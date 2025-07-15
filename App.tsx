@@ -1,28 +1,47 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React from "react";
+// import {NavigationContainer} from '@react-navigation/native';
+// import {createStackNavigator} from '@react-navigation/stack';
+import { SafeAreaView, StyleSheet , View} from "react-native";
+import LoginWidget from './Widgets/loginSignup_widget'
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
 
-  return (
-    <View style={styles.container}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <NewAppScreen templateFileName="App.tsx" />
+// const Navigation = createStackNavigator();
+
+const App = () =>{
+  return(
+    <View style = {styles.container}>
+    <SafeAreaView>
+      <View style = {styles.loginSignupDiv}>
+        <LoginWidget />
+      </View>
+
+    </SafeAreaView>
     </View>
-  );
+
+    // <NavigationContainer>
+    //   <Navigation.Navigator>
+    //     <Navigation.Screen
+    //       name="Home"
+    //       component={LoginWidget}
+    //       options={{title: 'Welcome'}}
+    //     />
+    //     <Navigation.Screen name="Profile" component={LoginWidget} />
+    //   </Navigation.Navigator>
+    // </NavigationContainer>
+
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex :1,
+    backgroundColor : '#000000'
   },
+
+  loginSignupDiv : {
+    paddingTop : 60,
+  }
 });
 
 export default App;
