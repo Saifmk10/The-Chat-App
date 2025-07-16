@@ -1,3 +1,6 @@
 module.exports = {
-  assets: ['D:\\PROJECTS\\TheChat\\The-Chat\\Source\\Pages\\login_Signup\\Assets\\Micro5-Regular.ttf'],
+  assets: ['./Pages/login_Signup/Assets/Micro5-Regular.ttf' , 
+           './Pages/login_Signup/Assets/Jura-VariableFont_wght.ttf'
+  ],
+  
 };
