@@ -19,6 +19,7 @@ const App = () =>{
     </SafeAreaView>
     </View>
 
+
     // <NavigationContainer>
     //   <Navigation.Navigator>
     //     <Navigation.Screen
