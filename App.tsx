@@ -2,7 +2,7 @@ import React from "react";
 // import {NavigationContainer} from '@react-navigation/native';
 // import {createStackNavigator} from '@react-navigation/stack';
 import { SafeAreaView, StyleSheet , View} from "react-native";
-import LoginWidget from './Widgets/loginSignup_widget'
+import LoginWidget from './Pages/Login_Signup/loginSignup_page'
 
 
 
