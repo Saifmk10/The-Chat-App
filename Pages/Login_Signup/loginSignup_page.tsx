@@ -1,7 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 // import { Color } from "react-native/types_generated/Libraries/Animated/AnimatedExports";
+import LoginSignUpToogle from '../../Widgets/Login_signup/toggleButtons';
+import LoginSignUpForm  from '../../Widgets/Login_signup/loginForm';
+
 
 const loginSignup = () => {
     return (
@@ -12,22 +15,11 @@ const loginSignup = () => {
                 <Text style={loginSignupStyle.font}>STAY CONNECTED , FEEL CLOSER</Text>
 
                 <View style={loginSignupStyle.loginFormAndButtonParent}>
-                    {/* login , Signup toggle buttons */}
-                    <View style={loginSignupStyle.loginToggleDiv}>
-                        <TouchableOpacity>
-                            <Text style={loginSignupStyle.loginToggleButtonsHover}>LOG IN</Text>
-                        </TouchableOpacity>
 
-                        <TouchableOpacity>
-                            <Text style={loginSignupStyle.loginToggleButtonsNoHover}>SIGN UP</Text>
-                        </TouchableOpacity>
-                    </View>
 
-                    {/* login , Signup form */}
-                    <View style={loginSignupStyle.loginFormParent}>
-                        <TextInput placeholder="Username" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.loginFormInput} />
-                        <TextInput placeholder="Password" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.loginFormInput} />
-                    </View>
+                    <LoginSignUpToogle />
+
+                    <LoginSignUpForm/>
                 </View>
 
             </View>
@@ -35,6 +27,17 @@ const loginSignup = () => {
 
 
     )
+}
+
+const loginOrSignup = (type: String) => {
+    switch (type) {
+        case 'Signup':
+            return loginSignupStyle.loginToggleButtonsHover
+        case 'Login':
+            return loginSignupStyle.loginToggleButtonsNoHover;
+        default:
+            return loginSignupStyle.loginToggleButtonsNoHover;
+    }
 }
 
 const loginSignupStyle = StyleSheet.create({
@@ -82,7 +85,7 @@ const loginSignupStyle = StyleSheet.create({
 
         width: 130,
         textAlign: 'center',
-        textAlignVertical : 'center',
+        textAlignVertical: 'center',
         color: '#D9D9D9',
         fontFamily: 'Jura-Bold',
         fontSize: 16,
@@ -99,13 +102,14 @@ const loginSignupStyle = StyleSheet.create({
 
         width: 130,
         textAlign: 'center',
-        textAlignVertical : 'center',
+        textAlignVertical: 'center',
         color: '#000000',
         fontFamily: 'Jura-Bold',
         fontSize: 16,
         letterSpacing: 1,
     },
 
+    // holds all the forms and buttons that are realted to the login form within this 
     loginFormParent: {
         backgroundColor: '#D9D9D9',
         height: 320,
@@ -117,6 +121,7 @@ const loginSignupStyle = StyleSheet.create({
         borderRadius: 10
     },
 
+    // design for the input field of the login form
     loginFormInput: {
         borderWidth: 3,
         borderColor: '#000000',
