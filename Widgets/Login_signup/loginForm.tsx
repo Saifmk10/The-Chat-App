@@ -2,11 +2,11 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput} from "react-native";
 import colors from 'D:\\PROJECTS\\The-Chat-App\\Assets\\colors.js'
 
-const LoginSignupForm = () => {
+const LoginForm = () => {
     return (
         <View style={loginSignupStyle.loginFormParent}>
-            <TextInput placeholder="Username" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.loginFormInput} />
-            <TextInput placeholder="Password" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.loginFormInput} />
+            <TextInput placeholder="Username / Phone" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.loginFormInput} />
+            <TextInput secureTextEntry={true} placeholder="Password" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.loginFormInput} />
 
             <TouchableOpacity>
                 <Text style = {loginSignupStyle.loginButton}>
@@ -28,12 +28,13 @@ const loginSignupStyle = StyleSheet.create({
 
     // holds all the forms and buttons that are realted to the login form within this 
     loginFormParent: {
-        backgroundColor: '#D9D9D9',
+        backgroundColor: colors.secondary,
         height: 320,
         marginTop: 8,
         width: 300,
         paddingTop: 50,
         alignItems: 'center',
+        justifyContent : 'center',
 
         borderRadius: 10
     },
@@ -84,4 +85,4 @@ const loginSignupStyle = StyleSheet.create({
 
 })
 
-export default LoginSignupForm;
+export default LoginForm;

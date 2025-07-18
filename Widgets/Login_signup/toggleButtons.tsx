@@ -1,21 +1,40 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity} from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Alert} from "react-native";
 import colors from "../../Assets/colors";
+import loginSignupPage from "D:\\PROJECTS\\The-Chat-App\\Pages\\Login_Signup\\loginSignup_page.tsx"
 
-const LoginSignUpToogle = () => {
+// helps in checking if the user has clicked in the login or on the signin (login == true , signin == false) 
+
+
+
+
+
+const LoginSignUpToogle = ({ checker, setCheckerTo }: { checker: any, setCheckerTo: any }) => {
+
+    // const [checker , setCheckerTo] = useState(true)
+
+    const onclickUiChange = () =>{
+    if(checker == true){
+
+    }
+}
 
     return (
         <View style={loginSignupStyle.loginToggleDiv}>
-            <TouchableOpacity>
-                <Text style={loginSignupStyle.loginToggleButtonsHover}>LOG IN</Text>
+            <TouchableOpacity onPress={() => setCheckerTo(true)}>
+                <Text style={[checker ? loginSignupStyle.loginToggleButtonsHover : loginSignupStyle.loginToggleButtonsNoHover]}>LOG IN</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity>
-                <Text style={loginSignupStyle.loginToggleButtonsNoHover}>SIGN UP</Text>
+            <TouchableOpacity onPress={() => setCheckerTo(false)}>
+                <Text style={[checker ? loginSignupStyle.loginToggleButtonsNoHover : loginSignupStyle.loginToggleButtonsHover]}>SIGN UP</Text>
             </TouchableOpacity>
         </View>
     )
 }
+
+
+
+
 
 
 const loginSignupStyle = StyleSheet.create({
@@ -23,25 +42,22 @@ const loginSignupStyle = StyleSheet.create({
 
     // holds the login toggle design for the buttons
     loginToggleDiv: {
-        backgroundColor: '#D9D9D9',
+        backgroundColor: colors.secondary,
         height: 55,
         width: 300,
         borderRadius: 10,
         flexDirection: 'row',
-
-        
-        borderColor : colors.gradient_secondary
-        
-
     },
 
     // holds the design for the login and signup button design , when button is pressed this design is applied
     loginToggleButtonsHover: {
 
-        backgroundColor: '#5F48F5',
+        backgroundColor: colors.gradient_secondary,
         alignItems: 'center',
-        padding: 8,
+        flex : 1,
+        justifyContent : 'center',
         margin: 8,
+        marginLeft: 11,
         borderRadius: 10,
         borderColor: '#000000',
         borderWidth: 2,
@@ -49,7 +65,7 @@ const loginSignupStyle = StyleSheet.create({
         width: 130,
         textAlign: 'center',
         textAlignVertical: 'center',
-        color: '#D9D9D9',
+        color: colors.secondary,
         fontFamily: 'Jura-Bold',
         fontSize: 16,
         letterSpacing: 1,
@@ -57,16 +73,17 @@ const loginSignupStyle = StyleSheet.create({
 
     // when the button is not hover this design is applied
     loginToggleButtonsNoHover: {
-        backgroundColor: '#D9D9D9',
+        backgroundColor: colors.secondary,
         alignItems: 'center',
-        padding: 8,
+        flex : 1,
+        justifyContent : 'center',
         margin: 8,
         borderRadius: 10,
 
         width: 130,
         textAlign: 'center',
         textAlignVertical: 'center',
-        color: '#000000',
+        color: colors.primary,
         fontFamily: 'Jura-Bold',
         fontSize: 16,
         letterSpacing: 1,
