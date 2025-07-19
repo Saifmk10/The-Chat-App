@@ -1,8 +1,15 @@
 import React from "react";
+// import auth from '@react-native-firebase/auth'
 import { View, Text, StyleSheet, TouchableOpacity, TextInput} from "react-native";
 import colors from 'D:\\PROJECTS\\The-Chat-App\\Assets\\colors.js'
 
 const LoginForm = () => {
+
+
+    
+
+
+
     return (
         <View style={loginSignupStyle.loginFormParent}>
             <TextInput placeholder="Username / Phone" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.loginFormInput} />
