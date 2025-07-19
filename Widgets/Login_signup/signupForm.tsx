@@ -1,9 +1,20 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView , ScrollView } from "react-native";
+import auth from '@react-native-firebase/auth'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView , ScrollView, Alert } from "react-native";
 import colors from 'D:\\PROJECTS\\The-Chat-App\\Assets\\colors.js'
 
 
 const SignupForm = () => {
+
+
+    const authentication = () =>{
+        auth().createUserWithEmailAndPassword("Email@email.com", "Password").then(()=>{ Alert.alert("Workeed Well") })
+        .catch((error)=>{
+            console.log(error);
+        })
+    }
+
+
     return (
 
         // <ScrollView></>
@@ -16,7 +27,7 @@ const SignupForm = () => {
             <TextInput secureTextEntry={true} placeholder="Set Password" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} />
             </View>
             <TouchableOpacity>
-                <Text style={loginSignupStyle.signinButton}>
+                <Text onPress={authentication} style={loginSignupStyle.signinButton}>
                     Sign Up
                 </Text>
             </TouchableOpacity>
