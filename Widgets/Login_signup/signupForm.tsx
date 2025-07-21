@@ -1,18 +1,74 @@
-import React from "react";
+import React, { useState } from "react";
 import auth from '@react-native-firebase/auth'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView , ScrollView, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView, ScrollView, Alert } from "react-native";
 import colors from 'D:\\PROJECTS\\The-Chat-App\\Assets\\colors.js'
+
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from '@react-native-firebase/auth';
+
 
 
 const SignupForm = () => {
 
+        const [Email, setEmail] = useState("");
+    const [Password, setPassword] = useState("");
 
-    const authentication = () =>{
-        auth().createUserWithEmailAndPassword("Email@email.com", "Password").then(()=>{ Alert.alert("Workeed Well") })
-        .catch((error)=>{
-            console.log(error);
+
+
+    const signupUserLogic = () => {
+
+    createUserWithEmailAndPassword(getAuth(), Email, Password)
+        .then(() => {
+            console.log('User account created & signed in!');
+            // need to add the code here for thr firestore so that when the user creates an account a file will be created in his uid in the users folder of the firestore
         })
-    }
+        .catch(error => {
+            if (error.code === 'auth/email-already-in-use') {
+                console.log('That email address is already in use!');
+                Alert.alert("Account already exists...");
+            }
+
+            if (error.code === 'auth/invalid-email') {
+                console.log('That email address is invalid!');
+                Alert.alert("Gmail format not right");
+            }
+
+            console.error(error);
+        });
+
+}
+
+    //     function App() {
+    //   // Set an initializing state whilst Firebase connects 
+    //   const [initializing, setInitializing] = useState(true);
+    //   const [user, setUser] = useState();
+
+    //   // Handle user state changes
+    //   function handleAuthStateChanged(user) {
+    //     setUser(user);
+    //     if (initializing) setInitializing(false);
+    //   }
+
+    //   useEffect(() => {
+    //     const subscriber = onAuthStateChanged(getAuth(), handleAuthStateChanged);
+    //     return subscriber; // unsubscribe on unmount
+    //   }, []);
+
+    //   if (initializing) return null;
+
+    //   if (!user) {
+    //     return (
+    //       <View>
+    //         <Text>Login</Text>
+    //       </View>
+    //     );
+    //   }
+
+    //   return (
+    //     <View>
+    //       <Text>Welcome {user.email}</Text>
+    //     </View>
+    //   );
+    // }
 
 
     return (
@@ -21,13 +77,15 @@ const SignupForm = () => {
         <View style={loginSignupStyle.signupFormParent}>
 
             <View>
-            <TextInput placeholder="Full Name" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} />
-            <TextInput keyboardType="email-address" placeholder="Email / Phone" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} />
-            <TextInput placeholder="Choose an Username" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} />
-            <TextInput secureTextEntry={true} placeholder="Set Password" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} />
+                <TextInput placeholder="Full Name" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} />
+                <TextInput keyboardType="email-address" placeholder="Email" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} 
+                value={Email} onChangeText={setEmail}/>
+                <TextInput placeholder="Choose an Username" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} />
+                <TextInput secureTextEntry={true} placeholder="Set Password" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} 
+                value={Password} onChangeText={setPassword}/>
             </View>
             <TouchableOpacity>
-                <Text onPress={authentication} style={loginSignupStyle.signinButton}>
+                <Text onPress={signupUserLogic} style={loginSignupStyle.signinButton}>
                     Sign Up
                 </Text>
             </TouchableOpacity>
@@ -52,7 +110,7 @@ const loginSignupStyle = StyleSheet.create({
     },
 
 
-        
+
     // design for the input field of the login form
     signinFormInput: {
         borderWidth: 3,
