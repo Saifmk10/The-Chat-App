@@ -1,52 +1,42 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView , KeyboardAvoidingView , Platform} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import LoginSignUpToogle from '../../Widgets/Login_signup/toggleButtons';
 import LoginForm from "../../Widgets/Login_signup/loginForm";
 import SignupForm from "../../Widgets/Login_signup/signupForm";
-// import ShootingStar from "../../Widgets/Login_signup/shootingStars";
 import colors from "../../Assets/colors";
 
 
 
 const loginSignup = () => {
 
-    const [checker , setCheckerTo] = useState(true)
+    const [checker, setCheckerTo] = useState(true)
 
     return (
 
-        // <KeyboardAwareScrollView
-    //   style={{ flex: 1 }}
-    //   contentContainerStyle={{ flexGrow: 1 }}
-    //   enableOnAndroid={true}
-    //   keyboardShouldPersistTaps='handled'
-    // >
+        <LinearGradient colors={['#000000', '#5F48F5']} style={{ height: '100%' }} locations={[0.65, 1]}>
+            <SafeAreaView style={{ flex: 1, flexGrow: 1 }}>
+                <KeyboardAvoidingView style={{ flex: 1 }} keyboardVerticalOffset={10} behavior="padding">
+                    <View style={loginSignupStyle.displayType}>
 
-        <LinearGradient colors={['#000000', '#5F48F5']} style={{ height: '100%'}} locations={[0.65, 1]}>
-            <View style={loginSignupStyle.displayType}>
 
-                {/* <Text style={loginSignupStyle.font}>STAY CONNECTED , FEEL CLOSER</Text> */}
+                        {/* this holds the design for the toggle button */}
+                        <View style={loginSignupStyle.loginFormAndButtonParent}>
 
-                <View style={loginSignupStyle.loginFormAndButtonParent}>
-                    
-                    <LoginSignUpToogle checker={checker} setCheckerTo={setCheckerTo}/>
+                            <LoginSignUpToogle checker={checker} setCheckerTo={setCheckerTo} />
 
-                    {/* <LoginForm/> */}
+                        </View>
 
-                    {/* <SignupForm/> */}
+                        {/* section that is responsible for rendering the login and signup form based on button clicked */}
+                        {checker ? <LoginForm /> : <SignupForm />}
 
-                    {checker ? <LoginForm /> : <SignupForm />}
-                    
-                </View>
+                        {/* <Text style={loginSignupStyle.font}>A NeW WAY TO CONNeCT</Text> */}
 
-                <Text style={loginSignupStyle.font}>A NeW WAY TO CONNeCT</Text>
-
-                {/* <ShootingStar/> */}
-
-            </View>
+                    </View>
+                </KeyboardAvoidingView>
+            </SafeAreaView>
         </LinearGradient>
-        // </KeyboardAwareScrollView>
 
     )
 }
@@ -59,7 +49,7 @@ const loginSignupStyle = StyleSheet.create({
         color: colors.secondary,
         fontSize: 40,
         fontFamily: 'Micro5-Regular',
-        paddingTop : 20
+        paddingTop: 20
     },
 
     // holds the display type of this page
@@ -67,7 +57,7 @@ const loginSignupStyle = StyleSheet.create({
         display: 'flex',
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
 
     },
 
