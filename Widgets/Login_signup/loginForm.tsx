@@ -1,4 +1,4 @@
-import React from "react";
+import React , {useState} from "react";
 import {
   View,
   Text,
@@ -7,11 +7,42 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
-  ScrollView
+  ScrollView,
+  Alert
 } from "react-native";
 import colors from 'D:\\PROJECTS\\The-Chat-App\\Assets\\colors.js';
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword , signInWithEmailAndPassword } from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore'
 
+// INCOMPLETE AUTHENTICATION
 const LoginForm = () => {
+
+  const [Email, setEmail] = useState("");
+  const [Password, setPassword] = useState("");
+  
+  const loginWithEmailAndPassword = () =>{
+    signInWithEmailAndPassword(getAuth() , Email , Password).then((userCredentails)=>{
+      Alert.alert("Logged in Succesfully")
+
+      // const userId = userCredentails.user.uid;
+      // firestore().collection('Users').get().then()
+    })
+    // .catch(error => {
+    //                 if (error.code === 'auth/user-not-found') {
+    //                     console.log('That email address is already in use!');
+    //                     Alert.alert("USER NOT FOUND");
+    //                 }
+    
+    //                 if (error.code === 'auth/wrong-password') {
+    //                     console.log('That email address is invalid!');
+    //                     Alert.alert("WRONG PASSWORD");
+    //                 }
+    
+    //                 console.error(error);
+    //             });
+  }
+
+
   return (
 
         <View style={styles.loginFormParent}>
@@ -30,7 +61,7 @@ const LoginForm = () => {
           />
 
           <TouchableOpacity>
-            <Text style={styles.loginButton}>Login</Text>
+            <Text style={styles.loginButton} onPress={loginWithEmailAndPassword}>Login</Text>
           </TouchableOpacity>
 
           <View>
