@@ -4,38 +4,51 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView, Scro
 import colors from 'D:\\PROJECTS\\The-Chat-App\\Assets\\colors.js'
 
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 
 
 const SignupForm = () => {
 
-        const [Email, setEmail] = useState("");
+    const [Email, setEmail] = useState("");
     const [Password, setPassword] = useState("");
+    const [UserName , setUserName] = useState("");
 
 
 
     const signupUserLogic = () => {
 
-    createUserWithEmailAndPassword(getAuth(), Email, Password)
-        .then(() => {
-            console.log('User account created & signed in!');
-            // need to add the code here for thr firestore so that when the user creates an account a file will be created in his uid in the users folder of the firestore
-        })
-        .catch(error => {
-            if (error.code === 'auth/email-already-in-use') {
-                console.log('That email address is already in use!');
-                Alert.alert("Account already exists...");
-            }
+        createUserWithEmailAndPassword(getAuth(), Email, Password)
+            .then((userCredentails) => {
+                const UID = userCredentails.user.uid;
+                const createdDate = userCredentails.user.metadata.creationTime;
 
-            if (error.code === 'auth/invalid-email') {
-                console.log('That email address is invalid!');
-                Alert.alert("Gmail format not right");
-            }
+                console.log('Welcome ${useremail}');
+                // Alert.alert('Welcome ' + UID)
+                // need to add the code here for thr firestore so that when the user creates an account a file will be created in his uid in the users folder of the firestore
 
-            console.error(error);
-        });
+                firestore().collection('Users').doc(UID).set({Username : UserName , Email : Email , AccountCreated : createdDate}).then(()=>{
+                    Alert.alert('Welcome ' + UID)
+                }).catch(error => (
+                    Alert.alert('Welcome ' + error)
+                ))
 
-}
+            })
+            .catch(error => {
+                if (error.code === 'auth/email-already-in-use') {
+                    console.log('That email address is already in use!');
+                    Alert.alert("Account already exists...");
+                }
+
+                if (error.code === 'auth/invalid-email') {
+                    console.log('That email address is invalid!');
+                    Alert.alert("Gmail format not right");
+                }
+
+                console.error(error);
+            });
+
+    }
 
     //     function App() {
     //   // Set an initializing state whilst Firebase connects 
@@ -78,11 +91,11 @@ const SignupForm = () => {
 
             <View>
                 <TextInput placeholder="Full Name" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} />
-                <TextInput keyboardType="email-address" placeholder="Email" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} 
-                value={Email} onChangeText={setEmail}/>
-                <TextInput placeholder="Choose an Username" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} />
+                <TextInput keyboardType="email-address" placeholder="Email" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput}
+                    value={Email} onChangeText={setEmail} />
+                <TextInput placeholder="Choose an Username" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} value={UserName} onChangeText={setUserName}/>
                 <TextInput secureTextEntry={true} placeholder="Set Password" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} 
-                value={Password} onChangeText={setPassword}/>
+                    value={Password} onChangeText={setPassword} />
             </View>
             <TouchableOpacity>
                 <Text onPress={signupUserLogic} style={loginSignupStyle.signinButton}>
