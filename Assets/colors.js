@@ -5,6 +5,7 @@ const colors =  {
     secondary : '#D9D9D9',
     gradient_primary : '#000000',
     gradient_secondary : '#5F48F5',
+    error_message : '#FF0000'
 }
 
 export default colors;
