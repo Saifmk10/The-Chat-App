@@ -5,25 +5,26 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
   Alert
 } from "react-native";
 import colors from 'D:\\PROJECTS\\The-Chat-App\\Assets\\colors.js';
 import { getAuth ,signInWithEmailAndPassword } from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore'
 
-// INCOMPLETE AUTHENTICATION
+// The bellow function contain the code for the ui and the logic behind the login of the app 
+
 const LoginForm = () => {
 
+  // the const bellow are hooks that helps in updating the const value based in the user input and then these values are used in the verification of the user 
   const [Email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
 
+  // these const bellow are responsible for the display or error messages when the user uses the wrong credentails 
   const [passwordErrorMessage , setpasswordErrorMessage] = useState(false);
   const [emailErrorMessage , setemailErrorMessage] = useState(false);
 
   
+  // function responsile for the login logic where we use the firebase buildin function signInWithEmailAndPassword() that allows the user to use the email and password to login easily
   const loginUserLogic = () =>{
 
     signInWithEmailAndPassword(getAuth() , Email , Password).then((userCredentails)=>{
@@ -53,7 +54,7 @@ const LoginForm = () => {
   } else if (errorCode === 'auth/network-request-failed') {
     Alert.alert("Maybe, MAYBE your network is slow...");
   } else {
-    Alert.alert("Login failed , Please try again later " + error.message); // fallback for unknown errors
+    Alert.alert("Login failed , Please try again later " + error.message); 
   }
 });
   }
