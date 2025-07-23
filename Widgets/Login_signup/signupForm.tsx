@@ -97,8 +97,8 @@ const SignupForm = () => {
                 <TextInput secureTextEntry={true} placeholder="Set Password" placeholderTextColor="#000000" cursorColor={'#000000'} style={loginSignupStyle.signinFormInput} 
                     value={Password} onChangeText={setPassword} />
             </View>
-            <TouchableOpacity>
-                <Text onPress={signupUserLogic} style={loginSignupStyle.signinButton}>
+            <TouchableOpacity onPress={signupUserLogic}>
+                <Text  style={loginSignupStyle.signinButton}>
                     Sign Up
                 </Text>
             </TouchableOpacity>
