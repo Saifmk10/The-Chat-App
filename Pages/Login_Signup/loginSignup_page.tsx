@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
@@ -7,9 +7,12 @@ import LoginForm from "../../Widgets/Login_signup/loginForm";
 import SignupForm from "../../Widgets/Login_signup/signupForm";
 import colors from "../../Assets/colors";
 
+import { getAuth, createUserWithEmailAndPassword , onAuthStateChanged } from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 
-const loginSignup = () => {
+
+const LoginSignup = ({ navigation }: { navigation: any }) => {
 
     const [checker, setCheckerTo] = useState(true)
 
@@ -28,10 +31,7 @@ const loginSignup = () => {
 
                         </View>
 
-                        {/* section that is responsible for rendering the login and signup form based on button clicked */}
-                        {checker ? <LoginForm /> : <SignupForm />}
-
-                        {/* <Text style={loginSignupStyle.font}>A NeW WAY TO CONNeCT</Text> */}
+                        {checker ? <LoginForm navigation={navigation} /> : <SignupForm />}
 
                     </View>
                 </KeyboardAvoidingView>
@@ -68,4 +68,4 @@ const loginSignupStyle = StyleSheet.create({
 
 })
 
-export default loginSignup;
+export default LoginSignup;

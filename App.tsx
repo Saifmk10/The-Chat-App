@@ -1,37 +1,23 @@
-import React from "react";
-// import {NavigationContainer} from '@react-navigation/native';
-// import {createStackNavigator} from '@react-navigation/stack';
-import { SafeAreaView, StyleSheet , View} from "react-native";
-import LoginWidget from './Pages/Login_Signup/loginSignup_page'
+import {NavigationContainer } from '@react-navigation/native';
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import HomeScreen from './Widgets/Chat_home_screen/homeScreen';
+import LoginSignup from './Pages/Login_Signup/loginSignup_page';
 
+const Stack = createNativeStackNavigator();
 
+export default function App (){
 
-// const Navigation = createStackNavigator();
-
-const App = () =>{
-  return(
-    <View style = {styles.container}>
-    <SafeAreaView>
-      <View style = {styles.loginSignupDiv}>
-        <LoginWidget />
-      </View>
-
-    </SafeAreaView>
-    </View>
-
-
-    // <NavigationContainer>
-    //   <Navigation.Navigator>
-    //     <Navigation.Screen
-    //       name="Home"
-    //       component={LoginWidget}
-    //       options={{title: 'Welcome'}}
-    //     />
-    //     <Navigation.Screen name="Profile" component={LoginWidget} />
-    //   </Navigation.Navigator>
-    // </NavigationContainer>
-
-  )
+  // using the App.tsx as a blueprint where all the pages that will be used within the app will be added
+    return (
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{headerShown : false}}>
+            <Stack.Screen name = "LoginSignup" component={LoginSignup} />
+            <Stack.Screen name = "HomeScreen" component={HomeScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -45,4 +31,3 @@ const styles = StyleSheet.create({
   }
 });
 
-export default App;

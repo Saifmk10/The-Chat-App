@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from "react-native";
 import colors from 'D:\\PROJECTS\\The-Chat-App\\Assets\\colors.js'
 
-import { getAuth, createUserWithEmailAndPassword } from '@react-native-firebase/auth';
+import { getAuth, createUserWithEmailAndPassword , onAuthStateChanged } from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
 // the bellow function is the main function of the widget that holds both the ui and the logic behind the signup of the application. The ui and the signup logics are however seperated with the help of functions
@@ -54,38 +54,7 @@ const SignupForm = () => {
 
     }
 
-    //     function App() {
-    //   // Set an initializing state whilst Firebase connects 
-    //   const [initializing, setInitializing] = useState(true);
-    //   const [user, setUser] = useState();
-
-    //   // Handle user state changes
-    //   function handleAuthStateChanged(user) {
-    //     setUser(user);
-    //     if (initializing) setInitializing(false);
-    //   }
-
-    //   useEffect(() => {
-    //     const subscriber = onAuthStateChanged(getAuth(), handleAuthStateChanged);
-    //     return subscriber; // unsubscribe on unmount
-    //   }, []);
-
-    //   if (initializing) return null;
-
-    //   if (!user) {
-    //     return (
-    //       <View>
-    //         <Text>Login</Text>
-    //       </View>
-    //     );
-    //   }
-
-    //   return (
-    //     <View>
-    //       <Text>Welcome {user.email}</Text>
-    //     </View>
-    //   );
-    // }
+    
 
 
     return (
