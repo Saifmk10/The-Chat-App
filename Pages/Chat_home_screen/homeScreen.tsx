@@ -3,7 +3,6 @@ import { View, Text, SafeAreaView, StyleSheet } from "react-native";
 import colors from "../../Assets/colors";
 import HomeToggleButton from "../../Widgets/Home_screen_widgets/homeToggleButtons";
 import UserChat from "../../Widgets/Home_screen_widgets/userChatWidget";
-import { Color } from "react-native/types_generated/Libraries/Animated/AnimatedExports";
 
 const HomeScreen = () => {
 
