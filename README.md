@@ -1,6 +1,6 @@
 ## Screenshot
 
-![App Screenshot](Assets\readme_imgs\mockup_readme_1.svg)
+![App Screenshot](./Assets/readme_imgs/mockup_readme_1.svg)
 
 # THE-CHAT [Name TBD]
 THE-CHAT is a mobile application currently in development. It helps users connect with friends, chat seamlessly, and share images, locations, and more.
