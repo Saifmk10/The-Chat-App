@@ -2,8 +2,8 @@ import {NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import HomeScreen from './Widgets/Chat_home_screen/homeScreen';
-import LoginSignup from './Pages/Login_Signup/loginSignup_page';
+import HomeScreen from './Pages/Chat_home_screen/homeScreen';
+import LoginSignup from './Pages/Login_signup_screen/loginSignup_page';
 
 const Stack = createNativeStackNavigator();
 

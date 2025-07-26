@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert} from "react-native";
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity} from "react-native";
 import colors from "../../Assets/colors";
-import loginSignupPage from "D:\\PROJECTS\\The-Chat-App\\Pages\\Login_Signup\\loginSignup_page.tsx"
 
 // helps in checking if the user has clicked in the login or on the signin (login == true , signin == false) 
 
@@ -11,7 +10,6 @@ import loginSignupPage from "D:\\PROJECTS\\The-Chat-App\\Pages\\Login_Signup\\lo
 
 const LoginSignUpToogle = ({ checker, setCheckerTo }: { checker: any, setCheckerTo: any }) => {
 
-    // const [checker , setCheckerTo] = useState(true)
 
     const onclickUiChange = () =>{
     if(checker == true){
