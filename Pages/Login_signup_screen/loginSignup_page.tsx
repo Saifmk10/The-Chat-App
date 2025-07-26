@@ -2,13 +2,11 @@ import React, { useState , useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
-import LoginSignUpToogle from '../../Widgets/Login_signup/toggleButtons';
-import LoginForm from "../../Widgets/Login_signup/loginForm";
-import SignupForm from "../../Widgets/Login_signup/signupForm";
+import LoginSignUpToogle from '../../Widgets/Login_signup_widgets/toggleButtons';
+import LoginForm from "../../Widgets/Login_signup_widgets/loginForm";
+import SignupForm from "../../Widgets/Login_signup_widgets/signupForm";
 import colors from "../../Assets/colors";
 
-import { getAuth, createUserWithEmailAndPassword , onAuthStateChanged } from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
 
 
 
