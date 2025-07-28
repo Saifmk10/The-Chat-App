@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, SafeAreaView, StyleSheet } from "react-native";
 import colors from "../../Assets/colors";
-import HomeToggleButton from "../../Widgets/Home_screen_widgets/homeToggleButtons";
-import UserChat from "../../Widgets/Home_screen_widgets/userChatWidget";
+import HomeToggleButton from "../../Widgets/Home_screen_widgets/chatAnonymousToggleButtons";
+import UserChat from "../../Widgets/Home_screen_widgets/userChatWidget"; 
+import UserProfileOptions from "../../Widgets/Home_screen_widgets/userProfileOptions";
 
 const HomeScreen = () => {
 
@@ -10,6 +11,12 @@ const HomeScreen = () => {
 
     return (
         <SafeAreaView style={homeStyle.parentDesign}>
+
+            <View>
+                <UserProfileOptions/>
+            </View>
+
+
             <View style={homeStyle.homeToggleDesign}>
                 <HomeToggleButton checker={checker} setCheckerTo={setCheckerTo} />
             </View>
@@ -18,8 +25,8 @@ const HomeScreen = () => {
             {checker
                 ?
 
-                <View style={homeStyle.homeToggleDesign}>
-                    <UserChat />
+                <View style={homeStyle.chatPlacement}>
+                    <UserChat/>
                 </View>
 
                 : <Text style = {{color : colors.secondary}}>ANONYMOUS TESTING</Text>
@@ -42,11 +49,11 @@ const homeStyle = StyleSheet.create({
     },
 
     homeToggleDesign: {
-        paddingTop: 50
+        marginTop: 50
     },
 
     chatPlacement: {
-        paddingTop: 20
+        marginTop: 20
     }
 })
 
