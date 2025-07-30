@@ -1,13 +1,16 @@
-import React, { useState } from "react";
-import { View, Text, SafeAreaView, StyleSheet } from "react-native";
+import React, { useState , } from "react";
+import { View, Text, SafeAreaView, StyleSheet ,  } from "react-native";
 import colors from "../../Assets/colors";
 import HomeToggleButton from "../../Widgets/Home_screen_widgets/chatAnonymousToggleButtons";
 import UserChat from "../../Widgets/Home_screen_widgets/userChatWidget"; 
 import UserProfileOptions from "../../Widgets/Home_screen_widgets/userProfileOptions";
 
+import Popupmessage from "../../modal/popupMessage";
+
 const HomeScreen = () => {
 
     const [checker, setCheckerTo] = useState(true)
+
 
     return (
         <SafeAreaView style={homeStyle.parentDesign}>
@@ -33,6 +36,8 @@ const HomeScreen = () => {
             }
 
 
+            {/* custom made modal with props for the popup message when the user logs into the account */}
+            <Popupmessage message='Welcome Back ' buttonText='Close' />
 
 
         </SafeAreaView>
