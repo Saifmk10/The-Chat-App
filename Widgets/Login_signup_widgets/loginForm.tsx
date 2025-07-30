@@ -11,11 +11,12 @@ import {
 } from "react-native";
  
 import colors from '../../Assets/colors';
+
 import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
 // navigation : any has fixed the problem if type not being specified 
-const LoginForm = ({ navigation }: { navigation: any }) => {
+const LoginForm = ({ navigation }: { navigation: any;}) => {
 
 
   const [Email, setEmail] = useState("");
@@ -31,8 +32,11 @@ const LoginForm = ({ navigation }: { navigation: any }) => {
         const UID = userCredentials.user.uid;
         firestore().collection('Users').doc(UID).get().then(doc => {
           const username = doc.data()?.Username; // this const is used to fetch the username when the user logs into the app
-          Alert.alert("WELCOME BACK " + username);
-          navigation.navigate("HomeScreen"); // once the login happens we redirect the user to the homepage
+          // Alert.alert("WELCOME BACK " + username);
+          
+           // once the login happens we redirect the user to the homepage
+          navigation.navigate("HomeScreen");
+
         });
       })
       .catch(error => {
@@ -92,6 +96,8 @@ const LoginForm = ({ navigation }: { navigation: any }) => {
       <TouchableOpacity onPress={loginUserLogic}>
         <Text style={styles.loginButton}>Login</Text>
       </TouchableOpacity>
+
+      {/* <Popupmessage message='Welcome Back ' buttonText='Close' visibility = {checkUserLogin } /> */}
 
       <View>
         {/* NEED TO ADD FUCNTIONALITY TO THIS SECTION */}
