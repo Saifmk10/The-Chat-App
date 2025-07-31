@@ -47,7 +47,7 @@ const Popupmessage = ({ message, buttonText }: { message: any; buttonText: strin
 
                     </View>
 
-                </View>
+                </View> 
         </Modal>
 
     )
