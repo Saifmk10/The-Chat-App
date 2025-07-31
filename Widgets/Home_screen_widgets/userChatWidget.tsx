@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Image , Text , StyleSheet } from "react-native";
+import { View, Image , Text , StyleSheet, Touchable, TouchableOpacity } from "react-native";
 import colors from "../../Assets/colors";
 // import UserProfile from "../../Assets/images/user_profile";
 import Userlogo from "../../Assets/images/user_logo";
@@ -12,6 +12,7 @@ const UserChat = () => {
             {/* <Image source={require('The-Chat-App\\Assets\\images\\user_profile.svg')} /> */}
             {/* <UserProfile/> */}
 
+            <TouchableOpacity>
             <View style = {userchatStyle.parentDesign}>
                 <Userlogo style = {userchatStyle.userLogo}/>
 
@@ -26,6 +27,7 @@ const UserChat = () => {
                 
                 
             </View>
+            </TouchableOpacity>
         </View>
     )
 
