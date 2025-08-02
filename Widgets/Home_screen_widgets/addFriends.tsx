@@ -1,15 +1,37 @@
 import React, { useState } from "react";
 import { View, Image , Text , StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import colors from "../../Assets/colors";
-// import UserProfile from "../../Assets/images/user_profile";
 import Userlogo from "../../Assets/images/user_logo";
 import AddButton from "../../Assets/images/addFriends/add_button_image";
 import Popupmessage from "../../modal/popupMessage";
 
+import FetchingAllUserNames from "../../DataFetching/fetchingAllUserNames"
+
 
 const UserChat = () => {
     // need to add this dialogue box in new update
-    // const [checker , setChecker] = useState(false)
+    const [checker , setChecker] = useState(true)
+    console.log({checker});
+
+
+    const [userName , setUserName] = useState("loading...") // state of user name is set to default and later fetched within the fetchUserName()
+
+    // this fucntion is used to fetch the username data that is being called form the server in the file fetchingAllUserNames.tsx
+        const fetchUserName = async () =>{
+            try{
+                const output  = await FetchingAllUserNames();
+                return setUserName(output);
+            }
+            catch (error){
+                console.log("ERROR IN FETCHING USER NAME IN FILE addFriends.tsx , error is :" , error);
+            }
+
+            
+        }
+        fetchUserName() //calling the function
+    
+        console.log("FINAL OUTPUT FROM addFriends.tsx : " , userName);
+
 
     return (
 
@@ -26,16 +48,17 @@ const UserChat = () => {
                 <Userlogo style = {addFriendsStyle.userLogo}/>
 
                 <View style = {addFriendsStyle.userDetailsParent}>
-                    <Text style = {addFriendsStyle.userName}>Hank</Text>
+                    <Text style = {addFriendsStyle.userName}>{userName}</Text>
                     <Text style = {addFriendsStyle.newUserCaption }>Hey there let's connect</Text>
                 </View>
 
-                 {/* <TouchableOpacity style = {addFriendsStyle.addFriendButton} onPress={() => setChecker(true)}> */}
+                 <TouchableOpacity style = {addFriendsStyle.addFriendButton} onPress={() => setChecker(prev => !prev)}>
                     <AddButton/>
-                {/* </TouchableOpacity>      */}
+                </TouchableOpacity>
             </View>
 
-            {/* <View style = {{display: checker ? 'flex' : 'none'}}>
+            {/* in the current situation this doesnt work as of now the pop up message isnt working  */}
+            {/* <View style = {{display: checker ? 'flex' : 'none' }}>
                 <Popupmessage message='Welcome Back ' buttonText='Close' />
             </View> */}
             
