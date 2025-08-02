@@ -9,16 +9,10 @@ import AddFriends from "../../Widgets/Home_screen_widgets/addFriends"
 
 import Popupmessage from "../../modal/popupMessage";
 
-import FetchingAllUserNames from "../../DataFetching/fetchingAllUserNames"
-
 const HomeScreen = () => {
 
     const [checker, setCheckerTo] = useState(true)
-
-    const output = FetchingAllUserNames()
-
-    console.log({ output })
-
+    
 
     return (
 
