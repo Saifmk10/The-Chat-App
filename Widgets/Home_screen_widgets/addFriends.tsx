@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Image , Text , StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Image, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import colors from "../../Assets/colors";
 import Userlogo from "../../Assets/images/user_logo";
 import AddButton from "../../Assets/images/addFriends/add_button_image";
@@ -10,58 +10,86 @@ import FetchingAllUserNames from "../../DataFetching/fetchingAllUserNames"
 
 const UserChat = () => {
     // need to add this dialogue box in new update
-    const [checker , setChecker] = useState(true)
-    console.log({checker});
+    const [checker, setChecker] = useState(true)
+    console.log({ checker });
 
 
-    const [userName , setUserName] = useState("loading...") // state of user name is set to default and later fetched within the fetchUserName()
+    const [userName, setUserName] = useState<string[]>([]); // state of user name is set to default and later fetched within the fetchUserName()
+    const [numberOfUsers, setNumberOfUsers] = useState<number>(0)
 
     // this fucntion is used to fetch the username data that is being called form the server in the file fetchingAllUserNames.tsx
-        const fetchUserName = async () =>{
-            try{
-                const output  = await FetchingAllUserNames();
-                return setUserName(output);
+    const fetchUserName = async () => {
+        try {
+            const output = await FetchingAllUserNames();
+            if (output) {
+                const [name, count] = output;
+                // error bellow has been ignored , code works dont touch
+                setUserName(name); // fetched user name 
+                setNumberOfUsers(count) // fetched total user count
             }
-            catch (error){
-                console.log("ERROR IN FETCHING USER NAME IN FILE addFriends.tsx , error is :" , error);
-            }
-
+        }
+        catch (error) {
+            console.log("ERROR IN FETCHING USER NAME IN FILE addFriends.tsx , error is :", error);
             
         }
+
+
+    }
+
+    // the function is being added into the useEffect() to avoid repeated function calls 
+    useEffect(() =>{
         fetchUserName() //calling the function
+    } , [])
+
     
-        console.log("FINAL OUTPUT FROM addFriends.tsx : " , userName);
+
+    console.log("FINAL OUTPUT FROM addFriends.tsx : ", userName);
+    console.log("NUMBER OF USERS FROM addFriends.tsx : " , numberOfUsers)
 
 
     return (
 
-        
-        
-        <View style = {addFriendsStyle.mainContentParent}>
 
-            <View style = {addFriendsStyle.introParentDesign}>
-                <Text style = {addFriendsStyle.introTextDesign}>BUILD NEW CONNECTION</Text>
+        
+        <View style={addFriendsStyle.mainContentParent}>
+
+            <View style={addFriendsStyle.introParentDesign}>
+                <Text style={addFriendsStyle.introTextDesign}>BUILD NEW CONNECTION</Text>
             </View>
 
-            
-            <View style = {addFriendsStyle.parentDesign}>
-                <Userlogo style = {addFriendsStyle.userLogo}/>
+            {/*  */}
 
-                <View style = {addFriendsStyle.userDetailsParent}>
-                    <Text style = {addFriendsStyle.userName}>{userName}</Text>
-                    <Text style = {addFriendsStyle.newUserCaption }>Hey there let's connect</Text>
+            {/* using map here to connect the array of users and the number of user */}
+            {userName.map((name, index) =>(
+
+                // the key is used the let the component know how many components it needs to render
+                <View key={index} style={addFriendsStyle.parentDesign}>
+                <Userlogo style={addFriendsStyle.userLogo} />
+
+                <View style={addFriendsStyle.userDetailsParent}>
+                    <Text style={addFriendsStyle.userName}>
+                        {name}
+                    </Text>
+                    <Text style={addFriendsStyle.newUserCaption}>
+                        Hey there let's connect
+                    </Text>
                 </View>
 
-                 <TouchableOpacity style = {addFriendsStyle.addFriendButton} onPress={() => setChecker(prev => !prev)}>
-                    <AddButton/>
+                <TouchableOpacity style={addFriendsStyle.addFriendButton} onPress={() => setChecker(prev => !prev)}>
+                    <AddButton />
                 </TouchableOpacity>
             </View>
+
+            ))}
+            
+
+            {/*  */}
 
             {/* in the current situation this doesnt work as of now the pop up message isnt working  */}
             {/* <View style = {{display: checker ? 'flex' : 'none' }}>
                 <Popupmessage message='Welcome Back ' buttonText='Close' />
             </View> */}
-            
+
 
         </View>
     )
@@ -71,69 +99,71 @@ const UserChat = () => {
 
 const addFriendsStyle = StyleSheet.create({
 
-    mainContentParent : {
+    mainContentParent: {
         // marginTop : 300
     },
 
-    introTextDesign : {
-        color : colors.secondary,
+    introTextDesign: {
+        color: colors.secondary,
         fontFamily: "Jura-Bold",
-        fontSize : 20,
-        
+        fontSize: 20,
+
     },
 
-    introParentDesign : {
-        margin : 9
+    introParentDesign: {
+        margin: 9
     },
 
 
 
-    parentDesign : {
-        backgroundColor : colors.primary, 
-        height : 65,
-        width : 320, 
+    parentDesign: {
+        backgroundColor: colors.primary,
+        height: 65,
+        width: 320,
 
-        borderRadius : 30,
-        borderWidth : 2,
-        borderColor : colors.secondary,
+        marginTop : 15,
+
+        borderRadius: 30,
+        borderWidth: 2,
+        borderColor: colors.secondary,
 
         display: 'flex',
-        flexDirection : 'row',
-        alignItems : 'center',
-        overflow : 'hidden'
+        flexDirection: 'row',
+        alignItems: 'center',
+        overflow: 'hidden'
     },
 
-    userLogo : {
-        height : 10, 
-        width : 10, 
-        margin : 5
+    userLogo: {
+        height: 10,
+        width: 10,
+        margin: 5
     },
 
 
-    userDetailsParent : {
-        display : 'flex',
-        overflow : 'hidden',
-        marginLeft : 5
+    userDetailsParent: {
+        display: 'flex',
+        overflow: 'hidden',
+        marginLeft: 5
     },
-    
-    userName : {
-        color : colors.secondary,
+
+    userName: {
+        color: colors.secondary,
         fontFamily: "Jura-Bold",
-        fontSize : 18
+        fontSize: 18
     },
 
-    newUserCaption : {
-        color : colors.secondary,
+    newUserCaption: {
+        color: colors.secondary,
         fontFamily: "Jura-Bold",
-        fontSize : 12
-        
+        fontSize: 12
+
     },
 
-    addFriendButton : {
-        display : 'flex',
-        alignSelf : 'center',
+    addFriendButton: {
+        display: 'flex',
+        alignSelf: 'center',
 
-        marginLeft : 50
+        marginLeft: 50
     }
 })
 
