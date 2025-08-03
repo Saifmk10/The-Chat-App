@@ -5,7 +5,7 @@ import Userlogo from "../../Assets/images/user_logo";
 import AddButton from "../../Assets/images/addFriends/add_button_image";
 import Popupmessage from "../../modal/popupMessage";
 
-import FetchingAllUserNames from "../../DataFetching/fetchingAllUserNames"
+import FetchingAllUserNames from "../../Backend_logics/fetchingAllUserNames"
 
 
 const UserChat = () => {
