@@ -28,6 +28,12 @@
 @rem
 @rem ##########################################################################
 
+@rem --- Force correct JAVA_HOME for this project ---
+set JAVA_HOME=C:\Program Files\Java\jdk-17
+set JAVA_HOME=%JAVA_HOME:"=%
+set JAVA_EXE=%JAVA_HOME%\bin\java.exe 
+
+
 @rem Set local scope for the variables with windows NT shell
 if "%OS%"=="Windows_NT" setlocal
 

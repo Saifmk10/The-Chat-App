@@ -12,8 +12,10 @@ const UserLoginLogic = ( Email: string, Password: string , success : (username :
         firestore().collection('Users').doc(UID).get().then(doc => {
 
           const username = doc.data()?.Username; // this const is used to fetch the username when the user logs into the app
-          success(username);      
-        
+          success(username);  
+          console.log("USER NAME FROM UserLoginLogic.ts : " , username);    
+          
+          
 
         });
 

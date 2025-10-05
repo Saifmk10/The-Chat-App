@@ -22,7 +22,7 @@ const FetchingAllUserNames = async () => {
         var numberOfUsers = snapshot.docs.length // this is fetching the length of the document , which means the total number of users present
         console.log("Number of Users : " , numberOfUsers)
 
-        // USE THE BELLOW COMMENTED CODE FOR TESTIG PURPOSE IF ANY ERROR FOR INDIVIDUAL USERS
+        // USE THE  BELLOW COMMENTED CODE FOR TESTIG PURPOSE IF ANY ERROR FOR INDIVIDUAL USERS
 
         // var UIDdetails = snapshot.docs[7]; // this is getting the details that are present within the user id thats in position 0 of the array
         // console.log("Doc[last]"  , UIDdetails);
