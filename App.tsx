@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomeScreen from './Pages/Chat_home_screen/homeScreen';
 import LoginSignup from './Pages/Login_signup_screen/loginSignup_page';
+import UsersChatPage from './Pages/User_chat_screen/UsersChatPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -15,6 +16,7 @@ export default function App (){
         <Stack.Navigator screenOptions={{headerShown : false}}>
             <Stack.Screen name = "LoginSignup" component={LoginSignup} />
             <Stack.Screen name = "HomeScreen" component={HomeScreen} />
+            <Stack.Screen name = "UsersChatPage" component={UsersChatPage} />
         </Stack.Navigator>
       </NavigationContainer>
     )

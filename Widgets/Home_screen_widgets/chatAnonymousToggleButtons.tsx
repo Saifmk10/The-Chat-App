@@ -4,6 +4,8 @@ import colors from "../../Assets/colors";
 
 // helps in checking if the user has clicked in the login or on the signin (login == true , signin == false) 
 
+// this widget is the top widget , the toggle button that is used to switch from the chat to stocks
+
 
 
 
@@ -25,7 +27,7 @@ const HomeToggleButton = ({ checker, setCheckerTo }: { checker: any, setCheckerT
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => setCheckerTo(false)}>
-                <Text style={[checker ? loginSignupStyle.loginToggleButtonsNoHover : loginSignupStyle.loginToggleButtonsHover]}>ANONYMOUS</Text>
+                <Text style={[checker ? loginSignupStyle.loginToggleButtonsNoHover : loginSignupStyle.loginToggleButtonsHover]}>STOCKS</Text>
             </TouchableOpacity>
         </View>
     )

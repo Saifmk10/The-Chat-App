@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { View, Image, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import colors from "../../Assets/colors";
-import Userlogo from "../../Assets/images/user_logo";
+import Userlogo from "../../Assets/images/user/user_logo";
 import AddButton from "../../Assets/images/addFriends/add_button_image";
 import Popupmessage from "../../modal/popupMessage";
 
 import FetchingAllUserNames from "../../Backend_logics/fetchingAllUserNames"
 
 
-const UserChat = () => {
+const AddFriends = () => {
     // need to add this dialogue box in new update
     const [checker, setChecker] = useState(true)
     console.log({ checker });
@@ -23,9 +23,16 @@ const UserChat = () => {
             const output = await FetchingAllUserNames();
             if (output) {
                 const [name, count] = output;
-                // error bellow has been ignored , code works dont touch
-                setUserName(name); // fetched user name 
-                setNumberOfUsers(count) // fetched total user count
+
+                // this part is responsible for fetching all the user names from the db 
+
+                if (Array.isArray(name)) {
+                    setUserName(name); // fetched user name 
+                }
+                if (typeof count === "number") {
+                    setNumberOfUsers(count); // fetched total user count
+                }
+                 // fetched total user count
             }
         }
         catch (error) {
@@ -167,4 +174,4 @@ const addFriendsStyle = StyleSheet.create({
     }
 })
 
-export default UserChat;
+export default AddFriends;

@@ -1,18 +1,23 @@
 import React, { useState, } from "react";
 import LinearGradient from "react-native-linear-gradient";
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, } from "react-native";
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity} from "react-native";
 import colors from "../../Assets/colors";
 import HomeToggleButton from "../../Widgets/Home_screen_widgets/chatAnonymousToggleButtons";
 import UserChat from "../../Widgets/Home_screen_widgets/userChatWidget";
 import UserProfileOptions from "../../Widgets/Home_screen_widgets/userProfileOptions";
 import AddFriends from "../../Widgets/Home_screen_widgets/addFriends"
 
+
 import Popupmessage from "../../modal/popupMessage";
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }: { navigation: any;}) => {
 
     const [checker, setCheckerTo] = useState(true)
-    
+
+    const navigateToUsersChatScreen = () =>{
+        navigation.navigate("UsersChatPage")
+        console.log("CLICKED ON USERS CHAT")
+    }     
 
     return (
 
@@ -35,7 +40,9 @@ const HomeScreen = () => {
                         ?
 
                         <View style={homeStyle.chatPlacement}>
+                            <TouchableOpacity onPress={navigateToUsersChatScreen}>
                             <UserChat />
+                            </TouchableOpacity>
 
                             <View style = {homeStyle.addFriendsContainer}>
                                 <AddFriends/>
@@ -50,7 +57,7 @@ const HomeScreen = () => {
 
 
                     {/* custom made modal with props for the popup message when the user logs into the account */}
-                    <Popupmessage message='Welcome Back ' buttonText='Close' />
+                    {/* <Popupmessage message='Welcome Back ' buttonText='Close' /> */}
                 </SafeAreaView>
             </ScrollView>
         </LinearGradient>
