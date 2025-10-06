@@ -12,6 +12,7 @@ const FetchingAllUserNames = async () => {
 
         var initialUser = 0
         var allUserNames : string [] = []; // this tuple is gonna hold all the users names 
+        var allUserID : string [] = []; // fetching all the userid
 
         const snapshot = await firestore().collection("Users").get();
 
@@ -32,7 +33,7 @@ const FetchingAllUserNames = async () => {
 
         // var userName = UIDdata.Username; // this is fetching the user details form the db
         // console.log("USER NAME :" , userName) 
-
+ 
 
         // fetching all the username from the database not just 1 name
         for (initialUser ; initialUser < numberOfUsers; initialUser++){
@@ -41,14 +42,17 @@ const FetchingAllUserNames = async () => {
             const UIDdata = UIDdetails.data(); // this is gonna enter into and doc and then show all the details like username , email and more
 
             const userName = UIDdata.Username;
+            const UserID = UIDdata.UserId;
             
 
             allUserNames.push(userName)
+            allUserID.push(UserID)
 
         }
         // console.log("USERNAME OUTPUT FROM addFriends.tsx :", userName);
         console.log("USER NAME FROM ARRAY FROM addFriends.tsx:" , allUserNames) // this is fetching the user details form the db
-        return [allUserNames , numberOfUsers];
+        console.log("USER USER ID FROM ARRAY FROM addFriends.tsx:" , allUserID)
+        return [allUserNames , numberOfUsers , allUserID];
         
 
 

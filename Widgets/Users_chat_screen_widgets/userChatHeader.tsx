@@ -5,6 +5,8 @@ import UserProfile from "../../Assets/images/chatScreen_userProfile/userProfile"
 import BackButton from "../../Assets/images/chatScreen_userProfile/backbutton";
 import HomeScreen from "../../Pages/Chat_home_screen/homeScreen"
 
+
+
 const UserName = () => {
 
     const navigation = useNavigation();
@@ -24,7 +26,12 @@ const UserName = () => {
 
 
             <UserProfile />
-            <Text style={design.userNameDesign}>SAIFMK</Text>
+
+            <View>
+                <Text style={design.userNameDesign}>SAIFMK</Text>
+                <Text style={design.userLastSeen}>5 mins ago</Text>
+            </View>
+
         </View>
     )
 }
@@ -52,6 +59,11 @@ const design = StyleSheet.create({
         fontFamily: "Jura-Bold",
         fontSize: 17
     },
+    userLastSeen : {
+        color: "#D9D9D9",
+        fontFamily: "Jura-Bold",
+        fontSize: 10
+    }
 })
 
 export default UserName;
