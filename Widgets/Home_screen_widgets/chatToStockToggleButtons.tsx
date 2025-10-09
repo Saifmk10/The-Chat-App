@@ -1,10 +1,12 @@
+// this widget is the top widget , the toggle button that is used to switch from the chat to stocks
+
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity} from "react-native";
 import colors from "../../Assets/colors";
 
 // helps in checking if the user has clicked in the login or on the signin (login == true , signin == false) 
 
-// this widget is the top widget , the toggle button that is used to switch from the chat to stocks
+
 
 
 
