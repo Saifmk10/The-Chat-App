@@ -2,7 +2,7 @@ import React, { useState, } from "react";
 import LinearGradient from "react-native-linear-gradient";
 import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity} from "react-native";
 import colors from "../../Assets/colors";
-import HomeToggleButton from "../../Widgets/Home_screen_widgets/chatAnonymousToggleButtons";
+import HomeToggleButton from "../../Widgets/Home_screen_widgets/chatToStockToggleButtons";
 import UserChat from "../../Widgets/Home_screen_widgets/userChatWidget";
 import UserProfileOptions from "../../Widgets/Home_screen_widgets/userProfileOptions";
 import AddFriends from "../../Widgets/Home_screen_widgets/addFriends"
@@ -16,7 +16,7 @@ const HomeScreen = ({ navigation }: { navigation: any;}) => {
 
     const navigateToUsersChatScreen = () =>{
         navigation.navigate("UsersChatPage")
-        console.log("CLICKED ON USERS CHAT")
+        console.log("CLICKED ON USERS CHAT FROM homeScreen.tsx")
     }     
 
     return (
