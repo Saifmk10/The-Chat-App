@@ -70,7 +70,7 @@ const AddFriends = () => {
 
 
     // function responsible for adding the users into the logged in user chat
-    const clickedOnUser = async (userid: string, userName: string) => {
+    const addNewChat = async (userid: string, userName: string) => {
 
         const db = getFirestore();
         const auth = getAuth();
@@ -96,6 +96,8 @@ const AddFriends = () => {
 
     }
 
+    
+
     return (
 
 
@@ -111,7 +113,7 @@ const AddFriends = () => {
             {userName.map((name, index) => (
 
                 // the key is used the let the component know how many components it needs to render
-                <TouchableOpacity onPress={async () => { await clickedOnUser(userId[index], userName[index]) }}>
+                <View>
                     <View key={index} style={addFriendsStyle.parentDesign}>
                         <Userlogo style={addFriendsStyle.userLogo} />
 
@@ -124,14 +126,16 @@ const AddFriends = () => {
                             </Text>
                         </View>
 
-                        <TouchableOpacity style={addFriendsStyle.addFriendButton} onPress={() => setChecker(prev => !prev)}>
+                        <TouchableOpacity  onPress={async () => {await addNewChat(userId[index] , userName[index ])}} style={addFriendsStyle.addFriendButton}>
                             <AddButton />
                         </TouchableOpacity>
                     </View>
-                </TouchableOpacity>
+                </View>
 
             ))}
 
+
+        
 
             {/*  */}
 

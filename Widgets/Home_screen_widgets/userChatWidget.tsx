@@ -1,7 +1,7 @@
 // this module plays a very important role , this component plays a role where it fetched all the users that the current user had added to text with, it fetched and renders the user info in a widget format
 
 import React, { useEffect, useState } from "react";
-import { View, Image, Text, StyleSheet, Touchable, TouchableOpacity , } from "react-native";
+import { View, Image, Text, StyleSheet, Touchable, TouchableOpacity, } from "react-native";
 import colors from "../../Assets/colors";
 import Userlogo from "../../Assets/images/user/user_logo";
 
@@ -24,6 +24,7 @@ const fetchingAddedUsersInfo = async () => {
 
     let userNameArray: string[] = [];
     let userUID: string[] = [];
+    let userInfo: { userName: string; userUID: string }[] = []
 
 
     console.log(`CURRRENT USER : ${currentUserID} FETCHED FROM UserChatWidget.tsx`);
@@ -33,17 +34,10 @@ const fetchingAddedUsersInfo = async () => {
     const querySnapshot = await firestore().collection("Users").doc(currentUserID!).collection("userChat").get();
 
 
-    // bellow is the function the prints all the users connection from userChats collection , uncomment only for debug purpose
-    // querySnapshot.forEach(doc => {
-    //     // from here ill need to fetch the data of the user name of invididiual users so i can render it down
-    //     console.log("Chat doc:", doc.id, "=>", doc.data().messengerId);
-    // });
-
     // function that is responsible for fetching all the user name from the userChat collection
     // WORK FLOW OF THE FUNCTION IS GONNA BE : fetched all the users added --> fetched the user UID from doc id --> From that user UID it fetched the username --> so well have both UID and the username (username to display , UID for the chat initialization)
-
     for (const doc of querySnapshot.docs) {
-        
+
         const userDoc = await firestore()
             .collection("Users")
             .doc(doc.data().messengerId)
@@ -51,48 +45,61 @@ const fetchingAddedUsersInfo = async () => {
 
         const userData = userDoc.data();
 
-        userNameArray.push(userData?.Username)
-        userUID.push(doc.data().messengerId) 
+
+        userInfo.push(
+            {
+                userName: userData?.Username,
+                userUID: doc.data().messengerId
+            }
+        );
 
         // console.log("USERS UID FROM userChatWidget.tsx: " , )
         console.log("Chat DOC FROM userChatWidget.tsx:", doc.id, "=>", doc.data().messengerId);
         console.log("USER NAME FROM userChatWidget.tsx:", userData?.Username);
-        console.log(`USER NAME ARRAY FROM userChatWidget.tsx: USERNAMES : ${userNameArray} , ${userUID}` );
-
+        // console.log(`USER NAME ARRAY FROM userChatWidget.tsx: USERNAMES : ${userNameArray} , ${userUID}`);
     }
 
-    return [userNameArray , userUID]; 
+    return userInfo;
 }
 
 
 
 
 
-const UserChat = () => {
-    const [userData, setUserData] = useState<{ userNameArray: string[], userUID: string[] }>({ userNameArray: [], userUID: [] });
 
-    // useEffect has been implemented to run the fucntion as soon as the app is loaded
+const UserChat = () => {
+    const [userData, setUserData] = useState<{ userName: string; userUID: string }[]>([]);
+
+    // useEffect has been implemented to run the function as soon as the app is loaded
     useEffect(() => {
-  const autoCalling = async () => {
-    const [userNameArray, userUID] = await fetchingAddedUsersInfo();
-    setUserData({ userNameArray, userUID });
-  };
-  autoCalling();
-}, []);   
+        const autoCalling = async () => {
+            const users = await fetchingAddedUsersInfo();
+            setUserData(users);
+        };
+        autoCalling();
+    }, []);
+
+    // need to implement another function here that will navigate into the users chat page along with the UID
+    const fetchingUserInfo = (UserName : String, userUID: String) => {
+        console.log(`USER CLICKED ON ${UserName}`)
+        console.log(`USER ID : ${userUID}`)
+        
+        return [UserName , userUID]
+    }
 
     return (
 
 
-        
+
         <View>
-           
-            {userData.userNameArray.map((name, index) => (
-                <TouchableOpacity key={index} onPress={async () => { await fetchingAddedUsersInfo() }}>
+
+            {userData.map((user, index) => (
+                <TouchableOpacity key={index} onPress={() => fetchingUserInfo(user.userName , user.userUID)}>
                     <View style={userchatStyle.parentDesign}>
                         <Userlogo style={userchatStyle.userLogo} />
 
                         <View style={userchatStyle.userDetailsParent}>
-                            <Text style={userchatStyle.userName}>{name}</Text>
+                            <Text style={userchatStyle.userName}>{user.userName}</Text>
                             <Text style={userchatStyle.userRecentMessage}>This is a new chat app</Text>
                         </View>
 
@@ -102,8 +109,8 @@ const UserChat = () => {
                     </View>
                 </TouchableOpacity>
             ))}
-        
-            
+
+
 
         </View>
     )
@@ -116,7 +123,7 @@ const userchatStyle = StyleSheet.create({
         backgroundColor: colors.primary,
         height: 65,
         width: 320,
-        marginBottom : 15,
+        marginBottom: 15,
 
         borderRadius: 30,
         borderWidth: 2,
