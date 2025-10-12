@@ -1,51 +1,140 @@
+// this file is responsible for creating the unique chat id for all the users with hooks called USER_KEY
+// this file also contains the whole chat logic , connection to the realtime db any errors occur in the chat logic have a look into the 
+
 import * as REACT from "react"
-import {View , TextInput, StyleSheet , KeyboardAvoidingView , Platform} from "react-native"
+import React, { useEffect, useState } from "react";
+import { View, TextInput, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity } from "react-native"
+import { useNavigation, useRoute } from "@react-navigation/native";
 import SendButton from "../../Assets/images/chatScreen_userProfile/sendButton"
 
+import auth from '@react-native-firebase/auth';
+import firestore, { firebase, Timestamp } from '@react-native-firebase/firestore';
+import { getDatabase, ref, push, set } from '@react-native-firebase/database';
+import database from '@react-native-firebase/database';
+import { getApp } from '@react-native-firebase/app';
 
 
-const ChatInput = () =>{
+const ChatInput = () => {
+
+
+    // making use of the useRoute
+    const route = useRoute<any>();
+    const { UserName, userUID } = route.params;
+
+    // this key var will hold the unique key that is generated for each chat
+    
+
+    // fetching the user id of the current logged in user
+    const user = auth().currentUser;
+    const currentUserID = user?.uid;
+
+    // usestate prop used to take the the user input from the text feild
+    const[Message , SetMessage] = useState("");
+    const [USER_KEY , SETUSER_KEY] = useState<string>("");
+
+
+    // logic functions bellow 
+
+
+    // function that is responsible for generating the unique USER_KEY for each new chat
+    const creatingUserKey = async () => {
+
+        console.log(`USER ${currentUserID} READY TO CHAT WITH ${userUID} FROM chatInputFeild.tsx`)
+
+        // creating a user key so the users can chat seemlessly 
+        if (currentUserID && userUID) {
+            const key = currentUserID < userUID ? `${currentUserID}_${userUID}` : `${userUID}_${currentUserID}`;
+            SETUSER_KEY(key);
+            console.log(`USER KEY CREATED : ${USER_KEY} FROM chatInputField.tsx`);
+        }
+        else {
+            console.log("Missing user IDs — couldn't create chat key FROM chatInputField.tsx");
+        }
+
+    }
+
+
+    // function that is used to push the message from the input feild to the realtime database
+    const sendingMessage = async (USER_KEY: string, userId: string ) => {
+
+        try {
+            let time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const db = getDatabase(getApp(), "https://the-chat-44e8e-default-rtdb.asia-southeast1.firebasedatabase.app"); // here ive added this url as the firebase has asked to add the url if the location of the realtime db is not set as default location , im my case ive changed the location
+            const messageRef = push(ref(db, `UserChat/${USER_KEY}`));
+            await set(messageRef, {
+                Sender: userId,
+                Message: Message, 
+                Time: time
+            });
+            console.log(`MESSAGE SENT TO FIRE BASE FROM chatInputField.tsx to ${USER_KEY}`);
+        } catch (error) {
+            console.error("ERROR IN SENDING MESSAGE FROM chatInputField.tsx", error);
+        }
+
+    };
+
+
+
+    // calling the function responsible for creating the USER_KEY a unique key so that as soon as the user clicks on to chat with another user the key is generated instantly 
+    useEffect(() => {
+        creatingUserKey()
+    }, [])
+
+
 
     return (
-        <View style ={design.parent}>
+        <View style={design.parent}>
 
-            
-                <TextInput style = {design.inputFieldDesign} placeholder="Message" autoCorrect multiline numberOfLines={6} />
+            {/* <TouchableOpacity > */}
+            <TextInput style={design.inputFieldDesign} placeholder="Message" autoCorrect multiline numberOfLines={6} onChangeText={text =>SetMessage(text)} value={Message}/>
 
-                   <View style= {design.buttonDesign}>
-                        <SendButton />
-                    </View> 
+            <TouchableOpacity
+                style={design.buttonDesign}
+                onPress={async () => {
+                    if(currentUserID){
+                        sendingMessage(USER_KEY , currentUserID)
+                        SetMessage("");
+                    }
+                    else{
+                        console.log("ERROR FROM THE FUNCTION CALL")
+                    }
+                    
+                }}
+            >
+                <SendButton />
+            </TouchableOpacity>
+            {/* </TouchableOpacity> */}
 
-                
-            
+
         </View>
     )
 }
 
 const design = StyleSheet.create({
-    parent : {
-        display : "flex", 
-        alignItems : "flex-start",
-        justifyContent : "center",
-        flexDirection : "row",
-        gap : 15
+    parent: {
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "center",
+        flexDirection: "row",
+        gap: 15
     },
 
     buttonDesign: {
-        padding : 5
+        padding: 5
     },
 
-    inputFieldDesign : {
-        height : "auto",
-        width : 280,
-        backgroundColor : "#000000",
+    inputFieldDesign: {
+        height: "auto",
+        width: 280,
+        backgroundColor: "#000000",
 
-        borderColor : "#D9D9D9", 
-        borderWidth : 2, 
-        borderRadius : 15,
-        padding: 10, 
+        borderColor: "#D9D9D9",
+        borderWidth: 2,
+        borderRadius: 15,
+        padding: 10,
         fontFamily: "Jura-Bold",
-        
+        color: "#FFFFFF",
+
     }
 })
 

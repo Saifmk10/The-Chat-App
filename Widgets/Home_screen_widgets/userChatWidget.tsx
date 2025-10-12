@@ -1,17 +1,18 @@
 // this module plays a very important role , this component plays a role where it fetched all the users that the current user had added to text with, it fetched and renders the user info in a widget format
-
+// there is a bug in this even when a user is deleted its shown as user so need to check individual users db
 import React, { useEffect, useState } from "react";
 import { View, Image, Text, StyleSheet, Touchable, TouchableOpacity, } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 import colors from "../../Assets/colors";
 import Userlogo from "../../Assets/images/user/user_logo";
 
 import firestore from '@react-native-firebase/firestore';
 import { getFirestore, collection, doc, addDoc, getDoc } from "@react-native-firebase/firestore";
 import { getAuth } from '@react-native-firebase/auth';
-import UserName from "../Users_chat_screen_widgets/userChatHeader";
 
 
-//  function responsible for fetching all the user info
+
+//  function responsible for fetching all the user info     
 const fetchingAddedUsersInfo = async () => {
 
     // let [userName, setUserName] = useState<string[]>([]); 
@@ -68,6 +69,8 @@ const fetchingAddedUsersInfo = async () => {
 
 
 const UserChat = () => {
+    const navigation = useNavigation<any>();
+
     const [userData, setUserData] = useState<{ userName: string; userUID: string }[]>([]);
 
     // useEffect has been implemented to run the function as soon as the app is loaded
@@ -83,7 +86,8 @@ const UserChat = () => {
     const fetchingUserInfo = (UserName : String, userUID: String) => {
         console.log(`USER CLICKED ON ${UserName}`)
         console.log(`USER ID : ${userUID}`)
-        
+
+        navigation.navigate("UsersChatPage" , {UserName , userUID});
         return [UserName , userUID]
     }
 
