@@ -98,8 +98,11 @@ const UserChat = () => {
         <View>
 
             {userData.map((user, index) => (
-                <TouchableOpacity key={index} onPress={() => fetchingUserInfo(user.userName , user.userUID)}>
-                    <View style={userchatStyle.parentDesign}>
+                // this checks if there is a user name present in the doc that was creted in the 
+                user?.userName ? (
+
+                    <TouchableOpacity key={index} onPress={() => fetchingUserInfo(user.userName , user.userUID)}>
+                    <View style={userchatStyle.parentDesign}>                                                                                                                                                                                                                                                                                
                         <Userlogo style={userchatStyle.userLogo} />
 
                         <View style={userchatStyle.userDetailsParent}>
@@ -107,11 +110,16 @@ const UserChat = () => {
                             <Text style={userchatStyle.userRecentMessage}>This is a new chat app</Text>
                         </View>
 
-                        <View style={userchatStyle.userMessageCount}>
+
+                        {/* this is the notification section , currently removed but needs to be added later  */}
+                        {/* <View style={userchatStyle.userMessageCount}>
                             <Text style={userchatStyle.userMessageCountNumber}>1</Text>
-                        </View>
+                        </View> */}
                     </View>
                 </TouchableOpacity>
+
+                ) : null
+                
             ))}
 
 
