@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import Header from "../../Widgets/Users_chat_screen_widgets/userChatHeader.tsx"
 import ChatInput from "../../Widgets/Users_chat_screen_widgets/chatInputField.tsx"
+import ChatHolderContainer from "../../Widgets/Users_chat_screen_widgets/chatsHorderContainer.tsx"
 
 
 const UsersChatPage = () =>{ 
@@ -24,7 +25,7 @@ const UsersChatPage = () =>{
 
 
             <View style={design.chatArea}>
-                {/* chat here */}
+                <ChatHolderContainer/>
             </View>
             
             <View style = {design.chatInputDesign}>
@@ -51,7 +52,8 @@ const design = StyleSheet.create({
 
     chatArea : {
         flex : 1,
-        flexGrow : 1
+        flexGrow : 1,
+        padding : 10
     },
     
 
