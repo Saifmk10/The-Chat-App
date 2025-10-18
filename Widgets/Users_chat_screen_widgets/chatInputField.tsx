@@ -17,11 +17,10 @@ import { getApp } from '@react-native-firebase/app';
 const ChatInput = () => {
 
 
-    // making use of the useRoute
+    // this route is used to fetch the user name and the user id from the rendered chat name .
     const route = useRoute<any>();
     const { UserName, userUID } = route.params;
 
-    // this key var will hold the unique key that is generated for each chat
     
 
     // fetching the user id of the current logged in user
@@ -40,17 +39,21 @@ const ChatInput = () => {
     const creatingUserKey = async () => {
 
         console.log(`USER ${currentUserID} READY TO CHAT WITH ${userUID} FROM chatInputFeild.tsx`)
+        let key : string = "";
 
-        // creating a user key so the users can chat seemlessly 
+        // creating a user key so that each time a user opens a new chat it doesnt need to create unique session ids , and using the user key we can store that data easily
         if (currentUserID && userUID) {
-            const key = currentUserID < userUID ? `${currentUserID}_${userUID}` : `${userUID}_${currentUserID}`;
+            key = currentUserID < userUID ? `${currentUserID}_${userUID}` : `${userUID}_${currentUserID}`;
             SETUSER_KEY(key);
-            console.log(`USER KEY CREATED : ${USER_KEY} FROM chatInputField.tsx`);
+            console.log(`USER KEY CREATED : ${key} FROM chatInputField.tsx`);
         }
         else {
             console.log("Missing user IDs — couldn't create chat key FROM chatInputField.tsx");
         }
 
+        console.log(`USER KEY OF THE USERS MESSAGING IS : ${key} FROM chatInputField.tsx`);
+
+        return key;
     }
 
 
@@ -138,4 +141,4 @@ const design = StyleSheet.create({
     }
 })
 
-export default ChatInput
+export default ChatInput    
