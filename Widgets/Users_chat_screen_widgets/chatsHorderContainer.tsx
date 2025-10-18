@@ -7,7 +7,7 @@ import { View, TextInput, StyleSheet, KeyboardAvoidingView, Platform, TouchableO
 import { useNavigation, useRoute } from "@react-navigation/native"
 import FetchingUserKey from "../Users_chat_screen_widgets/chatInputField";
 
-import { getDatabase, ref, push, set, onValue, query } from '@react-native-firebase/database';
+import { getDatabase, ref, push, set, onValue, query, onChildAdded } from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
 import { getApp } from '@react-native-firebase/app';
 
@@ -16,18 +16,8 @@ import { getApp } from '@react-native-firebase/app';
 
 
 
+
 const chatHolderContainer = () => {
-
-    // create a function that is gonna fetch the current user 
-    // then within the same function write the logic for the user message segrigation according to the users user id
-    // provide a way in whcih all the messages can be rendered using the key property
-
-    // const checking = UserKeyCreation()
-
-    // useEffect(()=>{console.log(`PRINTING THE USERS ID FOR TESTING FROM THE chatsHorderConatainer,tsx : ${checking}`)} , [])
-
-
-
 
     // this route is used to fetch the user name and the user id from the rendered chat name .
     const route = useRoute<any>();
@@ -40,6 +30,11 @@ const chatHolderContainer = () => {
     // usestate prop used to take the the user input from the text feild
     const [USER_KEY, SETUSER_KEY] = useState<string>("");
     let key: string = "";
+
+
+    const [sentMessages, setSentMessages] = useState<string[]>([]);
+    const [receivedMessages, setReceivedMessages] = useState<string[]>([]);
+
 
     // logic functions bellow 
 
@@ -78,6 +73,7 @@ const chatHolderContainer = () => {
         const messageRef = ref(db, `UserChat/${USER_KEY}`);
         console.log(`Fetching messages from path: UserChat/${USER_KEY} FROM chatsHolderContainer.tsx`);
 
+        // fetching the snapshot of the whole chat of the current USER_KEY  
         onValue(messageRef, (snapshot) => {
             if (snapshot.exists()) {
                 console.log(
@@ -91,7 +87,7 @@ const chatHolderContainer = () => {
 
             let messageMetaData = snapshot.val()
 
-
+            // converting the message meta data into a json form so it can be accessed easily and also readable in in  the log
             const messageArray = Object.keys(messageMetaData).map(key => {
                 return {
                     id: key,
@@ -101,12 +97,52 @@ const chatHolderContainer = () => {
 
             console.log(` MESSAGE META DATA HAS BEEN FETCHED FORM THE SNAPSHOT : ${JSON.stringify(messageArray, null, 2)}`);
 
-            const messagesWithSender = messageArray.map(item => ({
+            // here the json format of the meta data is converted into an array form where we are only focusing on message and the sender
+            const messagesFromSenderAndReciever = messageArray.map(item => ({
                 message: item.Message,
                 sender: item.Sender
             }))
+            console.log("MESSAGE CONVERTED INTO ARRAY FROM chatsHolderContainer.tsx:", messagesFromSenderAndReciever);
 
-            console.log("Messages with sender:", messagesWithSender);
+
+            // here all the messages that was converted into an array is filtered out based on the current user that means the message send by the user will be displayed using this section of the fucntion
+            const SentMessages = messagesFromSenderAndReciever
+                .filter(item => item.sender === currentUserID)
+                .map(item => item.message);
+
+            console.log("MESSAGE SENT BY CURRENT LOGGED IN USER :", SentMessages)
+
+
+            // here all the messages that are being send form the other user will be fetched
+            const RecievedMessages = messagesFromSenderAndReciever
+                .filter(item => item.sender !== currentUserID)
+                .map(item => item.message);
+
+            console.log("MESSAGE RECIEVED BY CURRENT LOGGED IN USER :", RecievedMessages)
+
+
+            // in this process we are printing all the messages that have been taken from the current user in the form of an array , this is for testing purpose only for log
+            SentMessages.forEach(obj => {
+                console.log(`MESSAGE SENT BY CURRENT LOGGED IN USER : ${obj}`)
+            });
+
+            RecievedMessages.forEach(obj => {
+                console.log(`MESSAGE RECIEVED BY CURRENT LOGGED IN USER : ${obj}`)
+            });
+
+
+
+            setSentMessages(messagesFromSenderAndReciever
+                .filter(item => item.sender === currentUserID)
+                .map(item => item.message).reverse()
+            );
+
+            setReceivedMessages(messagesFromSenderAndReciever
+                .filter(item => item.sender !== currentUserID)
+                .map(item => item.message).reverse()
+            );
+
+
         });
     };
 
@@ -132,22 +168,19 @@ const chatHolderContainer = () => {
     return (
 
         // this is the container that is gonna hold the code for the container that is gonna hold the text message that is being send from the user and which will be initially white in color 
-        <View >
-
-            <View style={design.senderContainerParent}>
-                <Text style={design.senderContainerDesign} >
-                    Hello this is the new keyboard from whcih ive been trying to code from and kinda feel its a bit hard to code on this as its a bit too complex to handle
-                </Text>
-            </View>
-
-
-            <View>
-                <Text style={design.recievedMessageContainerDesign} >
-                    Maybe itll feel a bit hard in the starting , but as the time passes ull get used to it so dont worry , the broken keyboard on ur laptop will now be a problem once u get used to it
-                </Text>
-            </View>
-
+        <View>
+    {receivedMessages.map((msg, index) => (
+        <View key={index}>
+            <Text  style={design.recievedMessageContainerDesign}>{msg}</Text>
         </View>
+    ))}
+
+    {sentMessages.map((msg, index) => (
+        <View key={index} style={design.senderContainerParent}>
+            <Text style={design.senderContainerDesign}>{msg}</Text>
+        </View>
+    ))}
+</View>
 
 
     );
@@ -164,24 +197,9 @@ const design = StyleSheet.create({
     // design for the sender code design
     senderContainerDesign: {
 
-        backgroundColor: "#D9D9D9",
-        width: 250,
-        height: "auto",
-        padding: 10,
-        margin: 10,
-        borderRadius: 15,
-
-        fontFamily: "Jura-Bold",
-        lineHeight: 20,
-
-
-    },
-
-    // design for the message being send to the logged in user from the other user
-    recievedMessageContainerDesign: {
-
         backgroundColor: "#5F48F5",
-        width: 250,
+        minWidth : "auto",
+        maxWidth: 250,
         height: "auto",
         padding: 10,
         margin: 10,
@@ -191,7 +209,26 @@ const design = StyleSheet.create({
         color: "#D9D9D9",
         lineHeight: 20,
 
+        alignItems: "flex-end"
+        
 
+    },
+
+    // design for the message being send to the logged in user from the other user
+    recievedMessageContainerDesign: {
+
+        backgroundColor: "#D9D9D9",
+        width: "auto",
+        maxWidth: 250,
+        height: "auto",
+        padding: 10,
+        margin: 10,
+        borderRadius: 15,
+
+        fontFamily: "Jura-Bold",
+        lineHeight: 20,
+
+        
     },
 
 
