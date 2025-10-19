@@ -3,8 +3,8 @@
 
 import * as REACT from "react"
 import React, { useEffect, useState } from "react";
-import { View, TextInput, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity } from "react-native"
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { View, TextInput, StyleSheet, TouchableOpacity , FlatList} from "react-native"
+import { useRoute } from "@react-navigation/native";
 import SendButton from "../../Assets/images/chatScreen_userProfile/sendButton"
 
 import auth from '@react-native-firebase/auth';
@@ -99,7 +99,7 @@ const ChatInput = () => {
                         SetMessage("");
                     }
                     else{
-                        console.log("ERROR FROM THE FUNCTION CALL")
+                        console.log("ERROR FROM THE FUNCTION CALL FROM chatInputFeild.tsx")
                     }
                     
                 }}
