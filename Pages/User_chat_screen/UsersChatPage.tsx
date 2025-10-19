@@ -3,7 +3,7 @@
 // This file is only ment to merge all of those together so if any complexity or updates only ref to the above files mentioned 
 
 import React from "react";
-import { View , Text , StyleSheet , KeyboardAvoidingView , Platform} from "react-native";
+import { View , Text , StyleSheet , KeyboardAvoidingView , Platform , ScrollView} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Header from "../../Widgets/Users_chat_screen_widgets/userChatHeader.tsx"
@@ -22,11 +22,12 @@ const UsersChatPage = () =>{
             <View>
                 <Header/>
             </View>
-
-
+          
+          <ScrollView>
             <View style={design.chatArea}>
                 <ChatHolderContainer/>
             </View>
+          </ScrollView>
             
             <View style = {design.chatInputDesign}>
                 <ChatInput/>
