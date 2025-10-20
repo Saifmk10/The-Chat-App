@@ -1,4 +1,4 @@
-import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
+import auth , {signInWithEmailAndPassword } from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
 
@@ -6,7 +6,8 @@ import firestore from '@react-native-firebase/firestore';
 
 
 const UserLoginLogic = ( Email: string, Password: string , success : (username : string) => void , Error : (errorMessage : string) => void) => {
-    signInWithEmailAndPassword(getAuth(), Email, Password)
+
+  signInWithEmailAndPassword(auth(), Email, Password)
       .then((userCredentials) => {
         const UID = userCredentials.user.uid;
         firestore().collection('Users').doc(UID).get().then(doc => {

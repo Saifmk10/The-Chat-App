@@ -1,4 +1,5 @@
 import React ,{useState} from "react";
+import auth from "@react-native-firebase/auth";
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import colors from "../../Assets/colors";
 import UserlogoOption from "../../Assets/images/user_logo_options";
@@ -8,12 +9,22 @@ const UserProfileOptions = () => {
 
     // need to implement the logic for the checker and also make sure the additonal user settings are shown only when the user clicks in user profile
     const [checker , SetCheker] = useState<boolean>(false);
-
     if(checker == true){
         console.log("True")
     }
     else{
         console.log("Flase")
+    }
+
+
+    const logoutLogic = async () =>{
+        try {
+            await auth().signOut();
+            console.log("USER HAS BEEN LOGGED OUT FROM userProfileOption.tsx")
+        }
+        catch(error){
+            console.log(`USER LOGIN FAILED ERROR : ${error} FROM userProfileOptions.tsx`)
+        }
     }
 
     return (
@@ -26,7 +37,7 @@ const UserProfileOptions = () => {
             
 
             <View style={{...userOptionsStyle.popUpDesign , display : checker ? 'flex' : 'none'}}>
-                <TouchableOpacity style={userOptionsStyle.logoutButton}>
+                <TouchableOpacity style={userOptionsStyle.logoutButton} onPress={logoutLogic}>
                     <Text style={userOptionsStyle.logoutFont}>LogOut</Text>
                 </TouchableOpacity>
 

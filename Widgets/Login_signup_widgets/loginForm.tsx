@@ -28,32 +28,19 @@ const LoginForm = ({ navigation }: { navigation: any;}) => {
 
   // function that is responsible for the login of user using the email and password , using of a function called signInWithEmailAndPassword() one of the functions that is provided by the firebase authentication
   const loginUserLogic = () => {
-
-    
-
-    UserLoginLogic(Email , Password , 
-
-      (username) => {    
-        setUsername(username);
-
-        // navigation to homescreen has been delayed so that other stuff like alert and modal can be rendered 
-        setTimeout(() => {
-        navigation.navigate("HomeScreen");
-        loginStatus = true
-      }, 500);
-
-      },
-
-      (errorMessage) =>{
-        Alert.alert("Error : " + errorMessage);
-        loginStatus = false
-      }
-
-    )
-
-    return loginStatus;
- 
-  };
+  UserLoginLogic(
+    Email,
+    Password,
+    (username) => {    
+      setUsername(username);
+      console.log("Welcome back, ", username);
+  
+    },
+    (errorMessage) => {
+      Alert.alert("Error : " + errorMessage);
+    }
+  );
+}
 
   return (
     <View style={styles.loginFormParent}>

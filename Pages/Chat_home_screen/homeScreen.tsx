@@ -13,7 +13,7 @@ import Popupmessage from "../../modal/popupMessage";
 const HomeScreen = ({ navigation }: { navigation: any;}) => {
 
     const [checker, setCheckerTo] = useState(true)
-
+  
     const navigateToUsersChatScreen = () =>{
         navigation.navigate("UsersChatPage")
         console.log("CLICKED ON USERS CHAT FROM homeScreen.tsx")
@@ -52,7 +52,9 @@ const HomeScreen = ({ navigation }: { navigation: any;}) => {
 
 
 
-                        : <Text style={{ color: colors.secondary }}>ANONYMOUS TESTING</Text>
+                        : <Text style={{ color: colors.secondary }}>
+                           GALLERY COMING SOON 
+                        </Text>
                     }
 
 
