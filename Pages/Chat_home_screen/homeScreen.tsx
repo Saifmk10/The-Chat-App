@@ -53,7 +53,7 @@ const HomeScreen = ({ navigation }: { navigation: any;}) => {
 
 
                         : <Text style={{ color: colors.secondary }}>
-                           GALLERY COMING SOON 
+                           STOCK COMING SOON 
                         </Text>
                     }
 
