@@ -11,6 +11,7 @@ import UsersChatPage from "./Pages/User_chat_screen/UsersChatPage";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<any>(null);
 
@@ -25,7 +26,7 @@ export default function App() {
     return unsubscribe; 
   }, []);
 
-  if (initializing) return null; 
+  if (initializing) return null;  
 
   return (
     <NavigationContainer>

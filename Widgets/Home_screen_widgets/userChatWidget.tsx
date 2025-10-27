@@ -83,12 +83,12 @@ const UserChat = () => {
     }, []);
 
     // need to implement another function here that will navigate into the users chat page along with the UID
-    const fetchingUserInfo = (UserName : String, userUID: String) => {
+    const fetchingUserInfo = (UserName: String, userUID: String) => {
         console.log(`USER CLICKED ON ${UserName}`)
         console.log(`USER ID : ${userUID}`)
 
-        navigation.navigate("UsersChatPage" , {UserName , userUID});
-        return [UserName , userUID]
+        navigation.navigate("UsersChatPage", { UserName, userUID });
+        return [UserName, userUID]
     }
 
     return (
@@ -101,25 +101,25 @@ const UserChat = () => {
                 // this checks if there is a user name present in the doc that was creted in the 
                 user?.userName ? (
 
-                    <TouchableOpacity key={index} onPress={() => fetchingUserInfo(user.userName , user.userUID)}>
-                    <View style={userchatStyle.parentDesign}>                                                                                                                                                                                                                                                                                
-                        <Userlogo style={userchatStyle.userLogo} />
+                    <TouchableOpacity key={index} onPress={() => fetchingUserInfo(user.userName, user.userUID)}>
+                        <View style={userchatStyle.parentDesign}>
+                            <Userlogo style={userchatStyle.userLogo} />
 
-                        <View style={userchatStyle.userDetailsParent}>
-                            <Text style={userchatStyle.userName}>{user.userName}</Text>
-                            <Text style={userchatStyle.userRecentMessage}>This is a new chat app</Text>
-                        </View>
+                            <View style={userchatStyle.userDetailsParent}>
+                                <Text style={userchatStyle.userName}>{user.userName}</Text>
+                                <Text style={userchatStyle.userRecentMessage}>This is a new chat app</Text>
+                            </View>
 
 
-                        {/* this is the notification section , currently removed but needs to be added later  */}
-                        {/* <View style={userchatStyle.userMessageCount}>
+                            {/* this is the notification section , currently removed but needs to be added later  */}
+                            {/* <View style={userchatStyle.userMessageCount}>
                             <Text style={userchatStyle.userMessageCountNumber}>1</Text>
                         </View> */}
-                    </View>
-                </TouchableOpacity>
+                        </View>
+                    </TouchableOpacity>
 
                 ) : null
-                
+
             ))}
 
 
