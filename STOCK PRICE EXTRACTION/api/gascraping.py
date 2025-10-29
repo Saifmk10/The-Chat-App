@@ -71,36 +71,6 @@ def senSexPriceFetching() :
                 }
 
 
-
-
-def userSearchedStockPrice(stockName) : 
-    URL = f"https://www.google.com/finance/quote/{stockName}:NSE" #url for fetching price details for the nifty
-    response = requests.get(URL)
-
-    # nifty index fetching
-    if (response) : 
-
-        try:
-            parsedInfo = BeautifulSoup(response.text , "html.parser")
-
-            # fetching the details from the class , if the clas changes in in the google analytics then this needs to be updated
-            classNameFromScrapedWeb = "YMlKec fxKbKc"
-            finalOutput = float(parsedInfo.find(class_= classNameFromScrapedWeb).text.strip()[1:].replace("," , "")) #here the 0th element is being scrapped , but in the other fetched data the 1st element is stripped just change it as required
-            # time.sleep(5)
-
-            return {
-                "stockName": "NIFTY 50",
-                "stockPrice" : finalOutput, 
-                }
-
-            
- 
-        except Exception as error : 
-            return {
-                "stockName": "NIFTY 50",
-                "stockPrice" : str(error)
-                }
-
     
 
 class handler(BaseHTTPRequestHandler):
@@ -110,12 +80,10 @@ class handler(BaseHTTPRequestHandler):
             
             nseResultFromScrapping = niftyPriceFetching()
             bseResultFromScrapping = senSexPriceFetching()
-            userSearchedStockPriceScraping = userSearchedStockPrice("TATASTEEL") 
 
             combinedResult = {
                 "nse" : nseResultFromScrapping,
                 "bse" : bseResultFromScrapping,
-                "userSearched" : userSearchedStockPriceScraping
             }
 
             self.send_response(200)
