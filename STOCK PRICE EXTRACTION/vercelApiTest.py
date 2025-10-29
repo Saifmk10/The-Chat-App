@@ -2,7 +2,7 @@ import requests
 import time  # needed for sleep
 
 # Replace this URL with your actual Vercel API endpoint (without .py)
-url = "https://the-chat-app-3o3494g6j-saifmks-projects.vercel.app/api/gascraping.py"
+url = "https://the-chat-app-h5nf4i98a-saifmks-projects.vercel.app//api/gascraping.py"
 
 try:
     while True:  # loop indefinitely
@@ -19,7 +19,7 @@ try:
         #     pass
 
         # Wait for 5 seconds before next call
-        time.sleep(5)
+        time.sleep(1)
 
 except requests.exceptions.RequestException as e:
     print("Error:", e)
