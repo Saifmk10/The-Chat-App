@@ -1,3 +1,8 @@
+# function that is responsible for fetching the stock price that the user has searched for
+# currently we need to add the stock name correctly in order to fetch the data
+# needs to be connected to rapidfuzz inorder to fetch the data from the nse database to conpare the name of he stock the user has searched for
+
+
 from http.server import BaseHTTPRequestHandler , HTTPServer
 from urllib.parse import urlparse, parse_qs
 from bs4 import BeautifulSoup

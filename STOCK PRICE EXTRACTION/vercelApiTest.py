@@ -2,14 +2,17 @@ import requests
 import time  # needed for sleep
 
 # Replace this URL with your actual Vercel API endpoint (without .py)
-url = "https://the-chat-app-h5nf4i98a-saifmks-projects.vercel.app//api/gascraping.py"
-
+url1 = "https://the-chat-app-jbnwld16e-saifmks-projects.vercel.app/api/searchedapi.py/?symbol=TCS"
+url2 = "https://the-chat-app-jbnwld16e-saifmks-projects.vercel.app/api/gascraping.py"
 try:
     while True:  # loop indefinitely
-        response = requests.get(url)
-        print("Status Code:", response.status_code)
+        response1 = requests.get(url1)
+        response2 = requests.get(url2)
+        print("Status Code:", response1.status_code)
+        print("Status Code:", response2.status_code)
         print("Response:")
-        print(response.text)
+        print(response1.json())
+        print(response2.json())
 
         # If it's a JSON API, print JSON
         # try:
