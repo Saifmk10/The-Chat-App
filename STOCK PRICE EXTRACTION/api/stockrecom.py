@@ -3,7 +3,7 @@
 
 import requests
 from bs4 import BeautifulSoup
-from http.server import BaseHTTPRequestHandler , HTTPServer
+from http.server import BaseHTTPRequestHandler
 import json 
 
 
@@ -60,9 +60,9 @@ class handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(error).encode('utf-8'))
 
-if __name__ == "__main__":
-    PORT = 8000
-    server = HTTPServer(("localhost", PORT), handler)
-    print(f"Local server running at http://localhost:{PORT}")
-    print("Use curl to test: curl http://localhost:8000")
-    server.serve_forever()  
+# if __name__ == "__main__":
+#     PORT = 8000
+#     server = HTTPServer(("localhost", PORT), handler)
+#     print(f"Local server running at http://localhost:{PORT}")
+#     print("Use curl to test: curl http://localhost:8000")
+#     server.serve_forever()  
