@@ -7,6 +7,8 @@ import UserChat from "../../Widgets/Home_screen_widgets/userChatWidget";
 import UserProfileOptions from "../../Widgets/Home_screen_widgets/userProfileOptions";
 import AddFriends from "../../Widgets/Home_screen_widgets/addFriends"
 
+import StockScreen from "../Stocks_home_screen/stockScreen";
+
 
 import Popupmessage from "../../modal/popupMessage";
 
@@ -53,8 +55,9 @@ const HomeScreen = ({ navigation }: { navigation: any;}) => {
 
 
                         : <Text style={{ color: colors.secondary }}>
-                           STOCK COMING SOON 
+                           <StockScreen/>
                         </Text>
+                        // the navigation to the market page needs to happen from here
                     }
 
 
