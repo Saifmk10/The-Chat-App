@@ -6,7 +6,7 @@ url1 = "https://the-chat-app-jbnwld16e-saifmks-projects.vercel.app/api/searcheda
 url2 = "https://the-chat-app-jbnwld16e-saifmks-projects.vercel.app/api/gascraping.py"
 url3 = "https://the-chat-app-2imxqy30d-saifmks-projects.vercel.app//api/stockrecom.py"
 try:
-    while True:  # loop indefinitely
+    # while True:  # loop indefinitely
         response1 = requests.get(url1)
         response2 = requests.get(url2)
         response3 = requests.get(url3)
@@ -18,6 +18,8 @@ try:
         print(response2.json())
         print(response3.json())
 
+        # if needed to call the api in a loop use this for realtime stock updates   
+
         # If it's a JSON API, print JSON
         # try:
         #     print("JSON Response:")
@@ -26,7 +28,7 @@ try:
         #     pass
 
         # Wait for 5 seconds before next call
-        time.sleep(1)
+        # time.sleep(1)
 
 except requests.exceptions.RequestException as e:
     print("Error:", e)
