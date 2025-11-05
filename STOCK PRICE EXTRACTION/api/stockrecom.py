@@ -1,39 +1,41 @@
-# currently this file only displays the name of the stocks that are trending for a particular day , this price is not displayed in this api
-# the plan is to fetch the name of the stock from there an then store the name within a useState and then fetch the stock price realtime using the serchedapi end point
+# this end point is responsible for providin the latest trending stock of the day information , it provides both the stock name and the stock price as of now
+
 
 import requests
 from bs4 import BeautifulSoup
-from http.server import BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler , HTTPServer
 import json 
 
 
 # function that is responsible for fetching the stock price and the stock name
-def recommededStock ():
+def recommededStock():
     url = "https://www.google.com/finance"
-    response = requests.get(url)
+    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
 
-    if (response):
-        try : 
+    if response:
+        try:
+            soup = BeautifulSoup(response.text, "html.parser")
 
-            parsedInfo = BeautifulSoup(response.text , "html.parser")
-            classNameFromScrapedWebForNAME = "ZvmM7"
-            # classNameFromScrapedWebForPRICE = "YMlKec"
+            # in the google finance website that data of the stock price and the stock name has been added into a ul , so the ul class was fetched to access the inner tags
+            stock_list = soup.find("ul", {"class": "sbnBtf"})
+            if not stock_list:
+                return {"error": "Class not found in end point stockrecom.py"}
 
-            # stocknamearray = []
-            stocksName = parsedInfo.find_all(class_=classNameFromScrapedWebForNAME)
-            # stocksPrice = parsedInfo.find_all(class_=classNameFromScrapedWebForPRICE)
-            stocknamearray = [elements.text.strip() for elements in stocksName]
-            # stockpricearray = [elements.text.strip() for elements in stocksPrice]
-            return {
-                "stock name " : stocknamearray,
-                # "stock price" : stockpricearray,
-            }
-        
-        except Exception as error : 
-            return {
-                "stockName": "NIFTY 50",
-                "stockPrice" : str(error)
-                }
+            #with the help of the ul class now well be accessing the details from the li tag using the class    
+            stocks = []
+            for li in stock_list.find_all("li"):
+                name_tag = li.find("div", {"class": "ZvmM7"})
+                price_tag = li.find("div", {"class": "xVyTdb ytSBif"})
+
+                if name_tag and price_tag:
+                    name = name_tag.text.strip()
+                    price = price_tag.text.strip().replace("\u20b9" , "") #stock price filtered and raedy to e appended into the list
+                    stocks.append({"name": name, "price": price})
+
+            return {"trending_stocks": stocks[:10]}
+
+        except Exception as e:
+            return {"error": str(e)}
         
 
 
@@ -59,6 +61,8 @@ class handler(BaseHTTPRequestHandler):
             self.send_header('Content-type','application/json')
             self.end_headers()
             self.wfile.write(json.dumps(error).encode('utf-8'))
+
+# bellow code is used for api testing on the local
 
 # if __name__ == "__main__":
 #     PORT = 8000
