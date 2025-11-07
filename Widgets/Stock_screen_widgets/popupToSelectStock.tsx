@@ -1,16 +1,7 @@
-// popupMessage is a custom build modal that is used to show popup notifications or warning depending on the app situation.
-// this is created to bypass the boring Alert.alert that gives a uneditable design which is boring
+// this is the screen that pops up when the user wants to add a stock or clicks on the add stock button , 
 
-// the popupMessage makes use of the modal to display the notification in top of any content within the screen. 
-
-// in popupMessage we are making use of 2 props one is message and buttonText ; each are highly customizable as needed for various situations
-
-
-// there are few changes made in this as i was running a test code here , so in case this is being used again later dont get confused
-
-import React, { useState, useEffect } from "react";
-import { Modal, View, Text, Button, TouchableOpacity, StyleSheet, SafeAreaView, StyleProp, ViewStyle, TextInput , ScrollView} from 'react-native';
-import colors from "../Assets/colors";
+import { Modal, View, Text, Button, TouchableOpacity, StyleSheet, TextInput , ScrollView} from 'react-native';
+import colors from "D:\\PROJECTS\\The-Chat-App\\Assets\\colors.js";
 
 
 const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose , stockArray}: { message: any, buttonText1: any, buttonText2: any, visible: any, onClose: any , stockArray:any[]}) => {
