@@ -28,7 +28,7 @@ with open("EQUITY_L.csv", "r", encoding="utf-8") as dataset:
 
 
 
-# this function is the function repsonsible for the fuzzy code where the users can search for any stock and the ticket of that stock will be returned
+# this function is the function repsonsible for the fuzzy code where the users can search for any stock and the ticket of that stock will be returned 
 def fuzzyLogic(userSearchedStock):
 
     user_input = userSearchedStock
