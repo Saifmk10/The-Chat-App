@@ -13,20 +13,25 @@ from rapidfuzz import process, fuzz
 
 # bellow code is for the fuzzy logic , where the code for fetching the data set has been placed so that the dataset is accessed only when called.
 def loadTickerList():
-    csvPath = os.path.join(os.path.dirname(__file__), "EQUITY_L.csv")
+    try:
+        csvPath = os.path.join(os.path.dirname(__file__), "EQUITY_L.csv")
 
-    ticker = []
-    stock = {}
+        ticker = []
+        stock = {}
 
-    with open(csvPath, "r", encoding="utf-8") as dataset:
-        reader = csv.DictReader(dataset)
-        for row in reader:
-            symbol = row["SYMBOL"]
-            stockName = row["NAME OF COMPANY"]
-            ticker.append(symbol)
-            stock[symbol] = stockName
+        with open(csvPath, "r", encoding="utf-8") as dataset:
+            reader = csv.DictReader(dataset)
+            for row in reader:
+                symbol = row["SYMBOL"]
+                stockName = row["NAME OF COMPANY"]
+                ticker.append(symbol)
+                stock[symbol] = stockName
 
-    return ticker, stock
+        return ticker, stock
+    
+    except Exception as error: 
+        print("CSV ERROR:", repr(error))
+
 
 
 
