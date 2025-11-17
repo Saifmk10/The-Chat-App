@@ -4,6 +4,11 @@ import { Modal, View, Text, Button, TouchableOpacity, StyleSheet, TextInput , Sc
 import colors from "D:\\PROJECTS\\The-Chat-App\\Assets\\colors.js";
 
 
+const handlingSelectedStock  =  (pressed : any)  =>{
+    console.log(pressed.name)
+}
+
+
 const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose , stockArray}: { message: any, buttonText1: any, buttonText2: any, visible: any, onClose: any , stockArray:any[]}) => {
 
 
@@ -24,10 +29,10 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose , st
                     {/*  */}
                     <ScrollView>
                         {stockArray.map((stock, index) => (
-                            <View key={index} style={modalStyle.stockNameAndPrice}>
-                                <Text style={modalStyle.stockNameAndPrice}>{stock.name}: </Text>
-                                <Text style={modalStyle.stockNameAndPrice}>{stock.price}</Text>
-                            </View>
+                            <TouchableOpacity key={index} style={modalStyle.stockNameAndPrice} onPress={()=> handlingSelectedStock(stock)}>
+                                <Text style={modalStyle.stockName}>{stock.name}: </Text>
+                                <Text style={modalStyle.stockPrice}>₹{stock.price}</Text>
+                            </TouchableOpacity>
                         ))}
                     </ScrollView>
 
@@ -47,7 +52,7 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose , st
     );
 };
 
-
+  
 const modalStyle = StyleSheet.create({
     fontcolor: {
         color: colors.primary,
@@ -115,6 +120,16 @@ const modalStyle = StyleSheet.create({
         margin: 4,
         borderRadius: 20
     },
+    stockName: {
+        color: "#ffffff",
+        padding: 2,
+        margin: 4,
+    }, 
+    stockPrice: {
+        color: "#ffffff",
+        padding: 2,
+        margin: 4,
+    }, 
 
     buttonsPlacement: {
         display: "flex",

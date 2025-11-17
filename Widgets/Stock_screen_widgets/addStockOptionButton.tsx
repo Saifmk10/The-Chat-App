@@ -13,7 +13,7 @@ const mainStockApiFetching = async () => {
 
     try {
 
-        const response = await fetch("https://the-chat-app-jrlx61oqx-saifmks-projects.vercel.app/api/stockrecom.py");
+        const response = await fetch("https:///api/stockrecom.py");
         const jsonResponse = await response.json();
         console.log(`PRINTING THE API RESPONSE JSON FROM addStockOptionButton.tsx : `, jsonResponse);  
         return jsonResponse;
