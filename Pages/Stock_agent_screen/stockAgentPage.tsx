@@ -2,16 +2,14 @@
 
 import React from "react";
 import MainStockPrice from "../../Widgets/Stock_screen_widgets/addStockOptionButton";
-import StockAgent from "../../Widgets/Agent_selection_widgets/stockAgent"
 import {SafeAreaView , Text , StyleSheet , View} from "react-native"
 
 
 const stockAgentScreen = () =>{
     return (
-        <SafeAreaView >
+        <SafeAreaView>
             <View style = {style.mainStockPriceStyle}>
-                < MainStockPrice/>  
-                {/* <StockAgent/> */}
+                < MainStockPrice/>
             </View>
         </SafeAreaView>
     )
@@ -23,10 +21,12 @@ const style = StyleSheet.create({
     },
 
     mainStockPriceStyle : {
-        paddingTop : 20,
+        paddingTop : 40,
         display : "flex",
-        justifyContent : "flex-start",
-        alignItems : "flex-start"
+        justifyContent : "center",
+        alignItems : "center", 
+
+        backgroundColor : "#000000ff"
     } 
 })
 
