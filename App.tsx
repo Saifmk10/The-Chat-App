@@ -7,6 +7,7 @@ import auth from "@react-native-firebase/auth";
 import HomeScreen from "./Pages/Chat_home_screen/homeScreen";
 import LoginSignup from "./Pages/Login_signup_screen/loginSignup_page";
 import UsersChatPage from "./Pages/User_chat_screen/UsersChatPage";
+import StockAgentScreen from "./Pages/Stock_agent_screen/stockAgentPage";
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +36,8 @@ export default function App() {
           <>
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
             <Stack.Screen name="UsersChatPage" component={UsersChatPage} />
+            <Stack.Screen name="StockAgentScreen" component={StockAgentScreen}/>
+
           </>
         ) : (
           <Stack.Screen name="LoginSignup" component={LoginSignup} />
