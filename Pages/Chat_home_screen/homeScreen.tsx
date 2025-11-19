@@ -7,7 +7,7 @@ import UserChat from "../../Widgets/Home_screen_widgets/userChatWidget";
 import UserProfileOptions from "../../Widgets/Home_screen_widgets/userProfileOptions";
 import AddFriends from "../../Widgets/Home_screen_widgets/addFriends"
 
-import StockScreen from "../Stocks_home_screen/stockScreen";
+import StockScreen from "../Agent_home_screen/agentScreen";
 
 
 import Popupmessage from "../../modal/popupMessage";

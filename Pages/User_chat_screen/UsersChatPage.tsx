@@ -1,3 +1,5 @@
+// this is the screen where all the chat bubbles are rendered within the app , this screen is used only as a canva where the chat is seen and not for any interactions
+
 import React from "react";
 import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
