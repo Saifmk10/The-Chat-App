@@ -1,131 +1,61 @@
-# function that is responsible for fetching the stock price that the user has searched for
-# currently we need to add the stock name correctly in order to fetch the data
-# needs to be connected to rapidfuzz inorder to fetch the data from the nse database to conpare the name of he stock the user has searched for
-
-import json
-import csv
-import os
-from urllib.parse import parse_qs
-import requests
+from http.server import BaseHTTPRequestHandler , HTTPServer
+from urllib.parse import urlparse, parse_qs
 from bs4 import BeautifulSoup
-from rapidfuzz import process, fuzz
+import requests
+import json
 
-
-# bellow code is for the fuzzy logic , where the code for fetching the data set has been placed so that the dataset is accessed only when called.
-def loadTickerList():
-    try:
-        csvPath = os.path.join(os.path.dirname(__file__), "EQUITY_L.csv")
-
-        ticker = []
-        stock = {}
-
-        with open(csvPath, "r", encoding="utf-8") as dataset:
-            reader = csv.DictReader(dataset)
-            for row in reader:
-                symbol = row["SYMBOL"]
-                stockName = row["NAME OF COMPANY"]
-                ticker.append(symbol)
-                stock[symbol] = stockName
-
-        return ticker, stock
-    
-    except Exception as error: 
-        print("CSV ERROR:", repr(error))
-
-
-
-
-# this function is responsible for fuzzy logic where users can search any name and we find closest match
-def fuzzyLogic(userSearchedStock, stock):
-    userInput = userSearchedStock
-    companyNames = list(stock.values())
-
-    result = process.extractOne(userInput, companyNames, scorer=fuzz.WRatio)
-
-    if not result:
-        return None
-
-    matchedCompanyName, score, index = result
-
-    if score <= 70:
-        return None
-
-    matchedSymbol = list(stock.keys())[index]
-    return matchedSymbol
-
-
-
-# function that uses the matched ticker and scrapes google finance
 def userSearchedStockPrice(stockName):
-    tickerList, stockList = loadTickerList()
+    URL = f"https://www.google.com/finance/quote/{stockName}:NSE"
+    response = requests.get(URL)
 
-    stockTicket = fuzzyLogic(stockName, stockList)
+    if response:
+        try:
+            parsedInfo = BeautifulSoup(response.text, "html.parser")
+            classNameFromScrapedWeb = "YMlKec fxKbKc"
+            finalOutput = float(
+                parsedInfo.find(class_=classNameFromScrapedWeb)
+                .text.strip()[1:]
+                .replace(",", "")
+            )
+            return {
+                "stockName": stockName,
+                "stockPrice": finalOutput,
+            }
 
-    if not stockTicket:
-        return {
-            "stock": "no matching stock",
-            "input stock": stockName
-        }
+        except Exception as error:
+            return {
+                "stockName": stockName,
+                "stockPrice": f"Error: {str(error)}"
+            }
 
-    URL = f"https://www.google.com/finance/quote/{stockTicket}:NSE"
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = requests.get(URL, headers=headers)
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        # Parse query parameters
+        query = parse_qs(urlparse(self.path).query)
+        stockName = query.get("symbol", [None])[0]  # e.g. ?symbol=TCS
 
-    if response.status_code != 200:
-        return {
-            "stockName": stockTicket,
-            "stockPrice": "Google blocked the request"
-        }
+        # Validate input
+        if not stockName:
+            self.send_response(400)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": "Missing 'symbol' query parameter"}).encode())
+            return
 
-    parsedInfo = BeautifulSoup(response.text, "html.parser")
-    classNameFromScrapedWeb = "YMlKec fxKbKc"
-    priceElement = parsedInfo.find(class_=classNameFromScrapedWeb)
+        # Call your scraper
+        data = userSearchedStockPrice(stockName)
 
-    if not priceElement:
-        return {
-            "stockName": stockTicket,
-            "stockPrice": "Price not found"
-        }
+        # Send response
+        self.send_response(200)
+        self.send_header("Content-type", "application/json")
+        self.end_headers()
+        self.wfile.write(json.dumps(data).encode())
 
-    try:
-        finalOutput = float(
-            priceElement.text.strip()[1:].replace(",", "")
-        )
-        return {
-            "stockName": stockTicket,
-            "stockPrice": finalOutput,
-        }
+# used to run the code in local , used for debugging and testing purpose only
 
-    except Exception as error:
-        return {
-            "stockName": stockTicket,
-            "stockPrice": f"Error: {str(error)}"
-        }
-
-
-
-
-# VERCEL SERVERLESS HANDLER
-def handler(request):
-    query = request.get("query", {})
-    stockName = query.get("symbol")
-
-    if not stockName:
-        return {
-            "statusCode": 400,
-            "headers": {"Content-Type": "application/json"},
-            "body": json.dumps({"error": "Missing symbol parameter"})
-        }
-
-    result = userSearchedStockPrice(stockName)
-
-    return {
-        "statusCode": 200,
-        "headers": {"Content-Type": "application/json"},
-        "body": json.dumps(result)
-    }
-
-
-# local testing (this replaces your old HTTPServer setup)
 if __name__ == "__main__":
-    print(handler({"query": {"symbol": "TATA"}}))
+    PORT = 8000
+    server = HTTPServer(("localhost", PORT), handler)
+    print(f"Local server running at http://localhost:{PORT}")
+    print("Use curl to test: curl http://localhost:8000")
+    server.serve_forever()
