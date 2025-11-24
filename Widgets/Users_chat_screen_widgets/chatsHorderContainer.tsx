@@ -64,7 +64,7 @@ const ChatHolderContainer = () => {
                 const updatedMessages = [...prev, { message: msg.Message, sender: msg.Sender, time: msg.Time }];
                 console.log("Updated messages array:");
                 updatedMessages.forEach((m, idx) => {
-                    console.log(`${idx + 1}. Sender: ${m.sender}, Message: ${m.message}, Time: ${m.time}`);
+                    // console.log(`${idx + 1}. Sender: ${m.sender}, Message: ${m.message}, Time: ${m.time}`);
                 });
                 return updatedMessages;
             });

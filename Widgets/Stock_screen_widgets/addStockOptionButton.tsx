@@ -15,11 +15,12 @@ const mainStockApiFetching = async () => {
 
         const response = await fetch("https://the-chat-app-jlm7fxf59-saifmks-projects.vercel.app/api/stockrecom.py");
         const jsonResponse = await response.json();
-        console.log(`PRINTING THE API RESPONSE JSON FROM addStockOptionButton.tsx : `, jsonResponse);  
+        // console.log(`PRINTING THE API RESPONSE JSON FROM addStockOptionButton.tsx : `, jsonResponse);  
         return jsonResponse;
     }
     catch (error) {
         console.log(`PRINTING THE API RESPONSE FROM addStockOptionButton.tsx   , check function mainStockApiFetching() comment[ERROR] : ${error}`);
+        return error
     }
 
 
@@ -39,19 +40,19 @@ const mainStockPrice = () => {
         const fetchData = async () => {
                 try {
                     const data = await mainStockApiFetching();
-                    console.log("PRINTING THE API RESPONSE FROM mainStockPrice.tsx :", data);
+                    // console.log("PRINTING THE API RESPONSE FROM mainStockPrice.tsx :", data);
     
                     // safely access trending_stocks array
                     const trending = data?.["STOCKS :"]?.trending_stocks;
     
                     if (Array.isArray(trending)) {
                         setDataAsArray(trending);
-                        console.log("STOCK LIST (Array):", trending);  
+                        // console.log("STOCK LIST (Array):", trending);  
     
                         // this loop is used for debuggin pupose onlt
                         for (let i = 0; i < trending.length; i++) {
     
-                            console.log("STOCK DETAILS FROM ARRAY:", trending[i].name, trending[i].price);
+                            // console.log("STOCK DETAILS FROM ARRAY:", trending[i].name, trending[i].price);
     
                         }
     
