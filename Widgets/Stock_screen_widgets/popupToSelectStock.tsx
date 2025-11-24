@@ -1,35 +1,77 @@
-// this is the screen that pops up when the user wants to add a stock or clicks on the add stock button , 
+// this is the screen that pops up when the user wants to add a stock or clicks on the add stock button , here the user will be able to add the stocks they needs by searching for it or by clicking on the trending stock
 
-import { Modal, View, Text, Button, TouchableOpacity, StyleSheet, TextInput , ScrollView} from 'react-native';
+import { Modal, View, Text, Button, TouchableOpacity, StyleSheet, TextInput, ScrollView } from 'react-native';
 import colors from "D:\\PROJECTS\\The-Chat-App\\Assets\\colors.js";
 
 
-const handlingSelectedStock  =  (pressed : any)  =>{
+import { getAuth } from '@react-native-firebase/auth';
+import { getFirestore, collection, doc, addDoc, setDoc } from "@react-native-firebase/firestore";
+
+
+const handlingSelectedStock = (pressed: any) => {
     console.log(pressed.name)
 }
 
 
-const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose , stockArray}: { message: any, buttonText1: any, buttonText2: any, visible: any, onClose: any , stockArray:any[]}) => {
+const addStockToDb = async (pressed: any) => {
 
+    const fireBaseUser = getAuth();
+    const db = getFirestore()
+    const loggedinUser = fireBaseUser.currentUser?.uid;
+    // console.warn(loggedinUser)
+    const stockName = pressed.name
+    console.log(pressed.name)
+    console.log(pressed.price)
+    // code to access the doc inside the db and add the data into the doc of the users db
+    if (loggedinUser) {
+        try {
+
+            await setDoc(
+                doc(db, "Users", loggedinUser!, "Agents", "Finance", "Stock_Added", pressed.name),
+                {
+                    stockName: pressed.name,
+                    stockPrice: pressed.price,
+                    addedDate: new Date().toLocaleString()
+                }
+            );
+
+
+        }
+        catch (error) {
+            console.warn(error)
+        }
+    }
+
+}
+
+const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose, stockArray }: { message: any, buttonText1: any, buttonText2: any, visible: any, onClose: any, stockArray: any[] }) => {
+
+    // useEffect(() =>{
+    //     addStockToDb()
+    // }, [])
 
     return (
+        // this is modal where we get the popup like feature so never remove the modal tag
         <Modal visible={visible} animationType="fade" transparent>
             <View style={modalStyle.mainParent}>
                 <View style={modalStyle.parentContainer}>
 
                     {/* text that holds the message that is being displayed */}
                     <Text style={modalStyle.fontcolor}>{message}</Text>
+                    <Text>Select a stock to add it to the analysis</Text>
 
 
-                    {/* this is the main rea */}
+                    {/* this is the search option */}
                     <View>
-                        <TextInput placeholder="Enter Stock Name" style={modalStyle.stockInputSearch}></TextInput>
+                        <TextInput placeholder="Enter Stock Name" placeholderTextColor="#ffffff" style={modalStyle.stockInputSearch}></TextInput>
                     </View>
 
-                    {/*  */}
+                    <Text>TRENDING TODAY</Text>
+
+                    {/* with the help of the stock array parameter passed form the addstocksoptions.tsx */}
                     <ScrollView>
                         {stockArray.map((stock, index) => (
-                            <TouchableOpacity key={index} style={modalStyle.stockNameAndPrice} onPress={()=> handlingSelectedStock(stock)}>
+                            <TouchableOpacity key={index} style={modalStyle.stockNameAndPrice} onPress={() => addStockToDb(stock)}>
                                 <Text style={modalStyle.stockName}>{stock.name}: </Text>
                                 <Text style={modalStyle.stockPrice}>₹{stock.price}</Text>
                             </TouchableOpacity>
@@ -52,7 +94,7 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose , st
     );
 };
 
-  
+
 const modalStyle = StyleSheet.create({
     fontcolor: {
         color: colors.primary,
@@ -73,7 +115,7 @@ const modalStyle = StyleSheet.create({
 
     parentContainer: {
         //height kept auto here
-        height: 600,
+        height: 650,
         width: 300,
         backgroundColor: colors.secondary,
         borderRadius: 30,
@@ -110,7 +152,8 @@ const modalStyle = StyleSheet.create({
         margin: 10,
         backgroundColor: "#000000",
         width: 250,
-        borderRadius: 20
+        borderRadius: 20,
+
     },
 
     stockNameAndPrice: {
@@ -124,12 +167,12 @@ const modalStyle = StyleSheet.create({
         color: "#ffffff",
         padding: 2,
         margin: 4,
-    }, 
+    },
     stockPrice: {
         color: "#ffffff",
         padding: 2,
         margin: 4,
-    }, 
+    },
 
     buttonsPlacement: {
         display: "flex",
