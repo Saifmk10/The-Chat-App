@@ -89,8 +89,8 @@ const ChatInput = () => {
         <View style={design.parent}>
 
             {/* <TouchableOpacity > */}
-            <TextInput style={design.inputFieldDesign} placeholder="Message" autoCorrect multiline numberOfLines={6} onChangeText={text =>SetMessage(text)} value={Message}/>
-
+            <TextInput style={design.inputFieldDesign} placeholder="Message" autoCorrect multiline numberOfLines={6} onChangeText={text =>SetMessage(text)} value={Message}   returnKeyType="send"/>
+ 
             <TouchableOpacity
                 style={design.buttonDesign}
                 onPress={async () => {
@@ -116,7 +116,7 @@ const ChatInput = () => {
 const design = StyleSheet.create({
     parent: {
         display: "flex",
-        alignItems: "flex-start",
+        alignItems: "flex-end",
         justifyContent: "center",
         flexDirection: "row",
         gap: 15
