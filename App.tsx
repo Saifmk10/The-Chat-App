@@ -4,14 +4,15 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import auth from "@react-native-firebase/auth";
 
-import HomeScreen from "./Pages/Chat_home_screen/homeScreen";
+import HomeScreen from "./Pages/Main_home_screen/homeScreen";
 import LoginSignup from "./Pages/Login_signup_screen/loginSignup_page";
 import UsersChatPage from "./Pages/User_chat_screen/UsersChatPage";
 import StockAgentScreen from "./Pages/Stock_agent_screen/stockAgentPage";
+import AgentScreen from "./Pages/Agent_home_screen/agentScreen";
 
 const Stack = createNativeStackNavigator();
 
-export default function App() {
+export default function App() {  
 
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<any>(null);
@@ -37,6 +38,7 @@ export default function App() {
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
             <Stack.Screen name="UsersChatPage" component={UsersChatPage} />
             <Stack.Screen name="StockAgentScreen" component={StockAgentScreen}/>
+            <Stack.Screen name="AgentScreen" component={AgentScreen}/>
 
           </>
         ) : (

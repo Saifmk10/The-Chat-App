@@ -6,11 +6,11 @@ import StockAgent from "../../Widgets/Agent_selection_widgets/stockAgent"
 import {SafeAreaView , Text , StyleSheet , View} from "react-native"
 
 
-const stockScreen = () =>{
+const AgentScreen = () =>{
     return (
         <SafeAreaView >
             <View style = {style.mainStockPriceStyle}>
-                {/* < MainStockPrice/>  */} {/* this is the test section that needs to be coming within the next update */}
+                {/* from here the navigation will happen to the stockAgentPage.tsx , the navigation logic is within the widget */}
                 <StockAgent/>
             </View>
         </SafeAreaView>
@@ -30,4 +30,4 @@ const style = StyleSheet.create({
     } 
 })
 
-export default stockScreen;
+export default AgentScreen;
