@@ -1,7 +1,7 @@
-// this is the screen where all the chat bubbles are rendered within the app , this screen is used only as a canva where the chat is seen and not for any interactions
+// this screen is responsible for the user chat screen where the users can chat with other users by sending and recieving all the messages , this is the place all the messages are rendered
 
-import React from "react";
-import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, ScrollView, Platform, Keyboard } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Header from "../../Widgets/Users_chat_screen_widgets/userChatHeader";
@@ -9,28 +9,49 @@ import ChatInput from "../../Widgets/Users_chat_screen_widgets/chatInputField";
 import ChatHolderContainer from "../../Widgets/Users_chat_screen_widgets/chatsHorderContainer";
 
 const UsersChatPage = () => {
+
+    const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+    useEffect(() => {
+        const show = Keyboard.addListener("keyboardDidShow", (e) => {
+            setKeyboardHeight(e.endCoordinates.height);
+        });
+
+        const hide = Keyboard.addListener("keyboardDidHide", () => {
+            setKeyboardHeight(0);
+        });
+
+        return () => {
+            show.remove();
+            hide.remove();
+        };
+    }, []);
+
     return (
-        <SafeAreaView style={design.safeArea} edges={["top", "bottom"]}>
+        <SafeAreaView style={design.safeArea} edges={["top"]}>
             <View style={design.container}>
+                {/* this holds the user name and other stuffs realted to the user */}
                 <Header />
                 
-                <KeyboardAvoidingView
-                    style={design.keyboardAvoid}
-                    behavior={Platform.OS === "ios" ? "padding" : "height"}
-                    keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -30} // prevents Android gap
-                >
-                    <ScrollView
-                        contentContainerStyle={design.scrollContent}
-                        keyboardShouldPersistTaps="handled"
-                        showsVerticalScrollIndicator={false}
-                    >
-                        <ChatHolderContainer />
-                    </ScrollView>
 
-                    <View style={design.chatInputWrapper}>
-                        <ChatInput />
-                    </View>
-                </KeyboardAvoidingView>
+                {/* this manages the rendering of all the chat bubbles of the users */}
+                <ScrollView
+                    contentContainerStyle={design.scrollContent}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
+                    <ChatHolderContainer />
+                </ScrollView>
+
+                {/* this is the chat input field  */}
+                <View
+                    style={[
+                        design.chatInputWrapper,
+                        { marginBottom: Platform.OS === "android" ? keyboardHeight : 0 },
+                    ]}
+                >
+                    <ChatInput />
+                </View>
             </View>
         </SafeAreaView>
     );
@@ -39,12 +60,9 @@ const UsersChatPage = () => {
 const design = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: "#000000",
+        backgroundColor: "#000",
     },
     container: {
-        flex: 1,
-    },
-    keyboardAvoid: {
         flex: 1,
     },
     scrollContent: {
@@ -53,11 +71,10 @@ const design = StyleSheet.create({
         paddingVertical: 5,
     },
     chatInputWrapper: {
-        borderTopWidth: 1,
-        borderTopColor: "#222",
         padding: 10,
-        backgroundColor: "#000000",
-        justifyContent: "flex-end",
+        backgroundColor: "#000",
+        borderTopColor: "#222",
+        borderTopWidth: 1,
     },
 });
 
