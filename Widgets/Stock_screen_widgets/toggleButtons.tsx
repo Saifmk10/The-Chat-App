@@ -24,16 +24,16 @@ const ToggleButton = ({ checker, setCheckerTo }: { checker: any, setCheckerTo: a
 
     return (
         <View style={loginSignupStyle.loginToggleDiv}>
-            <TouchableOpacity onPress={() => setCheckerTo("stocks")}>
-                <Text style={checker === "stocks" ? loginSignupStyle.loginToggleButtonsHover : loginSignupStyle.loginToggleButtonsNoHover}>DASHBOARD</Text>
+            <TouchableOpacity onPress={() => setCheckerTo("DASHBOARD")}>
+                <Text style={checker === "DASHBOARD" ? loginSignupStyle.loginToggleButtonsHover : loginSignupStyle.loginToggleButtonsNoHover}>DASHBOARD</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => setCheckerTo("my stocks")}>
-                <Text style={checker === "my stocks" ? loginSignupStyle.loginToggleButtonsHover : loginSignupStyle.loginToggleButtonsNoHover}>STOCKS</Text>
+            <TouchableOpacity onPress={() => setCheckerTo("STOCKS")}>
+                <Text style={checker === "STOCKS" ? loginSignupStyle.loginToggleButtonsHover : loginSignupStyle.loginToggleButtonsNoHover}>STOCKS</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => setCheckerTo("another")}>
-                <Text style={checker === "another"  ? loginSignupStyle.loginToggleButtonsHover : loginSignupStyle.loginToggleButtonsNoHover}>BOT</Text>
+            <TouchableOpacity onPress={() => setCheckerTo("BOT")}>
+                <Text style={checker === "BOT"  ? loginSignupStyle.loginToggleButtonsHover : loginSignupStyle.loginToggleButtonsNoHover}>STOCK BOT</Text>
             </TouchableOpacity>
         </View>
 
