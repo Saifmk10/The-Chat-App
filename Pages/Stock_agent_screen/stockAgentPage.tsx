@@ -8,11 +8,12 @@ import BackButton from "../../Assets/images/stockAgentScreen/backbutton";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 import ToggleButtons from "../../Widgets/Stock_screen_widgets/toggleButtons";
+import AddedStocksList from "../../Widgets/Stock_screen_widgets/addedStocksList";
 
 
 const StockAgentOperationsScreen = () => {
     const navigation = useNavigation<any>();
-    const [checker, setCheckerTo] = useState("stocks")
+    const [checker, setCheckerTo] = useState("DASHBOARD")
 
 
     return (
@@ -35,24 +36,53 @@ const StockAgentOperationsScreen = () => {
             </View>
 
             {/* this is the section where the toggle button will be managed , according to each click the checker changes making it easy to navigate to next screen */}
-            <View style={style.stockAdditionStyle}>
+            <View style={style.toggleButtonsStyle}>
                 <ToggleButtons checker={checker} setCheckerTo={setCheckerTo} />
-            </View>
+            </View> 
 
 
             {
-                checker === "stocks" ?
-                    <View style={style.stockAdditionSection}>
-                        < MainStockPrice />
-                    </View>
-                    : checker === "my stocks" ?
+                // if the checker usestate is set to dashboard then all the code bellow this ? will be executed
+                checker === "DASHBOARD" ?
                     <View style={style.stockAdditionStyle}>
-                       <Text style = {style.textColor}>hello this is my stocks</Text>
+                        <Text style={style.textColor}>hello this is my stocks</Text>
                     </View>
-                    : 
-                    <View style={style.stockAdditionStyle}>
-                       <Text style = {style.textColor}>hello this is differnt</Text>
-                    </View>
+            
+
+
+
+
+
+                    // if the checker usestate is set to stocks then all the code bellow this ? will be executed
+                    : checker === "STOCKS" ?
+                        
+                            <View style = {{flex : 1, marginTop:20}}>
+                                
+                                
+                                <View style={style.stockAdditionSection}>
+                                    < MainStockPrice />
+                                </View>
+                                <View style={style.stockRenderingSection}>
+                                    <AddedStocksList/>
+                                </View>
+
+                            </View>
+
+                            
+
+                           
+
+                        
+
+
+
+
+
+                        // if the checker usestate is set to bot then all the code bellow this ? will be executed
+                        :
+                        <View style={style.stockAdditionStyle}>
+                            <Text style={style.textColor}>hello this is differnt</Text>
+                        </View>
             }
 
 
@@ -92,23 +122,42 @@ const style = StyleSheet.create({
         fontFamily: "Jura-Bold",
         fontSize: 25,
     },
+    toggleButtonsStyle : {
+        paddingTop: 20,
+        display: "flex",
+        // flex: 1,
+        // justifyContent : "center",
+        alignItems: "center",
+    },
 
     stockAdditionStyle: {
         paddingTop: 20,
-        display : "flex",
-        flex : 1,
+        display: "flex",
+        // flex: 1,
         // justifyContent : "center",
-        alignItems : "center", 
+        alignItems: "center",
 
         backgroundColor: "#000000"
-    }, 
+    },
+
+    mainParentStocks : {
+        flex : 1
+    },
+
+    stockRenderingSection :{
+        padding: 20,
+        display: "flex",
+        // flex: 1,
+        // justifyContent: "flex-start",
+        alignItems: "center",
+    },
 
     stockAdditionSection: {
-        padding: 20,
-        display : "flex",
-        flex : 1,
-        justifyContent : "flex-end",
-        alignItems : "center", 
+        marginTop: 20,
+        display: "flex",
+        // flex: 1,
+        // justifyContent: "flex-end",
+        alignItems: "center",
 
         backgroundColor: "#000000"
     }

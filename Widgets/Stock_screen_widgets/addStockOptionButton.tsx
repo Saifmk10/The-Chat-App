@@ -15,7 +15,7 @@ const mainStockApiFetching = async () => {
 
         const response = await fetch("https://the-chat-app-jlm7fxf59-saifmks-projects.vercel.app/api/stockrecom.py");
         const jsonResponse = await response.json();
-        // console.log(`PRINTING THE API RESPONSE JSON FROM addStockOptionButton.tsx : `, jsonResponse);  
+        console.log(`PRINTING THE API RESPONSE JSON FROM addStockOptionButton.tsx : `, jsonResponse);  
         return jsonResponse;
     }
     catch (error) {
@@ -52,7 +52,7 @@ const mainStockPrice = () => {
                         // this loop is used for debuggin pupose onlt
                         for (let i = 0; i < trending.length; i++) {
     
-                            // console.log("STOCK DETAILS FROM ARRAY:", trending[i].name, trending[i].price);
+                            console.log("STOCK DETAILS FROM ARRAY:", trending[i].name, trending[i].price);
     
                         }
     
@@ -72,7 +72,7 @@ const mainStockPrice = () => {
 
 
     return (
-        <SafeAreaView style={style.stockHolderParent}>
+        <View style={style.stockHolderParent}>
 
             
             <TouchableOpacity onPress={() => setVisbilityStat(true)}>
@@ -93,7 +93,7 @@ const mainStockPrice = () => {
                 />
             </View>
 
-        </SafeAreaView>
+        </View>
     )
 }
 
@@ -105,7 +105,7 @@ const style = StyleSheet.create({
 
     stockHolderParent: {
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "column",
         gap: 10
     },
 
