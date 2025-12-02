@@ -27,7 +27,7 @@ const addStockToDb = async (pressed: any) => {
         try {
 
             await setDoc(
-                doc(db, "Users", loggedinUser!, "Agents", "Finance", "Stock_Added", pressed.name),
+                doc(db, "Users", loggedinUser!, "Agents", "Finance", "Stock_Added", pressed.name), // the name of each doc has been added to be as the stock name that was clicked on
                 {
                     stockName: pressed.name,
                     stockPrice: pressed.price,

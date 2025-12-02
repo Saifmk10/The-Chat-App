@@ -77,7 +77,7 @@ const mainStockPrice = () => {
             
             <TouchableOpacity onPress={() => setVisbilityStat(true)}>
                 <View style={style.stockPrice}>
-                    <Text style={style.textColor}>ADD STOCK NAME</Text>
+                    <Text style={style.textColor}>ADD STOCK</Text>
                 </View>
             </TouchableOpacity>
 
