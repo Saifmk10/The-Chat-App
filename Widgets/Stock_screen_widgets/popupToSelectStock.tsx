@@ -58,7 +58,7 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose, sto
 
                     {/* text that holds the message that is being displayed */}
                     <Text style={modalStyle.fontcolor}>{message}</Text>
-                    <Text>Select a stock to add it to the analysis</Text>
+                    <Text>Click a stock to add it to the analysis</Text>
 
 
                     {/* this is the search option */}
@@ -81,9 +81,9 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose, sto
 
                     {/* button to close the pop up message */}
                     <View style={modalStyle.buttonsPlacement}>
-                        <TouchableOpacity style={modalStyle.buttonDesign} onPress={onClose}>
+                        {/* <TouchableOpacity style={modalStyle.buttonDesign} onPress={onClose}>
                             <Text style={modalStyle.buttonText}>{buttonText1}</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                         <TouchableOpacity style={modalStyle.buttonDesign} onPress={onClose}>
                             <Text style={modalStyle.buttonText}>{buttonText2}</Text>
                         </TouchableOpacity>

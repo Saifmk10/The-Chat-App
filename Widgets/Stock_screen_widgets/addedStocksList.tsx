@@ -4,24 +4,31 @@ import { getAuth } from '@react-native-firebase/auth';
 import { getFirestore, collection, doc, addDoc, setDoc, getDocs } from "@react-native-firebase/firestore";
 import { useEffect, useState } from "react";
 
+import Popupmessage from "./addedStockPopup";
+
 const AddedStocksList = () => {
 
     const fireBaseUser = getAuth();
     const db = getFirestore()
     const loggedinUser = fireBaseUser.currentUser?.uid;
 
-    const [stocks, setStocks] = useState<{ stockName: string; stockPrice: string }[]>([])
+    const [stocks, setStocks] = useState<{ stockName: string; stockPrice: string }[]>([]) // this is used to render the stock details in this widget itself , the bellow ones render it in th pop up
+
+
+    const [visbilityStat, setVisbilityStat] = useState(false); //  setting the visisbility value for the pop up that shows stock details
+    const [stockNamePopUp , setStockName] = useState<string>(); // used to give the addedStockPopUp.tsx the access to the data so that it can render the stock details
+    const [stockPricePopUp , setStockPrice] = useState<string>(); //  used to give the addedStockPopUp.tsx the access to the data so that it can render the stock details
+
+
 
     const fetchingAddedStock = async () => {
-
-
-
+        // checking if the user has been logged in so the user will access only his account details
         if (loggedinUser) {
             try {
                 const refCollectionn = collection(db, "Users", loggedinUser!, "Agents", "Finance", "Stock_Added")
                 const snapshot = await getDocs(refCollectionn)
 
-                const fetchedData = snapshot.docs.map((doc: any) => doc.data())
+                const fetchedData = snapshot.docs.map((doc: any) => doc.data()) // fetching the data , the this data is added to the bellow state for rendering
                 setStocks(fetchedData)
                 console.log("FETCHED DATA OF STOCKS FROM addedStockList.tsx", fetchedData)
             }
@@ -31,13 +38,23 @@ const AddedStocksList = () => {
         }
     }
 
+    const test = (name : string , price : string) =>{
+        console.log("CLICKED AND RETURNED FROM addedStockList.tsx:" , name)
+        console.log("CLICKED AND RETURNED FROM addedStockList.tsx:" , price)
+    }
+
+
+
+    // all the stock details will be rendered as soon as the user clicks in the stocks section
     useEffect(() => {
         fetchingAddedStock()
     }, [])
 
+
+
+
+
     return (
-
-
 
         <View>
 
@@ -55,7 +72,7 @@ const AddedStocksList = () => {
                     {
                         stocks.map((items, index) => (
 
-                            <View style={style.mainContainerParent}>
+                            <TouchableOpacity style={style.mainContainerParent} onPress={() => {setVisbilityStat(true) ; setStockName(items.stockName); setStockPrice(items.stockPrice); test(items.stockName , items.stockPrice); console.log("CLICKED FROM addedStocksList.tsx:" , items)}}>
 
                                 <View key={index} style={style.stockDetailsParentStyle}>
                                     <Text style={style.stockName}>{items.stockName.slice(0,8) + ".."}</Text>
@@ -66,12 +83,21 @@ const AddedStocksList = () => {
                                 {/* <TouchableOpacity style={style.deleteButtonStyle}>
                                     <DeleteLogo />
                                 </TouchableOpacity> */}
-                            </View>
-
-
+                            </TouchableOpacity>
 
                         ))
                     }
+
+
+                    <Popupmessage
+                    visible={visbilityStat}
+                    stockName={stockNamePopUp}
+                    stockPrice={stockPricePopUp}
+                    buttonText1="ADD"
+                    buttonText2="CLOSE"
+                    onClose={() => setVisbilityStat(false)}
+                    // stockArray={dataAsArray}    
+                />
                 </View>
             </ScrollView>
 
@@ -127,7 +153,7 @@ const style = StyleSheet.create({
         fontSize: 13,
     },
     stockPrice : {
-         width: 70,
+        width: 80,
         paddingLeft: 10,
         fontFamily: "Jura-Bold",
         fontSize: 13,
