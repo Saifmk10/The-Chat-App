@@ -53,9 +53,9 @@ class handler(BaseHTTPRequestHandler):
 
 # used to run the code in local , used for debugging and testing purpose only
 
-if __name__ == "__main__":
-    PORT = 8000
-    server = HTTPServer(("localhost", PORT), handler)
-    print(f"Local server running at http://localhost:{PORT}")
-    print("Use curl to test: curl http://localhost:8000")
-    server.serve_forever()
+# if __name__ == "__main__":
+#     PORT = 8000
+#     server = HTTPServer(("localhost", PORT), handler)
+#     print(f"Local server running at http://localhost:{PORT}")
+#     print("Use curl to test: curl http://localhost:8000")
+#     server.serve_forever()
