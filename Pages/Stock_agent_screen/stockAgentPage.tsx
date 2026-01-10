@@ -149,7 +149,7 @@ const style = StyleSheet.create({
         display: "flex",
         // flex: 1,
         // justifyContent: "flex-start",
-        alignItems: "center",
+        // alignItems: "center",
     },
 
     stockAdditionSection: {
