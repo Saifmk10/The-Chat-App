@@ -14,7 +14,7 @@ const AddedStocksList = () => {
     const loggedinUser = fireBaseUser.currentUser?.uid;
 
     const [stocks, setStocks] = useState<{ stockName: string; stockPrice: string }[]>([]) // this is used to render the stock details in this widget itself , the bellow ones render it in th pop up
-
+    const [emptyStock, setEmptyStock] = useState(Boolean)
 
     const [visbilityStat, setVisbilityStat] = useState(false); //  setting the visisbility value for the pop up that shows stock details
     const [stockNamePopUp, setStockName] = useState<string>(); // used to give the addedStockPopUp.tsx the access to the data so that it can render the stock details
@@ -31,7 +31,16 @@ const AddedStocksList = () => {
 
                 const fetchedData = snapshot.docs.map((doc: any) => doc.data()) // fetching the data , the this data is added to the bellow state for rendering
                 setStocks(fetchedData)
-                console.log("FETCHED DATA OF STOCKS FROM addedStockList.tsx", fetchedData)
+
+                if (fetchedData.length === 0) {
+                    setEmptyStock(false)
+                    console.log("THIS IS EMPTY" , emptyStock)
+                }
+                else {
+                    setEmptyStock(true)
+                    console.log("FETCHED DATA OF STOCKS FROM addedStockList.tsx", fetchedData , emptyStock)
+                }
+
             }
             catch (error) {
                 console.log("FETCHED DATA OF STOCKS FROM addedStockList.tsx error", error)
@@ -42,12 +51,8 @@ const AddedStocksList = () => {
     const deleteAddedStock = async (DelItem: string) => {
         if (loggedinUser) {
             try {
-                const refCollectionn = collection(db, "Users", loggedinUser!, "Agents", "Finance", "Stock_Added")
-                const snapshot = await getDocs(refCollectionn)
 
-                const fetchedData = snapshot.docs.map((doc: any) => doc.data()) // fetching the data , the this data is added to the bellow state for rendering
-                // setStocks(fetchedData)
-                console.log("FETCHED DATA ", DelItem, "TO DELETE IT addedStockList.tsx", fetchedData)
+                // this will perform the the deletion and also the error handling 
                 try {
                     await deleteDoc(doc(db, "Users", loggedinUser!, "Agents", "Finance", "Stock_Added", DelItem))
                     console.log(`YOU HAVE REMOVED ${DelItem} FROM STOCK ANALYSIS`)
@@ -55,6 +60,7 @@ const AddedStocksList = () => {
                 catch (error) {
                     console.log("ERROR IN DELETION SCTOCK ERROR :", error)
                 }
+
             }
             catch (error) {
                 console.log("FETCHED DATA OF STOCKS FROM addedStockList.tsx error", error)
@@ -98,25 +104,35 @@ const AddedStocksList = () => {
             <ScrollView
             >
                 <View>
-                    {
-                        stocks.map((items, index) => (
 
-                            <TouchableOpacity style={style.mainContainerParent} onPress={() => { setVisbilityStat(true); setStockName(items.stockName); setStockPrice(items.stockPrice); test(items.stockName, items.stockPrice); console.log("CLICKED FROM addedStocksList.tsx:", items) }}>
 
-                                <View key={index} style={style.stockDetailsParentStyle}>
-                                    <Text style={style.stockName}>{items.stockName.slice(0, 8) + ".."}</Text>
-                                    <Text style={style.stockPrice}>{"₹"}{items.stockPrice}</Text>
-                                    <Text style={style.stockAddDate}>15-12-2025</Text>
-                                </View>
+                    {!emptyStock ?
 
-                                <TouchableOpacity style={style.deleteButtonStyle} onPress={() => { deleteAddedStock(items.stockName), refreshOnDel() }}>
-                                    <DeleteLogo />
+                        (
+                            <View style={style.emptyStockMessage}>
+                                <Text style={style.emptyStockMessageText}>No stocks have been added for analysis. Please add stocks to begin receiving regular market updates.</Text>
+                                <Text style={style.emptyStockMessageTextLearnMore}>Learn More</Text>
+                            </View>
+                        ) : 
+                        
+                        (   
+                            stocks.map((items, index) => (
+                                <TouchableOpacity style={style.mainContainerParent} onPress={() => { setVisbilityStat(true); setStockName(items.stockName); setStockPrice(items.stockPrice); test(items.stockName, items.stockPrice); console.log("CLICKED FROM addedStocksList.tsx:", items) }}>
+                                    <View key={index} style={style.stockDetailsParentStyle}>
+                                        <Text style={style.stockName}>{items.stockName.slice(0, 8) + ".."}</Text>
+                                        <Text style={style.stockPrice}>{"₹"}{items.stockPrice}</Text>
+                                        <Text style={style.stockAddDate}>15-12-2025</Text>
+                                    </View>
+                                    <TouchableOpacity style={style.deleteButtonStyle} onPress={() => { deleteAddedStock(items.stockName), refreshOnDel() }}>
+                                        <DeleteLogo />
+                                    </TouchableOpacity>
                                 </TouchableOpacity>
+                            ))
+                        )
 
-                            </TouchableOpacity>
-
-                        ))
                     }
+
+
 
 
                     <Popupmessage
@@ -135,9 +151,6 @@ const AddedStocksList = () => {
         </View>
     );
 
-    // return (
-    //     <Text style={style.text}>Hellow</Text>
-    // );
 
 }
 
@@ -175,6 +188,23 @@ const style = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#5F48F5",
         alignItems: "center",
+    },
+
+    emptyStockMessage:{
+        backgroundColor : "#D9D9D9",
+        marginTop : 20,
+        padding : 20,
+        borderRadius : 20,
+        
+    },
+    emptyStockMessageText:{
+        color : "#000000",
+        
+    },
+    emptyStockMessageTextLearnMore :{
+        marginTop : 5,
+        color : "#000000",
+        textDecorationLine : "underline"
     },
 
     stockName: {
