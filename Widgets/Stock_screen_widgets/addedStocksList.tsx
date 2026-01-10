@@ -1,10 +1,11 @@
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
 import DeleteLogo from "../../Assets/images/agents/stockAgent/deleteLogo";
 import { getAuth } from '@react-native-firebase/auth';
-import { getFirestore, collection, doc, addDoc, setDoc, getDocs } from "@react-native-firebase/firestore";
+import { getFirestore, collection, doc, addDoc, setDoc, getDocs, deleteDoc } from "@react-native-firebase/firestore";
 import { useEffect, useState } from "react";
 
 import Popupmessage from "./addedStockPopup";
+import { assets } from "../../react-native.config";
 
 const AddedStocksList = () => {
 
@@ -16,8 +17,8 @@ const AddedStocksList = () => {
 
 
     const [visbilityStat, setVisbilityStat] = useState(false); //  setting the visisbility value for the pop up that shows stock details
-    const [stockNamePopUp , setStockName] = useState<string>(); // used to give the addedStockPopUp.tsx the access to the data so that it can render the stock details
-    const [stockPricePopUp , setStockPrice] = useState<string>(); //  used to give the addedStockPopUp.tsx the access to the data so that it can render the stock details
+    const [stockNamePopUp, setStockName] = useState<string>(); // used to give the addedStockPopUp.tsx the access to the data so that it can render the stock details
+    const [stockPricePopUp, setStockPrice] = useState<string>(); //  used to give the addedStockPopUp.tsx the access to the data so that it can render the stock details
 
 
 
@@ -38,9 +39,32 @@ const AddedStocksList = () => {
         }
     }
 
-    const test = (name : string , price : string) =>{
-        console.log("CLICKED AND RETURNED FROM addedStockList.tsx:" , name)
-        console.log("CLICKED AND RETURNED FROM addedStockList.tsx:" , price)
+    const deleteAddedStock = async (DelItem: string) => {
+        if (loggedinUser) {
+            try {
+                const refCollectionn = collection(db, "Users", loggedinUser!, "Agents", "Finance", "Stock_Added")
+                const snapshot = await getDocs(refCollectionn)
+
+                const fetchedData = snapshot.docs.map((doc: any) => doc.data()) // fetching the data , the this data is added to the bellow state for rendering
+                // setStocks(fetchedData)
+                console.log("FETCHED DATA ", DelItem, "TO DELETE IT addedStockList.tsx", fetchedData)
+                try {
+                    await deleteDoc(doc(db, "Users", loggedinUser!, "Agents", "Finance", "Stock_Added", DelItem))
+                    console.log(`YOU HAVE REMOVED ${DelItem} FROM STOCK ANALYSIS`)
+                }
+                catch (error) {
+                    console.log("ERROR IN DELETION SCTOCK ERROR :", error)
+                }
+            }
+            catch (error) {
+                console.log("FETCHED DATA OF STOCKS FROM addedStockList.tsx error", error)
+            }
+        }
+    }
+
+    const test = (name: string, price: string) => {
+        console.log("CLICKED AND RETURNED FROM addedStockList.tsx:", name)
+        console.log("CLICKED AND RETURNED FROM addedStockList.tsx:", price)
     }
 
 
@@ -49,6 +73,11 @@ const AddedStocksList = () => {
     useEffect(() => {
         fetchingAddedStock()
     }, [])
+
+    const refreshOnDel = async () => {
+        await fetchingAddedStock()
+    }
+
 
 
 
@@ -60,9 +89,9 @@ const AddedStocksList = () => {
 
             {/* header row */}
             <View style={style.headingStyle}>
-                <Text style={style.text}>Stock Name</Text>
-                <Text style={style.text}>Price</Text>
-                <Text style={style.text}>Date</Text>
+                <Text style={style.text}>Stocks Added For Analysis</Text>
+                {/* <Text style={style.text}>Price</Text>
+                <Text style={style.text}>Date</Text> */}
             </View>
 
             {/* scrollable list with proper layout */}
@@ -72,17 +101,18 @@ const AddedStocksList = () => {
                     {
                         stocks.map((items, index) => (
 
-                            <TouchableOpacity style={style.mainContainerParent} onPress={() => {setVisbilityStat(true) ; setStockName(items.stockName); setStockPrice(items.stockPrice); test(items.stockName , items.stockPrice); console.log("CLICKED FROM addedStocksList.tsx:" , items)}}>
+                            <TouchableOpacity style={style.mainContainerParent} onPress={() => { setVisbilityStat(true); setStockName(items.stockName); setStockPrice(items.stockPrice); test(items.stockName, items.stockPrice); console.log("CLICKED FROM addedStocksList.tsx:", items) }}>
 
                                 <View key={index} style={style.stockDetailsParentStyle}>
-                                    <Text style={style.stockName}>{items.stockName.slice(0,8) + ".."}</Text>
-                                    <Text style={style.stockPrice}>{items.stockPrice}</Text>
+                                    <Text style={style.stockName}>{items.stockName.slice(0, 8) + ".."}</Text>
+                                    <Text style={style.stockPrice}>{"₹"}{items.stockPrice}</Text>
                                     <Text style={style.stockAddDate}>15-12-2025</Text>
                                 </View>
 
-                                {/* <TouchableOpacity style={style.deleteButtonStyle}>
+                                <TouchableOpacity style={style.deleteButtonStyle} onPress={() => { deleteAddedStock(items.stockName), refreshOnDel() }}>
                                     <DeleteLogo />
-                                </TouchableOpacity> */}
+                                </TouchableOpacity>
+
                             </TouchableOpacity>
 
                         ))
@@ -90,14 +120,14 @@ const AddedStocksList = () => {
 
 
                     <Popupmessage
-                    visible={visbilityStat}
-                    stockName={stockNamePopUp}
-                    stockPrice={stockPricePopUp}
-                    buttonText1="ADD"
-                    buttonText2="CLOSE"
-                    onClose={() => setVisbilityStat(false)}
+                        visible={visbilityStat}
+                        stockName={stockNamePopUp}
+                        stockPrice={stockPricePopUp}
+                        buttonText1="ADD"
+                        buttonText2="CLOSE"
+                        onClose={() => setVisbilityStat(false)}
                     // stockArray={dataAsArray}    
-                />
+                    />
                 </View>
             </ScrollView>
 
@@ -116,62 +146,65 @@ const style = StyleSheet.create({
     text: {
         color: "#ffff",
         fontFamily: "Jura-Bold",
+        fontSize: 15
     },
     headingStyle: {
         display: "flex",
         flexDirection: "row",
-        gap: 55 ,
-        paddingRight: 40, 
+        // gap: 50 ,
+        // paddingRight: 40, 
         // marginLeft : 10
-    }, 
+        alignItems: "center",
+        justifyContent: "center"
+    },
 
     // style section for the stock price name and date container
-    mainContainerParent : {
-        marginTop : 20,
-        display : "flex",
-        flexDirection : "row", 
-
-        alignItems : "center"
-    },
-    stockDetailsParentStyle :{
-        backgroundColor: "#D9D9D9", 
+    mainContainerParent: {
+        marginTop: 20,
         display: "flex",
-        flexDirection : "row",
-        width : 300,
-        gap : 10,
-        padding : 15,
-
-        borderRadius : 10, 
-        borderWidth : 1,
-        borderColor : "#5F48F5"
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    stockDetailsParentStyle: {
+        backgroundColor: "#D9D9D9",
+        flexDirection: "row",
+        width: 280,
+        padding: 15,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "#5F48F5",
+        alignItems: "center",
     },
 
-    stockName : {
-         width: 100,
-        paddingLeft: 10,
+    stockName: {
+        flex: 1,
         fontFamily: "Jura-Bold",
         fontSize: 13,
     },
-    stockPrice : {
-        width: 80,
-        paddingLeft: 10,
+
+    stockPrice: {
+        flex: 1,
+        textAlign: "center",
         fontFamily: "Jura-Bold",
         fontSize: 13,
     },
-    stockAddDate : {
-        width: 120,
-        paddingLeft: 10,
+
+    stockAddDate: {
+        flex: 1,
+        textAlign: "right",
         fontFamily: "Jura-Bold",
         fontSize: 13,
     },
-    deleteButtonStyle : {
-        backgroundColor : "#f40b0bff", 
-        padding : 10, 
-        margin : 5, 
+
+    deleteButtonStyle: {
+        backgroundColor: "#f40b0bff",
+        padding: 5,
+        margin: 5,
 
         borderRadius: 10,
     }
-    
+
 })
 
 
