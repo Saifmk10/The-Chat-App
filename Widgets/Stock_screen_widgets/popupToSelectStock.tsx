@@ -2,11 +2,12 @@
 
 import { Modal, View, Text, Button, TouchableOpacity, StyleSheet, TextInput, ScrollView } from 'react-native';
 import colors from "D:\\PROJECTS\\The-Chat-App\\Assets\\colors.js";
-
-
 import { getAuth } from '@react-native-firebase/auth';
 import { getFirestore, collection, doc, addDoc, setDoc } from "@react-native-firebase/firestore";
+import { useState } from 'react';
 
+
+// import { fetchingAddedStock } from './addedStocksList';
 
 const handlingSelectedStock = (pressed: any) => {
     console.log(pressed.name)
@@ -22,6 +23,7 @@ const addStockToDb = async (pressed: any) => {
     const stockName = pressed.name
     console.log(pressed.name)
     console.log(pressed.price)
+
     // code to access the doc inside the db and add the data into the doc of the users db
     if (loggedinUser) {
         try {
@@ -35,7 +37,6 @@ const addStockToDb = async (pressed: any) => {
                 }
             );
 
-
         }
         catch (error) {
             console.warn(error)
@@ -44,37 +45,49 @@ const addStockToDb = async (pressed: any) => {
 
 }
 
+// function used to search for a particulat stock , native api is used
+
+
+
+
 const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose, stockArray }: { message: any, buttonText1: any, buttonText2: any, visible: any, onClose: any, stockArray: any[] }) => {
 
-    // useEffect(() =>{
-    //     addStockToDb()
-    // }, [])
+
+    const [searchedStockName , setSearchedStockName] = useState("");
+
+    const searchedStock = () => {
+        
+    }
+    
 
     return (
         // this is modal where we get the popup like feature so never remove the modal tag
-        <Modal visible={visible} animationType="fade" transparent>
+        <Modal visible={visible} animationType="fade" transparent statusBarTranslucent>
             <View style={modalStyle.mainParent}>
                 <View style={modalStyle.parentContainer}>
 
                     {/* text that holds the message that is being displayed */}
-                    <Text style={modalStyle.fontcolor}>{message}</Text>
-                    <Text>Click a stock to add it to the analysis</Text>
+                    {/* <Text style={modalStyle.fontcolor}>{message}</Text> */}
+                    {/* <Text>Click a stock to add it to the analysis</Text> */}
 
 
                     {/* this is the search option */}
                     <View>
-                        <TextInput placeholder="Enter Stock Name" placeholderTextColor="#ffffff" style={modalStyle.stockInputSearch}></TextInput>
+                        <TextInput placeholder="Enter Stock Name" placeholderTextColor="#ffffff" style={modalStyle.stockInputSearch} value={searchedStockName}></TextInput>
                     </View>
 
                     <Text>TRENDING TODAY</Text>
 
                     {/* with the help of the stock array parameter passed form the addstocksoptions.tsx */}
-                    <ScrollView>
+                    <ScrollView contentContainerStyle={modalStyle.stockListContainer}>
                         {stockArray.map((stock, index) => (
-                            <TouchableOpacity key={index} style={modalStyle.stockNameAndPrice} onPress={() => addStockToDb(stock)}>
-                                <Text style={modalStyle.stockName}>{stock.name}: </Text>
-                                <Text style={modalStyle.stockPrice}>₹{stock.price}</Text>
-                            </TouchableOpacity>
+                            <View >
+                                <TouchableOpacity key={index} style={modalStyle.stockNameAndPrice} onPress={() => { addStockToDb(stock) }}>
+                                    <Text style={modalStyle.stockName}>{stock.name}: </Text>
+                                    <Text style={modalStyle.stockPrice}>₹{stock.price}</Text>
+                                </TouchableOpacity>
+                            </View>
+
                         ))}
                     </ScrollView>
 
@@ -90,7 +103,7 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose, sto
                     </View>
                 </View>
             </View>
-        </Modal >
+        </Modal>
     );
 };
 
@@ -107,7 +120,7 @@ const modalStyle = StyleSheet.create({
 
     mainParent: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: "flex-end",
         alignItems: 'center',
         backgroundColor: 'rgba(0,0,0,0.8)'
     },
@@ -116,7 +129,7 @@ const modalStyle = StyleSheet.create({
     parentContainer: {
         //height kept auto here
         height: 650,
-        width: 300,
+        width: 350,
         backgroundColor: colors.secondary,
         borderRadius: 30,
         borderWidth: 2,
@@ -156,12 +169,22 @@ const modalStyle = StyleSheet.create({
 
     },
 
+    stockListContainer: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        // justifyContent: "space-between",
+        alignItems : "center",
+        justifyContent : "center"
+    },
+
     stockNameAndPrice: {
         backgroundColor: "#000000",
         color: "#ffffff",
-        padding: 2,
+        padding: 10,
         margin: 4,
-        borderRadius: 20
+        borderRadius: 20,
+        width: 150,
+        height : 100
     },
     stockName: {
         color: "#ffffff",
