@@ -89,7 +89,8 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose, sto
         // this is modal where we get the popup like feature so never remove the modal tag
         <Modal visible={visible} animationType="fade" transparent statusBarTranslucent>
 
-            <Pressable onPress={onClose} style={{flex:1 , backgroundColor: "rgba(0,0,0,0.4)",}}>
+            {/* <Pressable onPress={onClose} style={{flex:1 , backgroundColor: "rgba(0,0,0,0.4)",}}> */}
+            {/* <Pressable> */}
             <View style={modalStyle.mainParent}>
                 <View style={modalStyle.parentContainer}>
 
@@ -149,7 +150,8 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose, sto
                     </View>
                 </View>
             </View>
-            </Pressable>
+            {/* </Pressable> */}
+            {/* </Pressable> */}
         </Modal>
     );
 };
