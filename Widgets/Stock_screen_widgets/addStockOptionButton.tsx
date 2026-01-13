@@ -8,23 +8,7 @@ import Popupmessage from './popupToSelectStock';
 
 
 // function that is responsible for the fetching of data from the api end point , in case api throws any error change the end point bcs end point keeps updating as the api is upgraded
-const mainStockApiFetching = async () => {
 
-
-    try {
-
-        const response = await fetch("https://stock-api.saifmk.website/gainer");
-        const jsonResponse = await response.json();
-        console.log(`PRINTING THE API RESPONSE JSON FROM addStockOptionButton.tsx : `, jsonResponse);  
-        return jsonResponse;
-    }
-    catch (error) {
-        console.log(`PRINTING THE API RESPONSE FROM addStockOptionButton.tsx   , check function mainStockApiFetching() comment[ERROR] : ${error}`);
-        return error
-    }
-
-
-}
 
 
 const mainStockPrice = () => {
@@ -32,44 +16,9 @@ const mainStockPrice = () => {
     // the button to add the stock wil be by default set to false so once the button is clicked it becomes true and with that the function call is handles
     const [visbilityStat, setVisbilityStat] = useState(false);
 
-    // in this hook the data that is fetched from the api is stored as a array so it can be used to map in the popupToSelectStock.tsx file where the pop up is managed
-    const [dataAsArray, setDataAsArray] = useState<any[]>([])
+    
     
         
-        // funciton that takes the data that has been fetched from the mainStockApiFetching function and then the ouput is fomatted and managed here
-        const fetchData = async () => {
-                try {
-                    const data = await mainStockApiFetching();
-                    // console.log("PRINTING THE API RESPONSE FROM mainStockPrice.tsx :", data);
-    
-                    // safely access trending_stocks array
-                    const trending = data?.trending_stocks;
-    
-                    if (Array.isArray(trending)) {
-                        setDataAsArray(trending);
-                        console.log("STOCK LIST (Array):", trending);  
-    
-                        // this loop is used for debuggin pupose onlt
-                        for (let i = 0; i < trending.length; i++) {
-    
-                            console.log("STOCK DETAILS FROM ARRAY:", trending[i].name, trending[i].price);
-    
-                        }
-    
-                    } else {
-                        console.warn("PROVIDED RESPONSE IS NOT AN ARRAY RESPONSE , FROM ", data);
-                    }
-                } catch (error) {
-                    console.error("Error fetching:", error);
-                }
-            };
-            
-            
-            // the function is called here based in the hook the hook is true when the pop up is open and its false when the pop up is closed it becomes false , this statement makes the data realtime 
-            if(visbilityStat){
-                fetchData()
-            }
-
 
     return (
         <View style={style.stockHolderParent}>
@@ -89,7 +38,7 @@ const mainStockPrice = () => {
                     buttonText1="ADD"
                     buttonText2="CLOSE"
                     onClose={() => setVisbilityStat(false)}
-                    stockArray={dataAsArray}    
+                    // stockArray={dataAsArray}    
                 />
             </View>
 
