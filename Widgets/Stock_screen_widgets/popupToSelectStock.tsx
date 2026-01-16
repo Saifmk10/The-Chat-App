@@ -131,11 +131,13 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
             if (Array.isArray(trending)) {
                 setDataAsArray(trending);
                 console.log("STOCK LIST (Array):", trending);
+                
 
+                //  uncomment for debugging ONLY
                 // this loop is used for debuggin pupose onlt
-                for (let i = 0; i < trending.length; i++) {
-                    console.log("STOCK DETAILS FROM ARRAY:", trending[i].name, trending[i].price);
-                }
+                // for (let i = 0; i < trending.length; i++) {
+                //     console.log("STOCK DETAILS FROM ARRAY:", trending[i].name, trending[i].price);
+                // }
 
             } else {
                 console.warn("PROVIDED RESPONSE IS NOT AN ARRAY RESPONSE , FROM ", data);
@@ -169,7 +171,7 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
     },[visible , activeTab])
 
     return (
-
+ 
 
        
 
@@ -179,7 +181,7 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
         // this is modal where we get the popup like feature so never remove the modal tag
         <Modal visible={visible} animationType="fade" transparent statusBarTranslucent>
 
-            {/* <Pressable onPress={onClose} style={{flex:1 , backgroundColor: "rgba(0,0,0,0.4)",}}> */}
+            <Pressable onPress={onClose} style={{flex:1 , backgroundColor: "rgba(0,0,0,0.4)",}}>
             {/* <Pressable> */}
             <View style={modalStyle.mainParent}>
                 <View style={modalStyle.parentContainer}>
@@ -281,10 +283,17 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
                                     {/* //  this is the trending stock , looser , gainer stock rendering section */}
                                     <ScrollView contentContainerStyle={modalStyle.stockListContainer}>
                                         {dataAsArray.map((stock, index) => (
+
+                                            
+                                            
                                             <View >
                                                 <TouchableOpacity key={index} style={modalStyle.stockNameAndPrice} onPress={() => { addStockToDb(stock) }}>
                                                     <Text style={modalStyle.stockName}>{stock.name}: </Text>
-                                                    <Text style={modalStyle.stockPrice}>₹{stock.price}</Text>
+                                                    <View style={modalStyle.stockPriceParent}>
+                                                        <Text style={modalStyle.stockPrice}>₹{stock.price}</Text>
+                                                        <Text style={[modalStyle.currentStockPrice , {color : Number(String(stock.current).replace(/[^\d.-]/g, "")) > 0 ? "green" : "red"}]}>{stock.current}</Text>
+                                                    </View>
+                                                    
                                                 </TouchableOpacity>
                                             </View>
                                         ))}
@@ -310,7 +319,7 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
                 </View>
             </View>
             {/* </Pressable> */}
-            {/* </Pressable> */}
+            </Pressable>
         </Modal>
     );
 };
@@ -435,7 +444,7 @@ const modalStyle = StyleSheet.create({
         margin: 4,
         borderRadius: 20,
         width: 150,
-        height: 100,
+        height: 130,
 
         // flexDirection:"column",
         display: "flex",
@@ -448,10 +457,23 @@ const modalStyle = StyleSheet.create({
         margin: 4,
         fontSize: 13
     },
+
+    stockPriceParent:{
+        display : "flex",
+        flexDirection : "column"
+    },
+
     stockPrice: {
         color: "#ffffff",
         padding: 2,
-        margin: 4,
+        // margin: 4,
+        fontSize: 15
+    },
+
+    currentStockPrice:{
+        fontWeight : 600,
+        padding: 2,
+        // margin: 4,
         fontSize: 13
     },
 
