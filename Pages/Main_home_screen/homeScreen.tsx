@@ -1,24 +1,37 @@
-import React, { useState, } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity} from "react-native";
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, Animated} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+
 import colors from "../../Assets/colors";
-import HomeToggleButton from "../../Widgets/Home_screen_widgets/chatToStockToggleButtons";
-import UserChat from "../../Widgets/Home_screen_widgets/userChatWidget";
+import HomeToggleButton from "../../Widgets/Home_screen_widgets/updatesToAgentToggleButtons";
+// import UserChat from "../../Widgets/Home_screen_widgets/userChatWidget";
 import UserProfileOptions from "../../Widgets/Home_screen_widgets/userProfileOptions";
-import AddFriends from "../../Widgets/Home_screen_widgets/addFriends"
-import StockScreen from "../Agent_home_screen/agentScreen";
+// import AddFriends from "../../Widgets/Home_screen_widgets/addFriends"
+// import StockScreen from "../Agent_home_screen/agentScreen";
+// import StockAgentOperationsScreen from "../Stock_agent_screen/stockAgentPage"
+// import Popupmessage from "../../modal/popupMessage";
 
-
-import Popupmessage from "../../modal/popupMessage";
-
-const HomeScreen = ({ navigation }: { navigation: any;}) => {
+const HomeScreen = () => {
 
     const [checker, setCheckerTo] = useState(true)
-  
-    const navigateToUsersChatScreen = () =>{
-        navigation.navigate("UsersChatPage")
-        console.log("CLICKED ON USERS CHAT FROM homeScreen.tsx")
-    }     
+    const navigation = useNavigation<any>()
+    
+    useFocusEffect(useCallback(()=>{setCheckerTo(true)} , [])) // used to set back the toggle into true state so when user returns user will be able to go into the news and not see blank screen
+
+    useEffect(()=>{  if (!checker) {navigation.navigate("StockAgentScreen")}   },[checker]) // used to navigate to a new page where the stock agent is present
+                                                                                            //[checker] says the react to nvigate to the screen only when the checker state changes 
+
+    // const navigateToNews = () =>{
+    //     navigation.navigate("UsersChatPage")
+    //     console.log("CLICKED ON USERS CHAT FROM homeScreen.tsx")
+    // }     
+
+    // const navigateStockAgent = () =>{
+    //     navigation.navigate("StockAgentScreen")
+    //     console.log("CLICKED ON STOCK AGENT FROM homeScreen.tsx")
+    // }
 
     return (
 
@@ -37,27 +50,25 @@ const HomeScreen = ({ navigation }: { navigation: any;}) => {
                     </View>
 
                     {/* here the checker is working on if the user has clicke */}
-                    {checker
-                        ?
+                    {/* {checker */}
+                        {/* ? */}
 
-                        <View style={homeStyle.chatPlacement}>
-                            <TouchableOpacity onPress={navigateToUsersChatScreen}>
-                            <UserChat />
-                            </TouchableOpacity>
+                        {/* <View style={homeStyle.chatPlacement}> */}
+                            {/* <TouchableOpacity onPress={navigateToNews}> */}
+                            {/* <UserChat /> */}
+                            {/* </TouchableOpacity> */}
 
-                            <View style = {homeStyle.addFriendsContainer}>
-                                <AddFriends/>
-                            </View>
+                            {/* <View style = {homeStyle.addFriendsContainer}> */}
+                                {/* <AddFriends/> */}
+                            {/* </View> */}
                             
-                        </View>
+                        {/* </View> */}
 
 
 
-                        : <Text style={{ color: colors.secondary }}>
-                           <StockScreen/>
-                        </Text>
-                        // the navigation to the market page needs to happen from here
-                    }
+                        {/* // : navigation.navigate("StockAgentScreen")
+                        // the navigation to the market page needs to happen from here */}
+                    {/* } */}
 
 
                     {/* custom made modal with props for the popup message when the user logs into the account */}
@@ -92,4 +103,4 @@ const homeStyle = StyleSheet.create({
 })
 
 
-export default HomeScreen;
+export default HomeScreen; 

@@ -4,7 +4,7 @@ import { getAuth } from '@react-native-firebase/auth';
 import { getFirestore, collection, doc, addDoc, setDoc, getDocs, deleteDoc } from "@react-native-firebase/firestore";
 import { useEffect, useState } from "react";
 
-import Popupmessage from "./addedStockDetails";
+import Popupmessage from "./addedStockDetailsPopUp";
 import { assets } from "../../react-native.config";
 
 const AddedStocksList = () => {

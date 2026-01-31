@@ -124,7 +124,7 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
     const fetchData = async () => {
         try {
             const data = await mainStockApiFetching();
-            // console.log("PRINTING THE API RESPONSE FROM mainStockPrice.tsx :", data);
+            console.log("PRINTING THE API RESPONSE FROM mainStockPrice.tsx :", data);
             // safely access trending_stocks array
             const trending = data?.trending_stocks;
 
@@ -290,8 +290,24 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
                                                 <TouchableOpacity key={index} style={modalStyle.stockNameAndPrice} onPress={() => { addStockToDb(stock) }}>
                                                     <Text style={modalStyle.stockName}>{stock.name}: </Text>
                                                     <View style={modalStyle.stockPriceParent}>
-                                                        <Text style={modalStyle.stockPrice}>₹{stock.price}</Text>
-                                                        <Text style={[modalStyle.currentStockPrice , {color : Number(String(stock.current).replace(/[^\d.-]/g, "")) > 0 ? "green" : "red"}]}>{stock.current}</Text>
+                                                        {
+
+                                                            dataAsArray.length > 0 ? 
+                                                            (
+                                                                <>
+                                                                <Text style={modalStyle.stockPrice}>₹{stock.price}</Text>
+                                                                <Text style={[modalStyle.currentStockPrice , {color : Number(String(stock.current).replace(/[^\d.-]/g, "")) > 0 ? "green" : "red"}]}>{stock.current}</Text>
+                                                                </>
+                                                            ) :
+
+                                                            (
+
+                                                                <Text style={modalStyle.stockPrice}>STOCK API NOT ACTIVE</Text>
+
+                                                            )
+
+                                                        }
+                                                        
                                                     </View>
                                                     
                                                 </TouchableOpacity>
