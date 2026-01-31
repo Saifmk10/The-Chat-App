@@ -35,11 +35,11 @@ export default function App() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
           <>
-            <Stack.Screen name="HomeScreen" component={HomeScreen} />
-            <Stack.Screen name="UsersChatPage" component={UsersChatPage} />
-            <Stack.Screen name="StockAgentScreen" component={StockAgentScreen}/>
-            <Stack.Screen name="AgentScreen" component={AgentScreen}/>
-
+            <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ animation: 'none' }} />
+            {/* <Stack.Screen name="UsersChatPage" component={UsersChatPage} /> */}
+            <Stack.Screen name="StockAgentScreen" component={StockAgentScreen} options={{ animation: 'none' }}/>
+            {/* <Stack.Screen name="AgentScreen" component={AgentScreen}/> */}
+            
           </>
         ) : (
           <Stack.Screen name="LoginSignup" component={LoginSignup} />

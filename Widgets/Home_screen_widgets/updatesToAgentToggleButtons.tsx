@@ -25,11 +25,11 @@ const HomeToggleButton = ({ checker, setCheckerTo }: { checker: any, setCheckerT
     return (
         <View style={loginSignupStyle.loginToggleDiv}>
             <TouchableOpacity onPress={() => setCheckerTo(true)}>
-                <Text style={[checker ? loginSignupStyle.loginToggleButtonsHover : loginSignupStyle.loginToggleButtonsNoHover]}>CHATS</Text>
+                <Text style={[checker ? loginSignupStyle.loginToggleButtonsHover : loginSignupStyle.loginToggleButtonsNoHover]}>UPDATES</Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => setCheckerTo(false)}>
-                <Text style={[checker ? loginSignupStyle.loginToggleButtonsNoHover : loginSignupStyle.loginToggleButtonsHover]}>AGENTS</Text>
+                <Text style={[checker ? loginSignupStyle.loginToggleButtonsNoHover : loginSignupStyle.loginToggleButtonsHover]}>AGENT</Text>
             </TouchableOpacity>
         </View>
     )

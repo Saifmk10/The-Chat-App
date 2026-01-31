@@ -28,7 +28,7 @@ const StockAgentOperationsScreen = () => {
 
                 {/* heading for the agent */}
                 <View style={style.headingParentStyle}>
-                    <Text style={style.headingStyle}>FINANCE</Text>
+                    <Text style={style.headingStyle}>AGENT</Text>
                 </View>
 
                 <View style={{ width: 40 }} /> {/* added to balance the centered look of the heading no other purpose */}
