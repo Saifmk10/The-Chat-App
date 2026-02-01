@@ -8,6 +8,7 @@ import colors from "../../Assets/colors";
 import HomeToggleButton from "../../Widgets/Home_screen_widgets/updatesToAgentToggleButtons";
 // import UserChat from "../../Widgets/Home_screen_widgets/userChatWidget";
 import UserProfileOptions from "../../Widgets/Home_screen_widgets/userProfileOptions";
+import StockNewsScreen from "../Stock_news_screen/stockNewsScreen";
 // import AddFriends from "../../Widgets/Home_screen_widgets/addFriends"
 // import StockScreen from "../Agent_home_screen/agentScreen";
 // import StockAgentOperationsScreen from "../Stock_agent_screen/stockAgentPage"
@@ -37,7 +38,7 @@ const HomeScreen = () => {
 
         <LinearGradient colors={['#000000', '#5F48F5']} style={{ height: '100%' }} locations={[0.65, 1]}>
 
-            <ScrollView>
+            {/* <ScrollView> */}
                 <SafeAreaView style={homeStyle.parentDesign}>
                     
                     <View>
@@ -48,6 +49,9 @@ const HomeScreen = () => {
                     <View style={homeStyle.homeToggleDesign}>
                         <HomeToggleButton checker={checker} setCheckerTo={setCheckerTo} />
                     </View>
+
+                {/* <ScrollView> */}
+                    {checker && <StockNewsScreen />}             
 
                     {/* here the checker is working on if the user has clicke */}
                     {/* {checker */}
@@ -73,8 +77,9 @@ const HomeScreen = () => {
 
                     {/* custom made modal with props for the popup message when the user logs into the account */}
                     {/* <Popupmessage message='Welcome Back ' buttonText='Close' /> */}
+                {/* </ScrollView> */}
                 </SafeAreaView>
-            </ScrollView>
+            {/* </ScrollView> */}
         </LinearGradient>
 
     )
