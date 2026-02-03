@@ -1,11 +1,11 @@
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
-import DeleteLogo from "../../Assets/images/agents/stockAgent/deleteLogo";
+import DeleteLogo from "../../../Assets/images/agents/stockAgent/deleteLogo";
 import { getAuth } from '@react-native-firebase/auth';
 import { getFirestore, collection, doc, addDoc, setDoc, getDocs, deleteDoc } from "@react-native-firebase/firestore";
 import { useEffect, useState } from "react";
 
 import Popupmessage from "./addedStockDetailsPopUp";
-import { assets } from "../../react-native.config";
+import { assets } from "../../../react-native.config";
 
 const AddedStocksList = () => {
 
