@@ -11,7 +11,7 @@ import Popupmessage from './popupToSelectStock';
 
 
 
-const mainStockPrice = () => {
+const MainStockPrice = () => {
 
     // the button to add the stock wil be by default set to false so once the button is clicked it becomes true and with that the function call is handles
     const [visbilityStat, setVisbilityStat] = useState(false);
@@ -78,4 +78,4 @@ const style = StyleSheet.create({
 
 })
 
-export default mainStockPrice;
+export default MainStockPrice;

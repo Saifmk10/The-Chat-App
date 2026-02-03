@@ -2,7 +2,7 @@
 
 import { Modal, View, Text, Button, TouchableOpacity, StyleSheet, TextInput, ScrollView ,  } from 'react-native';
 import colors from "D:\\PROJECTS\\The-Chat-App\\Assets\\colors.js";
-import DeleteLogo from '../../Assets/images/agents/stockAgent/deleteLogo';
+import DeleteLogo from '../../../Assets/images/agents/stockAgent/deleteLogo';
 import AddedStocksList from './addedStocksList';
 
 import { getAuth } from '@react-native-firebase/auth';
