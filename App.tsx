@@ -36,7 +36,7 @@ export default function App() {
         {user ? (
           <>
             <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ animation: 'none' }} />
-            {/* <Stack.Screen name="UsersChatPage" component={UsersChatPage} /> */}
+            <Stack.Screen name="UsersChatPage" component={UsersChatPage} />
             <Stack.Screen name="StockAgentScreen" component={StockAgentScreen} options={{ animation: 'none' }}/>
             {/* <Stack.Screen name="AgentScreen" component={AgentScreen}/> */}
             

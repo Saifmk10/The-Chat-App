@@ -1,166 +1,148 @@
-// this screen will contains all the options that are available within the stock agent. This contains the stocks , doashboard , bots. 
-// here the rendering of each screen according to the button clicked will be managed 
-
 import { useState } from "react";
-import MainStockPrice from "../../Widgets/Stock_screen_widgets/addStockOptionButton";
-import { SafeAreaView, Text, StyleSheet, View, TouchableOpacity } from "react-native"
+import {
+  SafeAreaView,
+  Text,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+
 import BackButton from "../../Assets/images/stockAgentScreen/backbutton";
-import { useNavigation, useRoute } from "@react-navigation/native";
-
 import ToggleButtons from "../../Widgets/Stock_screen_widgets/toggleButtons";
-import AddedStocksList from "../../Widgets/Stock_screen_widgets/addedStocksList";
 
+import MainStockPrice from "../../Widgets/Stock_screen_widgets/STOCKS/addStockOptionButton";
+import AddedStocksList from "../../Widgets/Stock_screen_widgets/STOCKS/addedStocksList";
+
+import IntraDayBot from "../../Widgets/Stock_screen_widgets/BOT/intraDayBot";
+import StockWindowSelector from "../../Widgets/Stock_screen_widgets/DASHBOARD/StockWindowSelector";
 
 const StockAgentOperationsScreen = () => {
-    const navigation = useNavigation<any>();
-    const [checker, setCheckerTo] = useState("DASHBOARD")
+  const navigation = useNavigation<any>();
 
+  const [checker, setCheckerTo] = useState<"DASHBOARD" | "STOCKS" | "BOT">(
+    "DASHBOARD"
+  );
 
-    return (
-        <SafeAreaView style={{ backgroundColor: "#000000", flex: 1 }}>
+  // FIXED TYPO (this was actually causing one of the UI shifts)
+  const [windowChecker, setWindowCheker] = useState("intraday");
 
-            <View style={style.backButtonHeadingStyle}>
+  return (
+    <SafeAreaView style={style.root}>
+      {/* HEADER */}
+      <View style={style.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <BackButton />
+        </TouchableOpacity>
 
-                {/* back arrow to go back to the previous screen */}
-                <TouchableOpacity onPress={() => { (navigation).goBack(); }}>
-                    <BackButton />
-                </TouchableOpacity>
+        <View style={style.headingParent}>
+          <Text style={style.heading}>AGENT</Text>
+        </View>
 
-                {/* heading for the agent */}
-                <View style={style.headingParentStyle}>
-                    <Text style={style.headingStyle}>AGENT</Text>
-                </View>
+        {/* spacer to keep title centered */}
+        <View style={{ width: 40 }} />
+      </View>
 
-                <View style={{ width: 40 }} /> {/* added to balance the centered look of the heading no other purpose */}
+      {/* TOGGLE BUTTONS */}
+      <View style={style.toggleContainer}>
+        <ToggleButtons checker={checker} setCheckerTo={setCheckerTo} />
+      </View>
 
+      {/* CONTENT AREA */}
+      <View style={style.contentArea}>
+        {checker === "DASHBOARD" && (
+          <StockWindowSelector
+            windowChecker={windowChecker}
+            setWindowCheker={setWindowCheker}
+          />
+        )}
+
+        {checker === "STOCKS" && (
+          <View style={style.stocksContainer}>
+            <View style={style.stockAdditionSection}>
+              <MainStockPrice />
             </View>
 
-            {/* this is the section where the toggle button will be managed , according to each click the checker changes making it easy to navigate to next screen */}
-            <View style={style.toggleButtonsStyle}>
-                <ToggleButtons checker={checker} setCheckerTo={setCheckerTo} />
-            </View> 
+            <View style={style.stockRenderingSection}>
+              <AddedStocksList />
+            </View>
+          </View>
+        )}
 
-
-            {
-                // if the checker usestate is set to dashboard then all the code bellow this ? will be executed
-                checker === "DASHBOARD" ?
-                    <View style={style.stockAdditionStyle}>
-                        <Text style={style.textColor}>hello this is my stocks</Text>
-                    </View>
-            
-
-
-
-
-
-                    // if the checker usestate is set to stocks then all the code bellow this ? will be executed
-                    : checker === "STOCKS" ?
-                        
-                            <View style = {{flex : 1, marginTop:20}}>
-                                
-                                
-                                <View style={style.stockAdditionSection}>
-                                    < MainStockPrice />
-                                </View>
-                                <View style={style.stockRenderingSection}>
-                                    <AddedStocksList/>
-                                </View>
-
-                            </View>
-
-                            
-
-                           
-
-                        
-
-
-
-
-
-                        // if the checker usestate is set to bot then all the code bellow this ? will be executed
-                        :
-                        <View style={style.stockAdditionStyle}>
-                            <Text style={style.textColor}>hello this is differnt</Text>
-                        </View>
-            }
-
-
-
-        </SafeAreaView>
-
-
-    )
-}
+        {checker === "BOT" && (
+          <View style={style.botContainer}>
+            <IntraDayBot />
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
+  );
+};
 
 const style = StyleSheet.create({
-    textColor: {
-        color: "#ffffff"
-    },
+  root: {
+    flex: 1,
+    backgroundColor: "#000",
+  },
 
-    backButtonHeadingStyle: {
-        paddingTop: 40,
-        paddingLeft: 15,
+  /* HEADER */
+  header: {
+    paddingTop: 40,
+    paddingHorizontal: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#D9D9D9",
+    paddingBottom: 10,
+  },
 
-        // display : "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        // gap : 75,
+  headingParent: {
+    flex: 1,
+    alignItems: "center",
+  },
 
-        borderWidth: 1,
-        borderBottomColor: "#D9D9D9",
-        borderRadius: 1
-    },
-    headingParentStyle: {
-        // display : "flex",
-        // justifyContent : "center", 
-        flex: 1,
-        alignItems: "center"
-    },
-    headingStyle: {
-        color: "#D9D9D9",
-        fontFamily: "Jura-Bold",
-        fontSize: 25,
-    },
-    toggleButtonsStyle : {
-        paddingTop: 20,
-        display: "flex",
-        // flex: 1,
-        // justifyContent : "center",
-        alignItems: "center",
-    },
+  heading: {
+    color: "#D9D9D9",
+    fontFamily: "Jura-Bold",
+    fontSize: 25,
+  },
 
-    stockAdditionStyle: {
-        paddingTop: 20,
-        display: "flex",
-        // flex: 1,
-        // justifyContent : "center",
-        alignItems: "center",
+  /* TOGGLE */
+  toggleContainer: {
+    paddingTop: 20,
+    paddingHorizontal: 15,
+  },
 
-        backgroundColor: "#000000"
-    },
+  /* MAIN CONTENT AREA */
+  contentArea: {
+    flex: 1,
+    width: "100%",
+    marginTop : 10
+  },
 
-    mainParentStocks : {
-        flex : 1
-    },
+  /* DASHBOARD handled inside StockWindowSelector */
 
-    stockRenderingSection :{
-        padding: 20,
-        display: "flex",
-        // flex: 1,
-        // justifyContent: "flex-start",
-        // alignItems: "center",
-    },
+  /* STOCKS SCREEN */
+  stocksContainer: {
+    flex: 1,
+    marginTop: 20,
+  },
 
-    stockAdditionSection: {
-        marginTop: 20,
-        display: "flex",
-        // flex: 1,
-        // justifyContent: "flex-end",
-        alignItems: "center",
+  stockAdditionSection: {
+    alignItems: "center",
+    marginBottom: 10,
+  },
 
-        backgroundColor: "#000000"
-    }
-})
+  stockRenderingSection: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+
+  /* BOT SCREEN */
+  botContainer: {
+    flex: 1,
+    paddingTop: 20,
+  },
+});
 
 export default StockAgentOperationsScreen;
