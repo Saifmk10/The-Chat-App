@@ -1,7 +1,7 @@
 // this screen holds all the agents that are avaialbale within the app , this screen has no logical or backend going on it completely front end and static
 
 import React from "react";
-import MainStockPrice from "../../Widgets/Stock_screen_widgets/addStockOptionButton";
+import MainStockPrice from "../../Widgets/Stock_screen_widgets/STOCKS/addStockOptionButton";
 import StockAgent from "../../Widgets/Agent_selection_widgets/stockAgent"
 import {SafeAreaView , Text , StyleSheet , View} from "react-native"
 

@@ -85,9 +85,9 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
     
 
     const mainStockApiFetching = async () => {
-        const URL_MOSTACTIVE  = "https://stock-api.saifmk.website/mostActive"
-        const URL_GAINER = "https://stock-api.saifmk.website/gainer"
-        const URL_LOOSER = "https://stock-api.saifmk.website/looser"
+        const URL_MOSTACTIVE  = "https://stock-api.saifmk.online/mostActive"
+        const URL_GAINER = "https://stock-api.saifmk.online/gainer"
+        const URL_LOOSER = "https://stock-api.saifmk.online/looser"
         let URL = ""
 
         if(activeTab === "most"){
