@@ -16,11 +16,11 @@ const ToggleButton = ({ checker, setCheckerTo }: { checker: any, setCheckerTo: a
 
     // const [checker , setCheckerTo] = useState(true)
 
-    const onclickUiChange = () =>{
-    if(checker == true){
+//     const onclickUiChange = () =>{
+//     if(checker == true){
     
-    }
-}
+//     }
+// }
 
     return (
         <View style={loginSignupStyle.loginToggleDiv}>
@@ -53,7 +53,7 @@ const loginSignupStyle = StyleSheet.create({
     // holds the login toggle design for the buttons
     loginToggleDiv: {
         backgroundColor: colors.secondary,
-        height: 55,
+        height: 45,
         width: 350,
         borderRadius: 10,
         flexDirection: 'row',
@@ -78,7 +78,7 @@ const loginSignupStyle = StyleSheet.create({
         textAlignVertical: 'center',
         color: colors.secondary,
         fontFamily: 'Jura-Bold',
-        fontSize: 15,
+        fontSize: 12,
         letterSpacing: 1,
     },
 
