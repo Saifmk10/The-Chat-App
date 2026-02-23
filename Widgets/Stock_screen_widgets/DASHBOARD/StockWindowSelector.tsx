@@ -72,6 +72,7 @@ const StockWindowSelctor = ({ windowChecker, setWindowCheker }: { windowChecker?
 
     type StockAnalysis = {
         stocks: string;
+        summary: string;
         analysis: {
             ohlc: {
                 opening: number;
@@ -147,6 +148,7 @@ const StockWindowSelctor = ({ windowChecker, setWindowCheker }: { windowChecker?
                 last_added: last_added,
                 summary: DATA.summary,
                 stocks: DATA.report.map((stockEntry) => ({
+                    // summary:stockEntry.summary,
                     name: stockEntry.stocks,
                     ohlc: stockEntry.analysis.ohlc,
                     signals: stockEntry.analysis.signal,
@@ -232,12 +234,14 @@ const StockWindowSelctor = ({ windowChecker, setWindowCheker }: { windowChecker?
                         <View>
                             <Text style={style.stockName}>
                                 {stocks.name}
+                                
                             </Text>
                         </View>
 
                         <View>
                             <Text style={style.summary}>
-                                BPCL shows a bullish bias as buyers lifted prices from the open, though the mid-range close indicates consolidation. Risk is low.
+                               {/* {stocks.} */}
+                               {jsonData.summary}
                             </Text>
                         </View>
 
