@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import DeleteLogo from "../../../Assets/images/agents/stockAgent/deleteLogo";
 import { getAuth } from '@react-native-firebase/auth';
 import { getFirestore, collection, doc, addDoc, setDoc, getDocs, deleteDoc } from "@react-native-firebase/firestore";
@@ -15,6 +15,7 @@ const AddedStocksList = () => {
 
     const [stocks, setStocks] = useState<{ stockName: string; stockPrice: string }[]>([]) // this is used to render the stock details in this widget itself , the bellow ones render it in th pop up
     const [emptyStock, setEmptyStock] = useState(Boolean)
+    const [isLoading, setIsLoading] = useState(true)
 
     const [visbilityStat, setVisbilityStat] = useState(false); //  setting the visisbility value for the pop up that shows stock details
     const [stockNamePopUp, setStockName] = useState<string>(); // used to give the addedStockPopUp.tsx the access to the data so that it can render the stock details
@@ -23,6 +24,7 @@ const AddedStocksList = () => {
 
 
     const fetchingAddedStock = async () => {
+        setIsLoading(true)
         // checking if the user has been logged in so the user will access only his account details
         if (loggedinUser) {
             try {
@@ -45,6 +47,11 @@ const AddedStocksList = () => {
             catch (error) {
                 console.log("FETCHED DATA OF STOCKS FROM addedStockList.tsx error", error)
             }
+            finally {
+                setIsLoading(false)
+            }
+        } else {
+            setIsLoading(false)
         }
     }
 
@@ -105,8 +112,14 @@ const AddedStocksList = () => {
             >
                 <View>
 
+                    {isLoading && (
+                        <View style={style.loaderParent}>
+                            <ActivityIndicator size="large" color="#5F48F5" />
+                            <Text style={style.loaderText}>Loading your added stocks...</Text>
+                        </View>
+                    )}
 
-                    {!emptyStock ?
+                    {!isLoading && !emptyStock ?
 
                         (
                             <View style={style.emptyStockMessage}>
@@ -116,7 +129,7 @@ const AddedStocksList = () => {
                         ) : 
                         
                         (   
-                            stocks.map((items, index) => (
+                            !isLoading && stocks.map((items, index) => (
                                 <TouchableOpacity style={style.mainContainerParent} onPress={() => { setVisbilityStat(true); setStockName(items.stockName); setStockPrice(items.stockPrice); test(items.stockName, items.stockPrice); console.log("CLICKED FROM addedStocksList.tsx:", items) }}>
                                     <View key={index} style={style.stockDetailsParentStyle}>
                                         <Text style={style.stockName}>{items.stockName.slice(0, 8) + ".."}</Text>
@@ -205,6 +218,19 @@ const style = StyleSheet.create({
         marginTop : 5,
         color : "#000000",
         textDecorationLine : "underline"
+    },
+
+    loaderParent: {
+        marginTop: 20,
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 10,
+    },
+
+    loaderText: {
+        color: "#D9D9D9",
+        fontFamily: "Jura-Bold",
+        fontSize: 13,
     },
 
     stockName: {
