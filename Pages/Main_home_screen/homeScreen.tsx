@@ -8,7 +8,7 @@ import colors from "../../Assets/colors";
 import HomeToggleButton from "../../Widgets/Home_screen_widgets/updatesToAgentToggleButtons";
 // import UserChat from "../../Widgets/Home_screen_widgets/userChatWidget";
 import UserProfileOptions from "../../Widgets/Home_screen_widgets/userProfileOptions";
-import StockNewsScreen from "../Stock_news_screen/stockNewsScreen";
+// import StockNewsScreen from "../Stock_news_screen/stockNewsScreen";
 // import AddFriends from "../../Widgets/Home_screen_widgets/addFriends"
 // import StockScreen from "../Agent_home_screen/agentScreen";
 // import StockAgentOperationsScreen from "../Stock_agent_screen/stockAgentPage"
@@ -51,7 +51,7 @@ const HomeScreen = () => {
                     </View>
 
                 {/* <ScrollView> */}
-                    {checker && <StockNewsScreen />}             
+                    {/* {checker && <StockNewsScreen />}              */}
 
                     {/* here the checker is working on if the user has clicke */}
                     {/* {checker */}

@@ -9,199 +9,15 @@ import { getFirestore, collection, doc, addDoc, setDoc, getDoc, deleteDoc } from
 const StockWindowSelctor = ({ windowChecker, setWindowCheker }: { windowChecker?: any, setWindowCheker?: any }) => {
 
     // database realted 
-    const fireBaseUser = getAuth();
-    const db = getFirestore()
-    const loggedinUser = fireBaseUser.currentUser?.uid;
+    
+
+    
 
 
-
-    type JsonData = {
-        date: string;
-        last_added: string;
-        summary: string;
-        stocks: {
-            name: string;
-            ohlc: {
-                opening: number;
-                closing: number;
-                high: number;
-                low: number;
-            };
-            signals: {
-                Buyer_Control: boolean;
-                Seller_Control: boolean;
-                Intraday_Weakness: boolean;
-                Intraday_Strength: boolean;
-                VWAP_Hold: boolean;
-                Mid_Range_Close: boolean;
-                Indecision_Day: boolean;
-                Wide_Range_Day: boolean;
-                VWAP_Rejection: boolean;
-                Dip_Absorption: boolean;
-                Late_Selling: boolean;
-                Late_Buying: boolean;
-                Small_Range_Day: boolean;
-                Trend_Day_Up: boolean;
-                Trend_Day_Down: boolean;
-            };
-            stats: {
-                count: number;
-                percentage: number;
-                mean: number;
-                median: number;
-                std: number;
-                range: number;
-                min: number;
-                max: number;
-                q25: number;
-                q50: number;
-                q75: number;
-            };
-        }[];
-    };
-
-    const [isExpanded, setIsExpanded] = useState<string | null>(null);
-    const [jsonData, setJsonData] = useState<JsonData | null>(null);
-    const [title, setTitle] = useState("")
-    const [summary, setSummary] = useState("")
-    const [percentage, setPercetange] = useState<number | null>(null);
-    const [opening, Setopening] = useState<number | null>(null);
-    const [closing, Setclosing] = useState<number | null>(null);
-    const [highest, Sethighest] = useState<number | null>(null);
-    const [lowest, Setlowest] = useState<number | null>(null);
-
-    type StockAnalysis = {
-        stocks: string;
-        summary: string;
-        analysis: {
-            ohlc: {
-                opening: number;
-                closing: number;
-                high: number;
-                low: number;
-            };
-            signal: {
-                Buyer_Control: boolean;
-                Seller_Control: boolean;
-                Intraday_Weakness: boolean;
-                Intraday_Strength: boolean;
-                VWAP_Hold: boolean;
-                Mid_Range_Close: boolean;
-                Indecision_Day: boolean;
-                Wide_Range_Day: boolean;
-                VWAP_Rejection: boolean;
-                Dip_Absorption: boolean;
-                Late_Selling: boolean;
-                Late_Buying: boolean;
-                Small_Range_Day: boolean;
-                Trend_Day_Up: boolean;
-                Trend_Day_Down: boolean;
-            };
-            stats: {
-                count: number;
-                percentage: number;
-                mean: number;
-                median: number;
-                std: number;
-                range: number;
-                min: number;
-                max: number;
-                q25: number;
-                q50: number;
-                q75: number;
-            };
-        };
-    };
-
-    type DayDocument = {
-        DATA: {                     // ← wrapping layer
-            date: string;
-            report: StockAnalysis[];
-            summary: string;
-        };
-        last_added: string;         // ← this sits outside DATA
-    };
-
-    const intraDayData = async () => {
-        try {
-            const ref = doc(
-                db,
-                "Users",
-                loggedinUser!,
-                "Agents",
-                "Finance",
-                "Stock_Data",
-                "IntraDay",
-                "Data",
-                "09-02-2026"
-            );
-
-            const snapshot = await getDoc(ref);
-
-            if (!snapshot.exists()) return null;
-
-            const data = snapshot.data() as DayDocument;
-            const { DATA, last_added } = data;
-
-            const jsonData = {
-                date: DATA.date,
-                last_added: last_added,
-                summary: DATA.summary,
-                stocks: DATA.report.map((stockEntry) => ({
-                    // summary:stockEntry.summary,
-                    name: stockEntry.stocks,
-                    ohlc: stockEntry.analysis.ohlc,
-                    signals: stockEntry.analysis.signal,
-                    stats: stockEntry.analysis.stats,
-                })),
-            };
-
-
-
-
-
-
-            console.log(JSON.stringify(jsonData, null, 2));
-            return jsonData;
-
-        } catch (error) {
-            console.log("Error fetching intraday data:", error);
-            return null;
-        }
-    };
-
-
-
-    const toggleExpand = (name: string) => {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-        setIsExpanded(isExpanded === name ? null : name);
-    };
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         const data = await intraDayData();
-    //         if (data) setJsonData(jsonData);
-    //     };
-    //     fetchData();
-    // }, []);
-
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await intraDayData();
-            if (data) setJsonData(data);  // ← was jsonData, now data
-        };
-        fetchData();
-    }, []);
-
-    // then access it like
-    const stocks = jsonData?.stocks;
-    console.log("-----> NEW DATA :", stocks)
-    // const summary = jsonData?.summary;
 
 
     return (
-        <SafeAreaView style={style.screenParent}>
+        <View style={style.screenParent}>
 
             {/* buttons used to select the  */}
             <View style={style.selctorParent}>
@@ -227,93 +43,7 @@ const StockWindowSelctor = ({ windowChecker, setWindowCheker }: { windowChecker?
             {/*  */}
 
 
-            <ScrollView>
-                {jsonData?.stocks.map((stocks) => (
-
-                    <View style={style.cardParent}>
-                        <View>
-                            <Text style={style.stockName}>
-                                {stocks.name}
-                                
-                            </Text>
-                        </View>
-
-                        <View>
-                            <Text style={style.summary}>
-                               {/* {stocks.} */}
-                               {jsonData.summary}
-                            </Text>
-                        </View>
-
-                        <TouchableOpacity onPress={() => toggleExpand(stocks.name)} style={style.stockDetailsParent}>
-                            <View style={style.stockDetails}>
-                                <Text style={style.percet}>
-                                    %{stocks.stats.percentage}
-                                </Text>
-                                <View style={style.otherDetailsParent}>
-                                    <Text style={style.otherDeatilsHeading}>OPENING</Text>
-                                    <Text style={style.otherDetailsPrice}>
-                                        {stocks.ohlc.opening}
-                                    </Text>
-                                </View>
-                                <View style={style.otherDetailsParent}>
-                                    <Text style={style.otherDeatilsHeading}>CLOSING</Text>
-                                    <Text style={style.otherDetailsPrice}>
-                                        {stocks.ohlc.closing}
-                                    </Text>
-                                </View>
-                                <View style={style.otherDetailsParent}>
-                                    <Text style={style.otherDeatilsHeading}>HIGHEST</Text>
-                                    <Text style={style.otherDetailsPrice}>
-                                        {stocks.ohlc.high}
-                                    </Text>
-                                </View>
-                                <View style={style.otherDetailsParent}>
-                                    <Text style={style.otherDeatilsHeading}>LOWEST</Text>
-                                    <Text style={style.otherDetailsPrice}>
-                                        {stocks.ohlc.low}
-                                    </Text>
-                                </View>
-                            </View>
-
-                            
-                            {/* expands to show more details about the analysis */}
-
-                            {isExpanded === stocks.name && (
-                                <View style={style.stockDetails}>
-                                    <View style={style.otherDetailsParent}>
-                                        <Text style={style.otherDeatilsHeading}>OPENING</Text>
-                                        <Text style={style.otherDetailsPrice}>
-                                            {stocks.ohlc.opening}
-                                        </Text>
-                                    </View>
-                                    <View style={style.otherDetailsParent}>
-                                        <Text style={style.otherDeatilsHeading}>CLOSING</Text>
-                                        <Text style={style.otherDetailsPrice}>
-                                            {stocks.ohlc.closing}
-                                        </Text>
-                                    </View>
-                                    <View style={style.otherDetailsParent}>
-                                        <Text style={style.otherDeatilsHeading}>HIGHEST</Text>
-                                        <Text style={style.otherDetailsPrice}>
-                                            {stocks.ohlc.high}
-                                        </Text>
-                                    </View>
-                                    <View style={style.otherDetailsParent}>
-                                        <Text style={style.otherDeatilsHeading}>LOWEST</Text>
-                                        <Text style={style.otherDetailsPrice}>
-                                            {stocks.ohlc.low}
-                                        </Text>
-                                    </View>
-                                </View>
-                            )}
-                        </TouchableOpacity>
-                    </View>
-
-                ))}
-            </ScrollView>
-
-        </SafeAreaView>
+        </View>
     )
 
 }
@@ -325,11 +55,8 @@ const secondaryColor = "#5F48F5"
 const style = StyleSheet.create({
 
     screenParent: {
-        // display: "flex",
-        flex: 1,
         alignItems: "center",
-        flexDirection: "column"
-        // justifyContent : "center"
+        flexDirection: "column",
     },
 
     selctorParent: {
