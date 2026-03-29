@@ -15,7 +15,7 @@ import Userlogo from "../../Assets/images/user/user_logo";
 import AddButton from "../../Assets/images/addFriends/add_button_image";
 import Popupmessage from "../../modal/popupMessage";
 
-import FetchingAllUserNames from "../../Backend_logics/fetchingAllUserNames"
+import FetchingAllUserNames from "../../Login_logics/fetchingAllUserNames"
 
 
 const AddFriends = () => {

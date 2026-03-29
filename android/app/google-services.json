@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "385628663247",
+    "firebase_url": "https://the-chat-44e8e-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "the-chat-44e8e",
     "storage_bucket": "the-chat-44e8e.firebasestorage.app"
   },
@@ -12,7 +13,28 @@
           "package_name": "com.source"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "385628663247-b9cud9kvu6vojbukanj2mftipmdfe1mh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.source",
+            "certificate_hash": "9de77299552d6257d308284d9bd05e3382477fbb"
+          }
+        },
+        {
+          "client_id": "385628663247-nvqg16bh3r7g0jon2foej6vnn9pjg5j2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.source",
+            "certificate_hash": "18ff5540b2d4a122badc359503e6cffcf1c51534"
+          }
+        },
+        {
+          "client_id": "385628663247-qehttl2jv5gvho54kk0mm9f962a6tj0u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCr7hbbQSDg9qs7Rwe2gqtgavvjyaeOisg"
@@ -20,7 +42,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "385628663247-qehttl2jv5gvho54kk0mm9f962a6tj0u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
