@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import auth from "@react-native-firebase/auth";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 import HomeScreen from "./Pages/Main_home_screen/homeScreen";
 import LoginSignup from "./Pages/Login_signup_screen/loginSignup_page";
@@ -11,6 +12,10 @@ import StockAgentScreen from "./Pages/Stock_agent_screen/stockAgentPage";
 import AgentScreen from "./Pages/Agent_home_screen/agentScreen";
 
 const Stack = createNativeStackNavigator();
+
+GoogleSignin.configure({
+  webClientId: '385628663247-qehttl2jv5gvho54kk0mm9f962a6tj0u.apps.googleusercontent.com',
+});
 
 export default function App() {  
 
@@ -27,6 +32,14 @@ export default function App() {
 
     return unsubscribe; 
   }, []);
+
+
+  // google account auth
+  // useEffect(() => {
+  //   GoogleSignin.configure({
+  //     webClientId: '385628663247-qehttl2jv5gvho54kk0mm9f962a6tj0u.apps.googleusercontent.com',  
+  //   });
+  // }, []);
 
   if (initializing) return null;  
 

@@ -4,9 +4,9 @@ import { getAuth } from '@react-native-firebase/auth';
 import { getFirestore, collection, doc, addDoc, setDoc, getDoc, deleteDoc } from "@react-native-firebase/firestore";
 import StockWindowSelctor from "../StockWindowSelector";
 
-const fireBaseUser = getAuth();
+// const fireBaseUser = getAuth();
 const db = getFirestore()
-const loggedinUser = fireBaseUser.currentUser?.uid;
+// const loggedinUser = fireBaseUser.currentUser?.uid;
 
 type DayDocument = {
         DATA: {                     // ← wrapping layer
@@ -128,9 +128,15 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
 
 
     const intraDayData = async () => {
-
-    
+        const loggedinUser = getAuth().currentUser?.uid;
+        
         try {
+            const loggedinUser = getAuth().currentUser?.uid;  // ← move it here
+        
+            if (!loggedinUser) {
+                console.log("No user logged in");
+                return null;
+            }
             const ref = doc(
                 db,
                 "Users",
