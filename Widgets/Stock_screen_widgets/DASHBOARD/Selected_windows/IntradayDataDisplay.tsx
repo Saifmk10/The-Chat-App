@@ -23,6 +23,7 @@ type JsonData = {
     summary: string;
     stocks: {
         name: string;
+        summary: string;
         ohlc: {
             opening: number;
             closing: number;
@@ -116,6 +117,7 @@ type StockAnalysis = {
 const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
     const [isExpanded, setIsExpanded] = useState<string | null>(null);
     const [jsonData, setJsonData] = useState<JsonData | null>(null);
+    const [noData, setNoData] = useState(false);
     const [title, setTitle] = useState("")
     const [summary, setSummary] = useState("")
     const [percentage, setPercetange] = useState<number | null>(null);
@@ -137,6 +139,10 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
                 console.log("No user logged in");
                 return null;
             }
+
+            // fetching the data asper current date from the firestore database where the intraday data is stored
+            const today = new Date();
+            const todayDate = `${String(today.getDate()).padStart(2, "0")}-${String(today.getMonth() + 1).padStart(2, "0")}-${today.getFullYear()}`;
             const ref = doc(
                 db,
                 "Users",
@@ -146,19 +152,23 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
                 "Stock_Data",
                 "IntraDay",
                 "Data",
-                "09-02-2026"
+                todayDate
             );
             const snapshot = await getDoc(ref);
-            if (!snapshot.exists()) return null;
+            if (!snapshot.exists()) {
+                setNoData(true);
+                return null;
+            }
             const data = snapshot.data() as DayDocument;
             const { DATA, last_added } = data;
+            const summaryObj = JSON.parse(DATA.summary) as Record<string, string>;
             const jsonData = {
                 date: DATA.date,
                 last_added: last_added,
                 summary: DATA.summary,
                 stocks: DATA.report.map((stockEntry) => ({
-                    // summary:stockEntry.summary,
                     name: stockEntry.stocks,
+                    summary: summaryObj[stockEntry.stocks] ?? "",
                     ohlc: stockEntry.analysis.ohlc,
                     signals: stockEntry.analysis.signal,
                     stats: stockEntry.analysis.stats,
@@ -189,7 +199,10 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
     useEffect(() => {
         const fetchData = async () => {
             const data = await intraDayData();
-            if (data) setJsonData(data); 
+            if (data) {
+                setNoData(false);
+                setJsonData(data);
+            }
         };
         fetchData();
     }, []);
@@ -203,7 +216,13 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
 
     return(
     <SafeAreaView style={style.screenParent}>
-    {windowChecker == "intraday" && (
+    {windowChecker == "intraday" && noData && (
+        <View style={style.noDataContainer}>
+            <Text style={style.noDataTitle}>No data available for today</Text>
+            <Text style={style.noDataSubtitle}>Make sure you have added stocks to your watchlist to see intraday analysis here. Data will be available after 3:45pm</Text>
+        </View>
+    )}
+    {windowChecker == "intraday" && !noData && (
                 <ScrollView>
                 {jsonData?.stocks.map((stocks) => (
 
@@ -217,8 +236,7 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
 
                         <View>
                             <Text style={style.summary}>
-                               {/* {stocks.} */}
-                               {jsonData.summary}
+                               {stocks.summary}
                             </Text>
                         </View>
 
@@ -418,9 +436,30 @@ const style = StyleSheet.create({
         color: primaryColor,
 
         fontFamily: 'Jura-Bold',
-    }
+    },
 
+    noDataContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 30,
+    },
 
+    noDataTitle: {
+        fontFamily: 'Jura-Bold',
+        fontSize: 16,
+        color: primaryColor,
+        textAlign: 'center',
+        marginBottom: 12,
+    },
+
+    noDataSubtitle: {
+        fontFamily: 'Jura-Bold',
+        fontSize: 13,
+        color: primaryColor,
+        textAlign: 'center',
+        opacity: 0.6,
+    },
 
 })
 
