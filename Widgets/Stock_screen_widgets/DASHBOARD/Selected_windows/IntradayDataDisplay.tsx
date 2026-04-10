@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, LayoutAnimation } from "react-native";
 import { getAuth } from '@react-native-firebase/auth';
-import { getFirestore, collection, doc, addDoc, setDoc, getDoc, deleteDoc } from "@react-native-firebase/firestore";
+import { getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs, deleteDoc } from "@react-native-firebase/firestore";
 import StockWindowSelctor from "../StockWindowSelector";
 
 // const fireBaseUser = getAuth();
@@ -125,24 +125,28 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
     const [closing, Setclosing] = useState<number | null>(null);
     const [highest, Sethighest] = useState<number | null>(null);
     const [lowest, Setlowest] = useState<number | null>(null);
+    const [availableDates, setAvailableDates] = useState<string[]>([]);
+    const [selectedDate, setSelectedDate] = useState<string | null>(null);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [expandedSummaries, setExpandedSummaries] = useState<Set<string>>(new Set());
 
 
 
 
-    const intraDayData = async () => {
-        const loggedinUser = getAuth().currentUser?.uid;
-        
+    const intraDayData = async (dateParam?: string) => {
         try {
-            const loggedinUser = getAuth().currentUser?.uid;  // ← move it here
+            const loggedinUser = getAuth().currentUser?.uid;
         
             if (!loggedinUser) {
                 console.log("No user logged in");
-                return null;
+                return null;    
             }
+
+            console.log("Fetching intraday data for user:", loggedinUser);  
 
             // fetching the data asper current date from the firestore database where the intraday data is stored
             const today = new Date();
-            const todayDate = `${String(today.getDate()).padStart(2, "0")}-${String(today.getMonth() + 1).padStart(2, "0")}-${today.getFullYear()}`;
+            const todayDate = dateParam ?? `${String(today.getDate()).padStart(2, "0")}-${String(today.getMonth() + 1).padStart(2, "0")}-${today.getFullYear()}`;
             const ref = doc(
                 db,
                 "Users",
@@ -160,6 +164,7 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
                 return null;
             }
             const data = snapshot.data() as DayDocument;
+            console.log("DATA:" , data)
             const { DATA, last_added } = data;
             const summaryObj = JSON.parse(DATA.summary) as Record<string, string>;
             const jsonData = {
@@ -183,6 +188,61 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
     };
 
 
+    const userselcteddata = async () => {
+        try {
+            const loggedinUser = getAuth().currentUser?.uid;
+            if (!loggedinUser) {
+                console.log("No user logged in");
+                return;
+            }
+            const colRef = collection(
+                db,
+                "Users",
+                loggedinUser,
+                "Agents",
+                "Finance",
+                "Stock_Data",
+                "IntraDay",
+                "Data"
+            );
+            const snapshot = await getDocs(colRef);
+            const dates = snapshot.docs.map((d: { id: string }) => d.id);
+            setAvailableDates(dates);
+        } catch (error) {
+            console.log("Error fetching available dates:", error);
+        }
+    };
+
+    const handleDateSelect = async (date: string) => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setSelectedDate(date);
+        setDropdownOpen(false);
+        setJsonData(null);
+        setNoData(false);
+        const data = await intraDayData(date);
+        if (data) {
+            setNoData(false);
+            setJsonData(data);
+        } else {
+            setNoData(true);
+        }
+    };
+
+    const getTwoSentences = (text: string): string => {
+        const sentences = text.match(/[^.!?]+[.!?]+/g);
+        if (!sentences || sentences.length <= 2) return text;
+        return sentences.slice(0, 2).join('').trim();
+    };
+
+    const toggleSummary = (name: string) => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setExpandedSummaries((prev) => {
+            const next = new Set(prev);
+            next.has(name) ? next.delete(name) : next.add(name);
+            return next;
+        });
+    };
+
     const toggleExpand = (name: string) => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setIsExpanded(isExpanded === name ? null : name);
@@ -205,6 +265,7 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
             }
         };
         fetchData();
+        userselcteddata();
     }, []);
 
 
@@ -216,6 +277,42 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
 
     return(
     <SafeAreaView style={style.screenParent}>
+    {windowChecker == "intraday" && (
+        <View style={style.dropdownWrapper}>
+            <TouchableOpacity
+                style={style.dropdownTrigger}
+                onPress={() => {
+                    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                    setDropdownOpen(!dropdownOpen);
+                }}
+            >
+                <Text style={style.dropdownTriggerText}>
+                    {selectedDate ?? "Select Date"}
+                </Text>
+                <Text style={style.dropdownArrow}>{dropdownOpen ? "▲" : "▼"}</Text>
+            </TouchableOpacity>
+            {dropdownOpen && (
+                <ScrollView style={style.dropdownList} nestedScrollEnabled>
+                    {availableDates.length === 0 ? (
+                        <Text style={style.dropdownItemText}>No dates available</Text>
+                    ) : (
+                        availableDates.map((date) => (
+                            <TouchableOpacity
+                                key={date}
+                                style={[
+                                    style.dropdownItem,
+                                    selectedDate === date && style.dropdownItemSelected,
+                                ]}
+                                onPress={() => handleDateSelect(date)}
+                            >
+                                <Text style={style.dropdownItemText}>{date}</Text>
+                            </TouchableOpacity>
+                        ))
+                    )}
+                </ScrollView>
+            )}
+        </View>
+    )}
     {windowChecker == "intraday" && noData && (
         <View style={style.noDataContainer}>
             <Text style={style.noDataTitle}>No data available for today</Text>
@@ -236,8 +333,17 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
 
                         <View>
                             <Text style={style.summary}>
-                               {stocks.summary}
+                                {expandedSummaries.has(stocks.name)
+                                    ? stocks.summary
+                                    : getTwoSentences(stocks.summary)}
                             </Text>
+                            {getTwoSentences(stocks.summary) !== stocks.summary && (
+                                <TouchableOpacity onPress={() => toggleSummary(stocks.name)}>
+                                    <Text style={style.showMoreText}>
+                                        {expandedSummaries.has(stocks.name) ? "Read less" : "Read more"}
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
                         </View>
 
                         <TouchableOpacity onPress={() => toggleExpand(stocks.name)} style={style.stockDetailsParent}>
@@ -459,6 +565,69 @@ const style = StyleSheet.create({
         color: primaryColor,
         textAlign: 'center',
         opacity: 0.6,
+    },
+
+    dropdownWrapper: {
+        marginHorizontal: 20,
+        marginTop: 15,
+        marginBottom: 5,
+        zIndex: 10,
+    },
+
+    dropdownTrigger: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#000',
+        borderRadius: 12,
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+    },
+
+    dropdownTriggerText: {
+        fontFamily: 'Jura-Bold',
+        fontSize: 13,
+        color: primaryColor,
+    },
+
+    dropdownArrow: {
+        fontFamily: 'Jura-Bold',
+        fontSize: 12,
+        color: secondaryColor,
+    },
+
+    dropdownList: {
+        backgroundColor: '#111',
+        borderRadius: 12,
+        marginTop: 4,
+        maxHeight: 180,
+    },
+
+    dropdownItem: {
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#222',
+    },
+
+    dropdownItemSelected: {
+        backgroundColor: secondaryColor,
+        borderRadius: 10,
+    },
+
+    dropdownItemText: {
+        fontFamily: 'Jura-Bold',
+        fontSize: 13,
+        color: primaryColor,
+    },
+
+    showMoreText: {
+        fontFamily: 'Jura-Bold',
+        fontSize: 12,
+        color: "#000000",
+        textDecorationLine: 'underline',
+        marginHorizontal: 10,
+        marginBottom: 8,
     },
 
 })
