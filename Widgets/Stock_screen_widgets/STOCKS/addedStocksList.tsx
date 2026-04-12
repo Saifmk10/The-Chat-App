@@ -13,7 +13,7 @@ const AddedStocksList = () => {
     const db = getFirestore()
     const loggedinUser = fireBaseUser.currentUser?.uid;
 
-    const [stocks, setStocks] = useState<{ stockName: string; stockPrice: string }[]>([]) // this is used to render the stock details in this widget itself , the bellow ones render it in th pop up
+    const [stocks, setStocks] = useState<{ stockName: string; stockPrice: string; StockTicker: string }[]>([]) // this is used to render the stock details in this widget itself , the bellow ones render it in th pop up
     const [emptyStock, setEmptyStock] = useState(Boolean)
     const [isLoading, setIsLoading] = useState(true)
 
@@ -62,10 +62,10 @@ const AddedStocksList = () => {
                 // this will perform the the deletion and also the error handling 
                 try {
                     await deleteDoc(doc(db, "Users", loggedinUser!, "Agents", "Finance", "Stock_Added", DelItem))
-                    console.log(`YOU HAVE REMOVED ${DelItem} FROM STOCK ANALYSIS`)
+                    console.log(`USER HAS REMOVED ${DelItem} FROM STOCK ANALYSIS`)
                 }
                 catch (error) {
-                    console.log("ERROR IN DELETION SCTOCK ERROR :", error)
+                    console.log("ERROR IN DELETION STOCK ERROR :", error)
                 }
 
             }
@@ -87,6 +87,7 @@ const AddedStocksList = () => {
         fetchingAddedStock()
     }, [])
 
+    // used to refresh the stock list when user deletes a stock from the list
     const refreshOnDel = async () => {
         await fetchingAddedStock()
     }
@@ -136,7 +137,7 @@ const AddedStocksList = () => {
                                         <Text style={style.stockPrice}>{"₹"}{items.stockPrice}</Text>
                                         <Text style={style.stockAddDate}>15-12-2025</Text>
                                     </View>
-                                    <TouchableOpacity style={style.deleteButtonStyle} onPress={() => { deleteAddedStock(items.stockName), refreshOnDel() }}>
+                                    <TouchableOpacity style={style.deleteButtonStyle} onPress={() => { deleteAddedStock(items.StockTicker), refreshOnDel() }}>
                                         <DeleteLogo />
                                     </TouchableOpacity>
                                 </TouchableOpacity>

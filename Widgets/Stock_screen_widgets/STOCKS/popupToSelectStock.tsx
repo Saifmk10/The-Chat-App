@@ -9,16 +9,18 @@ const addStockToDb = async (pressed: any) => {
     const fireBaseUser = getAuth();
     const db = getFirestore()
     const loggedinUser = fireBaseUser.currentUser?.uid;
-    const stockName = pressed.name
+    const stockName = pressed.ticker
+    console.log(pressed.ticker)
     console.log(pressed.name)
     console.log(pressed.price)
 
     if (loggedinUser) {
         try {
             await setDoc(
-                doc(db, "Users", loggedinUser!, "Agents", "Finance", "Stock_Added", pressed.name),
+                doc(db, "Users", loggedinUser!, "Agents", "Finance", "Stock_Added", pressed.ticker),
                 {
                     stockName: pressed.name,
+                    StockTicker: pressed.ticker,
                     stockPrice: pressed.price,
                     addedDate: new Date().toLocaleString()
                 }
@@ -112,9 +114,9 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
     }
 
     const mainStockApiFetching = async () => {
-        const URL_MOSTACTIVE = "https://stock-api.saifmk.online/mostActive"
-        const URL_GAINER = "https://stock-api.saifmk.online/gainer"
-        const URL_LOOSER = "https://stock-api.saifmk.online/looser"
+        const URL_MOSTACTIVE = "https://stock-api.saifmk.online/mostActive?limit=20"
+        const URL_GAINER = "https://stock-api.saifmk.online/gainer?limit=20"
+        const URL_LOOSER = "https://stock-api.saifmk.online/looser?limit=20"
         let URL = ""
 
         if (activeTab === "most") URL = URL_MOSTACTIVE
@@ -136,6 +138,7 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
         if (showLoader) setDataAsArray([]);
         try {
             const data = await mainStockApiFetching();
+            console.log("API RESPONSE RECEIVED IN fetchData():", data);
             const trending = data?.trending_stocks;
             if (Array.isArray(trending)) {
                 setDataAsArray(trending);
