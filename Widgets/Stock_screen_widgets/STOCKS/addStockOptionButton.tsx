@@ -11,7 +11,7 @@ import Popupmessage from './popupToSelectStock';
 
 
 
-const MainStockPrice = () => {
+const MainStockPrice = ({ onStockAdded }: { onStockAdded?: () => void }) => {
 
     // the button to add the stock wil be by default set to false so once the button is clicked it becomes true and with that the function call is handles
     const [visbilityStat, setVisbilityStat] = useState(false);
@@ -38,6 +38,7 @@ const MainStockPrice = () => {
                     buttonText1="ADD"
                     buttonText2="CLOSE"
                     onClose={() => setVisbilityStat(false)}
+                    onStockAdded={onStockAdded}
                     // stockArray={dataAsArray}    
                 />
             </View>

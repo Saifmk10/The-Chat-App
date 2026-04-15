@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import Popupmessage from "./addedStockDetailsPopUp";
 import { assets } from "../../../react-native.config";
 
-const AddedStocksList = () => {
+const AddedStocksList = ({ refreshKey }: { refreshKey?: number }) => {
 
     const fireBaseUser = getAuth();
     const db = getFirestore()
@@ -85,7 +85,7 @@ const AddedStocksList = () => {
     // all the stock details will be rendered as soon as the user clicks in the stocks section
     useEffect(() => {
         fetchingAddedStock()
-    }, [])
+    }, [refreshKey])
 
     // used to refresh the stock list when user deletes a stock from the list
     const refreshOnDel = async () => {
