@@ -28,6 +28,7 @@ const StockAgentOperationsScreen = () => {
 
   // FIXED TYPO (this was actually causing one of the UI shifts)
   const [windowChecker, setWindowCheker] = useState("intraday");
+  const [stockRefreshKey, setStockRefreshKey] = useState(0);
 
   return (
     <SafeAreaView style={style.root}>
@@ -64,11 +65,11 @@ const StockAgentOperationsScreen = () => {
         {checker === "STOCKS" && (
           <View style={style.stocksContainer}>
             <View style={style.stockAdditionSection}>
-              <MainStockPrice />
+              <MainStockPrice onStockAdded={() => setStockRefreshKey(k => k + 1)} />
             </View>
 
             <View style={style.stockRenderingSection}>
-              <AddedStocksList />
+              <AddedStocksList refreshKey={stockRefreshKey} />
             </View>
           </View>
         )}

@@ -78,13 +78,13 @@ const dotsStyle = StyleSheet.create({
     dot: {
         width: 12,
         height: 12,
-        borderRadius: 6,
+        borderRadius: 6,    
         backgroundColor: colors.primary,
     },
 });
 
 
-const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: { message: any, buttonText1: any, buttonText2: any, visible: any, onClose: any }) => {
+const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose, onStockAdded }: { message: any, buttonText1: any, buttonText2: any, visible: any, onClose: any, onStockAdded?: () => void }) => {
 
     const [searched, setSearched] = useState("");
     const [searchedStockName, setSearchedStockName] = useState("");
@@ -93,6 +93,8 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
     const [isSearching, setIsSearching] = useState(false)
     const [dataAsArray, setDataAsArray] = useState<any[]>([])
     const [activeTab, setActiveTab] = useState("most");
+    const [offset, setOffset] = useState(0);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
 
     const searchedStock = async (searched: string) => {
         console.log("USER SEARCHED FOR :", searched)
@@ -113,10 +115,10 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
         }
     }
 
-    const mainStockApiFetching = async () => {
-        const URL_MOSTACTIVE = "https://stock-api.saifmk.online/mostActive?limit=20"
-        const URL_GAINER = "https://stock-api.saifmk.online/gainer?limit=20"
-        const URL_LOOSER = "https://stock-api.saifmk.online/looser?limit=20"
+    const mainStockApiFetching = async (currentOffset: number = 0) => {
+        const URL_MOSTACTIVE = `https://stock-api.saifmk.online/mostActive?limit=20&offset=${currentOffset}`
+        const URL_GAINER = `https://stock-api.saifmk.online/gainer?limit=20&offset=${currentOffset}`
+        const URL_LOOSER = `https://stock-api.saifmk.online/looser?limit=20&offset=${currentOffset}`
         let URL = ""
 
         if (activeTab === "most") URL = URL_MOSTACTIVE
@@ -134,26 +136,34 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
         }
     }
 
-    const fetchData = async (showLoader: boolean = false) => {
+    const fetchData = async (showLoader: boolean = false, append: boolean = false, currentOffset: number = 0) => {
         if (showLoader) setDataAsArray([]);
+        if (append) setIsLoadingMore(true);
         try {
-            const data = await mainStockApiFetching();
+            const data = await mainStockApiFetching(currentOffset);
             console.log("API RESPONSE RECEIVED IN fetchData():", data);
             const trending = data?.trending_stocks;
             if (Array.isArray(trending)) {
-                setDataAsArray(trending);
+                if (append) {
+                    setDataAsArray(prev => [...prev, ...trending]);
+                } else {
+                    setDataAsArray(trending);
+                }
                 console.log("STOCK LIST (Array):", trending);
             } else {
                 console.warn("PROVIDED RESPONSE IS NOT AN ARRAY:", data);
             }
         } catch (error) {
             console.error("Error fetching:", error);
+        } finally {
+            if (append) setIsLoadingMore(false);
         }
     };
 
     useEffect(() => {
         if (visible) {
-            fetchData(true)
+            setOffset(0);
+            fetchData(true, false, 0)
         }
     }, [visible, activeTab])
 
@@ -161,7 +171,7 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
         <Modal visible={visible} animationType="fade" transparent statusBarTranslucent>
             <Pressable onPress={onClose} style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.4)" }}>
                 <View style={modalStyle.mainParent}>
-                    <View style={modalStyle.parentContainer}>
+                    <Pressable onPress={(e) => e.stopPropagation()} style={modalStyle.parentContainer}>
 
                     <View style={modalStyle.innerContent}>
                         {/* Search input */}
@@ -182,7 +192,7 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
                                 <BouncingDots />
                             ) : (
                             <View style={modalStyle.searchedStockDesign}>
-                                <TouchableOpacity style={modalStyle.stockNameAndPrice} onPress={() => { addStockToDb(searchedStockName) }}>
+                                <TouchableOpacity style={modalStyle.stockNameAndPrice} onPress={async () => { await addStockToDb(searchedStockName); onStockAdded?.(); onClose(); }}>
                                     <Text style={modalStyle.stockName}>{searchedStockName}: </Text>
                                     <Text style={modalStyle.stockPrice}>₹{searchedStockPrice}</Text>
                                 </TouchableOpacity>
@@ -216,7 +226,7 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
                                     <ScrollView style={modalStyle.scrollView} contentContainerStyle={modalStyle.stockListContainer}>
                                         {dataAsArray.map((stock, index) => (
                                             <View key={index}>
-                                                <TouchableOpacity style={modalStyle.stockNameAndPrice} onPress={() => { addStockToDb(stock) }}>
+                                                <TouchableOpacity style={modalStyle.stockNameAndPrice} onPress={async () => { await addStockToDb(stock); onStockAdded?.(); onClose(); }}>
                                                     <Text style={modalStyle.stockName}>{stock.name}: </Text>
                                                     <View style={modalStyle.stockPriceParent}>
                                                         <Text style={modalStyle.stockPrice}>₹{stock.price}</Text>
@@ -227,6 +237,22 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
                                                 </TouchableOpacity>
                                             </View>
                                         ))}
+                                        <View style={{ width: '100%', alignItems: 'center', paddingVertical: 10 }}>
+                                            {isLoadingMore ? (
+                                                <BouncingDots />
+                                            ) : (
+                                                <TouchableOpacity
+                                                    style={modalStyle.moreButton}
+                                                    onPress={() => {
+                                                        const newOffset = offset + 20;
+                                                        setOffset(newOffset);
+                                                        fetchData(false, true, newOffset);
+                                                    }}
+                                                >
+                                                    <Text style={modalStyle.moreButtonText}>More</Text>
+                                                </TouchableOpacity>
+                                            )}
+                                        </View>
                                     </ScrollView>
                                 )}
                             </View>
@@ -234,12 +260,12 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose }: {
                     </View>
 
                         {/* Close button */}
-                        <View style={modalStyle.buttonsPlacement}>
-                            <TouchableOpacity style={modalStyle.buttonDesign} onPress={onClose}>
-                                <Text style={modalStyle.buttonText}>{buttonText2}</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                        {/* <View style={modalStyle.buttonsPlacement}> */}
+                            {/* <TouchableOpacity style={modalStyle.buttonDesign} onPress={onClose}> */}
+                               {/* <Text style={modalStyle.buttonText}>More</Text> */}
+                            {/* </TouchableOpacity> */}
+                        {/* </View>  */}
+                    </Pressable>
                 </View>
             </Pressable>
         </Modal>
@@ -280,7 +306,21 @@ const modalStyle = StyleSheet.create({
     },
     scrollView: {
         width: '100%',
-        maxHeight: 430,
+        maxHeight: 500,
+    },
+    moreButton: {
+        backgroundColor: '#000000',
+        paddingVertical: 10,
+        paddingHorizontal: 30,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: colors.primary,
+        marginVertical: 8,
+    },
+    moreButtonText: {
+        color: '#ffffff',
+        fontFamily: 'Jura-Bold',
+        fontSize: 14,
     },
     buttonDesign: {
         backgroundColor: colors.gradient_secondary,
