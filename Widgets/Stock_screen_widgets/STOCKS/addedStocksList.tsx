@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, Modal } from "react-native";
 import DeleteLogo from "../../../Assets/images/agents/stockAgent/deleteLogo";
 import { getAuth } from '@react-native-firebase/auth';
 import { getFirestore, collection, doc, addDoc, setDoc, getDocs, deleteDoc } from "@react-native-firebase/firestore";
@@ -13,16 +13,23 @@ const AddedStocksList = ({ refreshKey }: { refreshKey?: number }) => {
     const db = getFirestore()
     const loggedinUser = fireBaseUser.currentUser?.uid;
 
-    const [stocks, setStocks] = useState<{ stockName: string; stockPrice: string; StockTicker: string }[]>([]) // this is used to render the stock details in this widget itself , the bellow ones render it in th pop up
+    const [stocks, setStocks] = useState<{ stockName: string; stockPrice: string; StockTicker: string; addedDate: string; }[]>([]) // this is used to render the stock details in this widget itself , the bellow ones render it in th pop up
     const [emptyStock, setEmptyStock] = useState(Boolean)
     const [isLoading, setIsLoading] = useState(true)
 
     const [visbilityStat, setVisbilityStat] = useState(false); //  setting the visisbility value for the pop up that shows stock details
     const [stockNamePopUp, setStockName] = useState<string>(); // used to give the addedStockPopUp.tsx the access to the data so that it can render the stock details
     const [stockPricePopUp, setStockPrice] = useState<string>(); //  used to give the addedStockPopUp.tsx the access to the data so that it can render the stock details
+    const [stockAddedDatePopUp, setStockAddedDate] = useState<string>(); //  used to give the addedStockPopUp.tsx the access to the data so that it can render the stock details
+
+    const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
+    const [stockToDelete, setStockToDelete] = useState<string | null>(null);
+    const [stockNameToDelete, setStockNameToDelete] = useState<string | null>(null);
+    const [deletedToast, setDeletedToast] = useState(false);
+    const [deleteInfoVisible, setDeleteInfoVisible] = useState(false);
 
 
-
+    // function to fetch the added stocks from the database and also set the empty stock state to show the message when there is no stock in the list
     const fetchingAddedStock = async () => {
         setIsLoading(true)
         // checking if the user has been logged in so the user will access only his account details
@@ -55,6 +62,8 @@ const AddedStocksList = ({ refreshKey }: { refreshKey?: number }) => {
         }
     }
 
+
+    // function to delete the stock from the added stock list when the user clicks on the delete button in the pop up
     const deleteAddedStock = async (DelItem: string) => {
         if (loggedinUser) {
             try {
@@ -92,6 +101,16 @@ const AddedStocksList = ({ refreshKey }: { refreshKey?: number }) => {
         await fetchingAddedStock()
     }
 
+    const confirmAndDelete = async () => {
+        if (!stockToDelete) return;
+        setConfirmDeleteVisible(false);
+        await deleteAddedStock(stockToDelete);
+        await refreshOnDel();
+        setStockToDelete(null);
+        setDeletedToast(true);
+        setTimeout(() => setDeletedToast(false), 2000);
+    };
+
 
 
 
@@ -99,7 +118,7 @@ const AddedStocksList = ({ refreshKey }: { refreshKey?: number }) => {
 
     return (
 
-        <View>
+        <View style={{ position: 'relative' }}>
 
             {/* header row */}
             <View style={style.headingStyle}>
@@ -112,7 +131,8 @@ const AddedStocksList = ({ refreshKey }: { refreshKey?: number }) => {
             <ScrollView
             >
                 <View>
-
+                    
+                    {/* loading */}
                     {isLoading && (
                         <View style={style.loaderParent}>
                             <ActivityIndicator size="large" color="#5F48F5" />
@@ -120,6 +140,8 @@ const AddedStocksList = ({ refreshKey }: { refreshKey?: number }) => {
                         </View>
                     )}
 
+
+                    {/* if user has not added any stocks */}
                     {!isLoading && !emptyStock ?
 
                         (
@@ -129,15 +151,16 @@ const AddedStocksList = ({ refreshKey }: { refreshKey?: number }) => {
                             </View>
                         ) : 
                         
+                    // rendering the added stocks with the details in a proper layout and also with the delete button for each stock
                         (   
                             !isLoading && stocks.map((items, index) => (
-                                <TouchableOpacity style={style.mainContainerParent} onPress={() => { setVisbilityStat(true); setStockName(items.stockName); setStockPrice(items.stockPrice); test(items.stockName, items.stockPrice); console.log("CLICKED FROM addedStocksList.tsx:", items) }}>
+                                <TouchableOpacity style={style.mainContainerParent} onPress={() => { setVisbilityStat(true); setStockName(items.stockName); setStockPrice(items.stockPrice); setStockAddedDate(items.addedDate); test(items.stockName, items.stockPrice); console.log("CLICKED FROM addedStocksList.tsx:", items) }}>
                                     <View key={index} style={style.stockDetailsParentStyle}>
                                         <Text style={style.stockName}>{items.stockName.slice(0, 8) + ".."}</Text>
                                         <Text style={style.stockPrice}>{"₹"}{items.stockPrice}</Text>
-                                        <Text style={style.stockAddDate}>15-12-2025</Text>
+                                        <Text style={style.stockAddDate}>{items.addedDate.split(",")[0]}</Text>
                                     </View>
-                                    <TouchableOpacity style={style.deleteButtonStyle} onPress={() => { deleteAddedStock(items.StockTicker), refreshOnDel() }}>
+                                    <TouchableOpacity style={style.deleteButtonStyle} onPress={() => { setStockToDelete(items.StockTicker); setStockNameToDelete(items.stockName); setDeleteInfoVisible(false); setConfirmDeleteVisible(true); }}>
                                         <DeleteLogo />
                                     </TouchableOpacity>
                                 </TouchableOpacity>
@@ -146,20 +169,78 @@ const AddedStocksList = ({ refreshKey }: { refreshKey?: number }) => {
 
                     }
 
-
-
-
-                    <Popupmessage
-                        visible={visbilityStat}
-                        stockName={stockNamePopUp}
-                        stockPrice={stockPricePopUp}
-                        buttonText1="ADD"
-                        buttonText2="CLOSE"
-                        onClose={() => setVisbilityStat(false)}
-                    // stockArray={dataAsArray}    
-                    />
                 </View>
             </ScrollView>
+
+            {/* stock details when clicked from added list */}
+            <Modal visible={visbilityStat}  animationType="fade" transparent statusBarTranslucent>
+                <View style={style.confirmOverlay}>
+                    <View style={style.confirmBox}>
+                        <Text style={style.confirmTitle}>{stockNamePopUp}</Text>
+                        <Text style={style.confirmMessage}>
+                            The Stock{" "} 
+                            <Text style={style.confirmStockName}>{stockNamePopUp}</Text>
+                            {" "}was added on <Text style={style.confirmStockName}>{stockAddedDatePopUp?.split(",")[0]}</Text> to your analysis list.
+                            At a price of <Text style={style.confirmStockName}>{"₹"}{stockPricePopUp}</Text>. 
+                            {"\n"} Refer to the Updates section for regular updates on this stock's performance and insights.
+                        </Text>
+                        <View style={style.confirmButtons}>
+                            <TouchableOpacity style={style.cancelButton} onPress={() => { setVisbilityStat(false); }}>
+                                <Text style={style.cancelButtonText}>OK</Text>
+                            </TouchableOpacity>
+                            {/* <TouchableOpacity style={style.continueButton} onPress={confirmAndDelete}>
+                                <Text style={style.continueButtonText}>Continue</Text>
+                            </TouchableOpacity> */}
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+
+            {/* Delete confirmation modal */}
+            <Modal visible={confirmDeleteVisible} animationType="fade" transparent statusBarTranslucent>
+                <View style={style.confirmOverlay}>
+                    <View style={style.confirmBox}>
+
+                        {/* i button — top right corner */}
+                        <TouchableOpacity style={style.infoButton} onPress={() => setDeleteInfoVisible(v => !v)}>
+                            <Text style={style.infoButtonText}>i</Text>
+                        </TouchableOpacity>
+
+                        <Text style={style.confirmTitle}>Delete Stock</Text>
+
+                        {/* Warning content shown when i is pressed */}
+                        {deleteInfoVisible && (
+                            <View style={style.infoWarningBox}>
+                                <Text style={style.infoWarningText}>
+                                    Deleting this stock will remove it permanently from your analysis list. All scheduled updates and insights for this stock will also stop. This action cannot be undone.
+                                </Text>
+                            </View>
+                        )}
+
+                        <Text style={style.confirmMessage}>
+                            Are you sure you want to delete{" "}
+                            <Text style={style.confirmStockName}>{stockNameToDelete}</Text>
+                            {" "}from your analysis list?
+                        </Text>
+                        <View style={style.confirmButtons}>
+                            <TouchableOpacity style={style.cancelButton} onPress={() => { setConfirmDeleteVisible(false); setStockToDelete(null); setDeleteInfoVisible(false); }}>
+                                <Text style={style.cancelButtonText}>No</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={style.continueButton} onPress={confirmAndDelete}>
+                                <Text style={style.continueButtonText}>Delete</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Deleted toast */}
+            {deletedToast ? (
+                <View style={style.toastContainer} pointerEvents="none">
+                    <Text style={style.toastText}>Stock has been deleted</Text>
+                </View>
+            ) : null}
 
 
         </View>
@@ -258,9 +339,126 @@ const style = StyleSheet.create({
         backgroundColor: "#f40b0bff",
         padding: 5,
         margin: 5,
-
         borderRadius: 10,
-    }
+    },
+
+    confirmOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.8)',
+    },
+    confirmBox: {
+        width: 300,
+        backgroundColor: '#1a1a2e',
+        borderRadius: 20,
+        borderWidth: 2,
+        borderColor: '#5F48F5',
+        padding: 24,
+        alignItems: 'center',
+    },
+    confirmTitle: {
+        color: '#ffffff',
+        fontFamily: 'Jura-Bold',
+        fontSize: 18,
+        marginBottom: 12,
+    },
+    confirmMessage: {
+        color: '#D9D9D9',
+        fontFamily: 'Jura-Bold',
+        fontSize: 14,
+        textAlign: 'center',
+        marginBottom: 24,
+        lineHeight: 22,
+    },
+    confirmStockName: {
+        color: '#f54848',
+        fontFamily: 'Jura-Bold',
+    },
+    confirmButtons: {
+        flexDirection: 'row',
+        gap: 16,
+    },
+    cancelButton: {
+        backgroundColor: '#D9D9D9',
+        paddingVertical: 10,
+        paddingHorizontal: 28,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#5F48F5',
+    },
+    cancelButtonText: {
+        color: '#000000',
+        fontFamily: 'Jura-Bold',
+        fontSize: 14,
+    },
+    continueButton: {
+        backgroundColor: '#f40b0bff',
+        paddingVertical: 10,
+        paddingHorizontal: 18,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#5F48F5',
+    },
+    continueButtonText: {
+        color: '#ffffff',
+        fontFamily: 'Jura-Bold',
+        fontSize: 14,
+    },
+    toastContainer: {
+        position: 'absolute',
+        bottom: 30,
+        left: 20,
+        right: 20,
+        backgroundColor: '#1a1a2e',
+        borderRadius: 16,
+        borderWidth: 1.5,
+        borderColor: '#f40b0bff',
+        paddingVertical: 14,
+        paddingHorizontal: 20,
+        alignItems: 'center',
+    },
+    toastText: {
+        color: '#ffffff',
+        fontFamily: 'Jura-Bold',
+        fontSize: 14,
+    },
+    infoButton: {
+        position: 'absolute',
+        top: 12,
+        right: 12,
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        backgroundColor: '#5F48F5',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#ffffff',
+        zIndex: 10,
+    },
+    infoButtonText: {
+        color: '#ffffff',
+        fontFamily: 'Jura-Bold',
+        fontSize: 13,
+        lineHeight: 16,
+    },
+    infoWarningBox: {
+        backgroundColor: '#2a1a1a',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#f54848',
+        padding: 12,
+        marginBottom: 12,
+        width: '100%',
+    },
+    infoWarningText: {
+        color: '#f5a0a0',
+        fontFamily: 'Jura-Bold',
+        fontSize: 12,
+        lineHeight: 20,
+        textAlign: 'center',
+    },
 
 })
 

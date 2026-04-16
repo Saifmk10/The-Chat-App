@@ -327,7 +327,9 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
                         <View>
                             <Text style={style.stockName}>
                                 {stocks.name}
-                                
+                            </Text>
+                            <Text style={style.stockNameLight}>
+                                {stocks.name}
                             </Text>
                         </View>
 
@@ -619,6 +621,15 @@ const style = StyleSheet.create({
         fontFamily: 'Jura-Bold',
         fontSize: 13,
         color: primaryColor,
+    },
+
+    stockNameLight: {
+        fontFamily: 'Jura-Regular',
+        fontSize: 12,
+        color: '#555',
+        marginHorizontal: 12,
+        marginBottom: 6,
+        fontWeight: '300',
     },
 
     showMoreText: {
