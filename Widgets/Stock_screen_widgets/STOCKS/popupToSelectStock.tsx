@@ -95,6 +95,17 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose, onS
     const [activeTab, setActiveTab] = useState("most");
     const [offset, setOffset] = useState(0);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [addedStockName, setAddedStockName] = useState<string | null>(null);
+
+    const handleAddStock = async (stock: any, displayName: string) => {
+        await addStockToDb(stock);
+        setAddedStockName(displayName);
+        setTimeout(() => {
+            setAddedStockName(null);
+            onStockAdded?.();
+            onClose();
+        }, 1800);
+    };
 
     const searchedStock = async (searched: string) => {
         console.log("USER SEARCHED FOR :", searched)
@@ -192,7 +203,7 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose, onS
                                 <BouncingDots />
                             ) : (
                             <View style={modalStyle.searchedStockDesign}>
-                                <TouchableOpacity style={modalStyle.stockNameAndPrice} onPress={async () => { await addStockToDb(searchedStockName); onStockAdded?.(); onClose(); }}>
+                                <TouchableOpacity style={modalStyle.stockNameAndPrice} onPress={() => handleAddStock(searchedStockName, searchedStockName)}>
                                     <Text style={modalStyle.stockName}>{searchedStockName}: </Text>
                                     <Text style={modalStyle.stockPrice}>₹{searchedStockPrice}</Text>
                                 </TouchableOpacity>
@@ -226,7 +237,7 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose, onS
                                     <ScrollView style={modalStyle.scrollView} contentContainerStyle={modalStyle.stockListContainer}>
                                         {dataAsArray.map((stock, index) => (
                                             <View key={index}>
-                                                <TouchableOpacity style={modalStyle.stockNameAndPrice} onPress={async () => { await addStockToDb(stock); onStockAdded?.(); onClose(); }}>
+                                                <TouchableOpacity style={modalStyle.stockNameAndPrice} onPress={() => handleAddStock(stock, stock.name)}>
                                                     <Text style={modalStyle.stockName}>{stock.name}: </Text>
                                                     <View style={modalStyle.stockPriceParent}>
                                                         <Text style={modalStyle.stockPrice}>₹{stock.price}</Text>
@@ -268,6 +279,16 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose, onS
                     </Pressable>
                 </View>
             </Pressable>
+
+            {/* Stock added confirmation toast */}
+            {addedStockName ? (
+                <View style={modalStyle.toastContainer} pointerEvents="none">
+                    <Text style={modalStyle.toastText}>
+                        <Text style={modalStyle.toastStockName}>{addedStockName}</Text>
+                        {" has been added to your analysis list"}
+                    </Text>
+                </View>
+            ) : null}
         </Modal>
     );
 };
@@ -321,6 +342,31 @@ const modalStyle = StyleSheet.create({
         color: '#ffffff',
         fontFamily: 'Jura-Bold',
         fontSize: 14,
+    },
+    toastContainer: {
+        position: 'absolute',
+        bottom: 40,
+        left: 20,
+        right: 20,
+        backgroundColor: '#378b2e',
+        borderRadius: 16,
+        borderWidth: 1.5,
+        borderColor: colors.primary,
+        paddingVertical: 14,
+        paddingHorizontal: 20,
+        alignItems: 'center',
+    },
+    toastText: {
+        color: '#ffffff',
+        fontFamily: 'Jura-Bold',
+        fontSize: 14,
+        textAlign: 'center',
+    },
+    toastStockName: {
+        color: '#ffffff',
+        fontFamily: 'Jura-Bold',
+        fontSize: 14,
+        textTransform: 'capitalize',
     },
     buttonDesign: {
         backgroundColor: colors.gradient_secondary,
