@@ -6,8 +6,8 @@ import { Image } from 'react-native';
 import { getAuth } from '@react-native-firebase/auth';
 import { getFirestore, collection, doc, addDoc, setDoc, getDocs, deleteDoc } from "@react-native-firebase/firestore";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LOGO_DEV_PUBLIC_KEY } from '@env';
 
-const LOGO_DEV_PUBLIC_KEY = 'pk_YdgRZM9fQe647VUfPhzFAw';
 const stockApiEndpoint = "https://stock-api.saifmk.online/stock/{stockname}"
 const STOCKS_CACHE_KEY = 'stocks_metadata_cache';
 const STOCKS_PRICES_CACHE_KEY = 'stocks_prices_cache';
@@ -154,7 +154,7 @@ const UserSelectedStockDisplay = () => {
                         <View style={styles.container} key={index}>
                             <View style={styles.yourContainerStockNameAndLogo}>
                                 <Image source={{ uri: `https://img.logo.dev/ticker/${stock.StockTicker+".NS"}?token=${LOGO_DEV_PUBLIC_KEY}` }} style={{ width: 35, height: 35 , borderRadius:10 }}/>
-                                <Text style={styles.yourStockContainerText}>{stock.stockName.length > 15 ? stock.stockName.slice(0, 14) + '..' : stock.stockName}</Text>
+                                <Text style={styles.yourStockContainerText}>{stock.stockName.length > 15 ? stock.stockName.slice(0, 13) + '..' : stock.stockName}</Text>
                             </View>
                             <View style={styles.yourContainerStockPriceAndPercentage}>
                                 <Text style={styles.yourStockContainerText}>₹{stock.stockPrice}</Text>

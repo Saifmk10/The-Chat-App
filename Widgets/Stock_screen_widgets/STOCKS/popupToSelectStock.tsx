@@ -1,9 +1,9 @@
-import { Modal, View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, Pressable, Animated, Easing } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, Pressable, Animated, Easing, Image } from 'react-native';
 import colors from "D:\\PROJECTS\\The-Chat-App\\Assets\\colors.js";
 import { getAuth } from '@react-native-firebase/auth';
 import { getFirestore, doc, setDoc } from "@react-native-firebase/firestore";
 import { useEffect, useRef, useState } from 'react';
-
+import { LOGO_DEV_PUBLIC_KEY } from '@env';
 
 const addStockToDb = async (pressed: any) => {
     const fireBaseUser = getAuth();
@@ -238,7 +238,11 @@ const Popupmessage = ({ message, buttonText1, buttonText2, visible, onClose, onS
                                         {dataAsArray.map((stock, index) => (
                                             <View key={index}>
                                                 <TouchableOpacity style={modalStyle.stockNameAndPrice} onPress={() => handleAddStock(stock, stock.name)}>
-                                                    <Text style={modalStyle.stockName}>{stock.name}: </Text>
+                                                    <View>  
+                                                        <Image source={{ uri: `https://img.logo.dev/name/${stock.name}?token=${LOGO_DEV_PUBLIC_KEY}` }} style={{ width: 30, height: 30 , borderRadius:10 }}/>
+                                                        <Text style={modalStyle.stockName}>{stock.name}: </Text>
+                                                    </View>
+                                                    
                                                     <View style={modalStyle.stockPriceParent}>
                                                         <Text style={modalStyle.stockPrice}>₹{stock.price}</Text>
                                                         <Text style={[modalStyle.currentStockPrice, { color: Number(String(stock.current).replace(/[^\d.-]/g, "")) > 0 ? "green" : "red" }]}>
@@ -425,16 +429,16 @@ const modalStyle = StyleSheet.create({
         padding: 10,
         margin: 4,
         borderRadius: 20,
-        width: 150,
-        height: 130,
+        width: 160,
+        height: 160,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
     },
     stockName: {
         color: "#ffffff",
-        padding: 2,
-        margin: 4,
+        padding: 0,
+        marginTop: 5,
         fontSize: 13,
     },
     stockPriceParent: {
