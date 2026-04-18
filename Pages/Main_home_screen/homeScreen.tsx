@@ -8,6 +8,7 @@ import colors from "../../Assets/colors";
 import HomeToggleButton from "../../Widgets/Home_screen_widgets/updatesToAgentToggleButtons";
 // import UserChat from "../../Widgets/Home_screen_widgets/userChatWidget";
 import UserProfileOptions from "../../Widgets/Home_screen_widgets/userProfileOptions";
+import UserSelectedStockDisplay from "../../Widgets/Home_screen_widgets/UPDATES/userSelectedStockDisplay";
 // import StockNewsScreen from "../Stock_news_screen/stockNewsScreen";
 // import AddFriends from "../../Widgets/Home_screen_widgets/addFriends"
 // import StockScreen from "../Agent_home_screen/agentScreen";
@@ -41,7 +42,7 @@ const HomeScreen = () => {
             {/* <ScrollView> */}
                 <SafeAreaView style={homeStyle.parentDesign}>
                     
-                    <View>
+                    <View style={{justifyContent:"flex-end", alignItems:"flex-end", marginRight:20}}>
                         <UserProfileOptions />
                     </View>
 
@@ -56,6 +57,7 @@ const HomeScreen = () => {
                     {/* here the checker is working on if the user has clicke */}
                     {/* {checker */}
                         {/* ? */}
+                        {checker && <UserSelectedStockDisplay />}
 
                         {/* <View style={homeStyle.chatPlacement}> */}
                             {/* <TouchableOpacity onPress={navigateToNews}> */}
@@ -90,12 +92,15 @@ const homeStyle = StyleSheet.create({
     parentDesign: {
         height: '100%',
         display: 'flex',
-        alignItems: 'center',
+        // alignItems: 'center',
         flex: 1
     },
 
     homeToggleDesign: {
-        marginTop: 50
+        marginTop: 50, 
+        justifyContent: 'center',
+        alignItems: 'center',
+
     },
 
     chatPlacement: {
