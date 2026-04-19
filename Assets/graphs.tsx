@@ -90,12 +90,12 @@ export const COLOR_SCHEMES = {
 };
 
 const BASE_COLORS = {
-  background: '#0000000d',
-  surface: '#f9fafb',
-  border: '#e5e7eb',
-  text: '#1f2937',
-  textLight: '#6b7280',
-  gridLine: '#e5e7eb',
+  background: '#111111',
+  surface: '#1a1a1a',
+  border: '#333333',
+  text: '#D9D9D9',
+  textLight: '#888888',
+  gridLine: '#2a2a2a',
 };
 
 // Animated wrapper component
@@ -127,21 +127,24 @@ const styles = StyleSheet.create({
     backgroundColor: BASE_COLORS.background,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    // borderRadius: 12,
-    // marginVertical: 8,
-    // borderWidth: 1,
-    // borderColor: BASE_COLORS.border,
+    borderRadius: 16,
+    marginVertical: 4,
+    borderWidth: 1,
+    borderColor: BASE_COLORS.border,
   },
   title: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: '600',
-    color: BASE_COLORS.text,
+    color: '#5F48F5',
     marginBottom: 4,
+    letterSpacing: 1.5,
+    fontFamily: 'Jura-Bold',
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 11,
     color: BASE_COLORS.textLight,
     marginBottom: 16,
+    fontFamily: 'Jura-Bold',
   },
   chartContainer: {
     alignItems: 'center',
@@ -166,6 +169,7 @@ const styles = StyleSheet.create({
   legendText: {
     fontSize: 12,
     color: BASE_COLORS.text,
+    fontFamily: 'Jura-Bold',
   },
   tooltip: {
     backgroundColor: BASE_COLORS.text,
@@ -481,13 +485,13 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
   data,
   title = 'Horizontal Bar Chart',
   subtitle,
-  width = screenWidth - 80,
+  width = screenWidth - 32,
   colors,
   colorScheme = 'default',
 }) => {
   const chartColors = colors || COLOR_SCHEMES[colorScheme];
   const height = data.length * 50 + 60;
-  const padding = { top: 20, right: 20, bottom: 20, left: 120 };
+  const padding = { top: 10, right: 60, bottom: 20, left: 110 };
   const innerWidth = width - padding.left - padding.right;
   const innerHeight = height - padding.top - padding.bottom;
 
@@ -501,7 +505,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
       {title && <Text style={styles.title}>{title}</Text>}
       {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
 
-      <View style={styles.chartContainer}>
+      <View style={[styles.chartContainer, { alignItems: 'flex-start' }]}>
         <Svg width={width} height={height}>
           <Defs>
             <LinearGradient id="hBarGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -1669,7 +1673,6 @@ export const GaugeChart: React.FC<GaugeChartProps> = ({
   colors,
   colorScheme = 'default',
 }) => {
-  const chartColors = colors || COLOR_SCHEMES[colorScheme];
   const safeValue = Math.max(0, Math.min(value, maxValue));
   const safeMaxValue = Math.max(1, maxValue);
   const percentage = (safeValue / safeMaxValue) * 100;
@@ -1683,6 +1686,26 @@ export const GaugeChart: React.FC<GaugeChartProps> = ({
   const endX = centerX + arcRadius * Math.cos(((angle - 180) * Math.PI) / 180);
   const endY = centerY + arcRadius * Math.sin(((angle - 180) * Math.PI) / 180);
 
+  // Dynamic red → yellow → green interpolation based on percentage
+  const getDynamicColor = (pct: number): string => {
+    if (colors) return colors[0]; // respect explicit color override
+    if (pct <= 50) {
+      const t = pct / 50;
+      const r = Math.round(239 + (255 - 239) * t);
+      const g = Math.round(68  + (215 - 68)  * t);
+      const b = Math.round(68  + (0   - 68)  * t);
+      return `rgb(${r},${g},${b})`;
+    } else {
+      const t = (pct - 50) / 50;
+      const r = Math.round(255 + (67  - 255) * t);
+      const g = Math.round(215 + (251 - 215) * t);
+      const b = 0;
+      return `rgb(${r},${g},${b})`;
+    }
+  };
+
+  const arcColor = getDynamicColor(percentage);
+
   return (
     <AnimatedChart>
       <View style={styles.container}>
@@ -1691,12 +1714,6 @@ export const GaugeChart: React.FC<GaugeChartProps> = ({
 
         <View style={styles.chartContainer}>
           <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-            <Defs>
-              <LinearGradient id="gaugeGrad" x1="0%" y1="50%" x2="100%" y2="50%">
-                <Stop offset="0%" stopColor={chartColors[0]} />
-                <Stop offset="100%" stopColor={chartColors[1]} />
-              </LinearGradient>
-            </Defs>
 
             {/* Background arc */}
             <Path
@@ -1707,12 +1724,12 @@ export const GaugeChart: React.FC<GaugeChartProps> = ({
               strokeLinecap="round"
             />
 
-            {/* Progress arc */}
+            {/* Progress arc — dynamic color */}
             {angle > 0 && (
               <Path
                 d={`M ${centerX - arcRadius} ${centerY} A ${arcRadius} ${arcRadius} 0 ${angle > 90 ? 1 : 0} 1 ${endX} ${endY}`}
                 fill="none"
-                stroke="url(#gaugeGrad)"
+                stroke={arcColor}
                 strokeWidth="10"
                 strokeLinecap="round"
               />
@@ -1722,27 +1739,23 @@ export const GaugeChart: React.FC<GaugeChartProps> = ({
             <Circle
               cx={centerX}
               cy={centerY}
-              r="28"
+              r="50"
               fill={BASE_COLORS.background}
-              stroke={BASE_COLORS.border}
-              strokeWidth="2"
+              stroke={arcColor}
+              strokeWidth="1.5"
             />
 
             {/* Percentage text */}
             <SvgText
-              x={centerX}
-              y={centerY - 4}
-              fontSize="22"
+              x={120}
+              y={centerY}
+              fontSize="26"
               fontWeight="700"
-              fill={BASE_COLORS.text}
+              fill={arcColor}
               textAnchor="middle"
+              alignmentBaseline="central"
             >
-              {Math.round(percentage)}%
-            </SvgText>
-
-            {/* Value text */}
-            <SvgText x={centerX} y={centerY + 12} fontSize="11" fill={BASE_COLORS.textLight} textAnchor="middle">
-              {formatNumber(safeValue)}/{formatNumber(safeMaxValue)}
+              {Math.round(percentage)} %
             </SvgText>
           </Svg>
         </View>
