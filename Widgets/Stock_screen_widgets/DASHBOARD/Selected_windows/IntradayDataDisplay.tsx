@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, LayoutAnimation } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { getAuth } from '@react-native-firebase/auth';
 import { getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs, deleteDoc } from "@react-native-firebase/firestore";
 import StockWindowSelctor from "../StockWindowSelector";
@@ -115,7 +116,16 @@ type StockAnalysis = {
 
 
 const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
+    const navigation = useNavigation<any>();
     const [isExpanded, setIsExpanded] = useState<string | null>(null);
+
+    const BULLISH_SIGNALS = ["Buyer_Control", "Intraday_Strength", "VWAP_Hold", "Dip_Absorption", "Late_Buying", "Trend_Day_Up"];
+    const BEARISH_SIGNALS = ["Seller_Control", "Intraday_Weakness", "VWAP_Rejection", "Late_Selling", "Trend_Day_Down"];
+
+    const getSignalCounts = (signals: Record<string, boolean>) => ({
+        bull: BULLISH_SIGNALS.filter(k => signals[k as keyof typeof signals]).length,
+        bear: BEARISH_SIGNALS.filter(k => signals[k as keyof typeof signals]).length,
+    });
     const [jsonData, setJsonData] = useState<JsonData | null>(null);
     const [noData, setNoData] = useState(false);
     const [title, setTitle] = useState("")
@@ -127,6 +137,7 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
     const [lowest, Setlowest] = useState<number | null>(null);
     const [availableDates, setAvailableDates] = useState<string[]>([]);
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
+    const [todayDate, setTodayDate] = useState<string>("");
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [expandedSummaries, setExpandedSummaries] = useState<Set<string>>(new Set());
 
@@ -146,7 +157,9 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
 
             // fetching the data asper current date from the firestore database where the intraday data is stored
             const today = new Date();
-            const todayDate = dateParam ?? `${String(today.getDate()).padStart(2, "0")}-${String(today.getMonth() + 1).padStart(2, "0")}-${today.getFullYear()}`;
+            const computedDate = dateParam ?? `${String(today.getDate()).padStart(2, "0")}-${String(today.getMonth() + 1).padStart(2, "0")}-${today.getFullYear()}`;
+            const todayDate = computedDate;
+            if (!dateParam) setTodayDate(computedDate);
             const ref = doc(
                 db,
                 "Users",
@@ -291,6 +304,9 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
                 </Text>
                 <Text style={style.dropdownArrow}>{dropdownOpen ? "▲" : "▼"}</Text>
             </TouchableOpacity>
+            
+            
+            
             {dropdownOpen && (
                 <ScrollView style={style.dropdownList} nestedScrollEnabled>
                     {availableDates.length === 0 ? (
@@ -313,109 +329,116 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
             )}
         </View>
     )}
+    
+    
+    
     {windowChecker == "intraday" && noData && (
         <View style={style.noDataContainer}>
             <Text style={style.noDataTitle}>No data available for today</Text>
             <Text style={style.noDataSubtitle}>Make sure you have added stocks to your watchlist to see intraday analysis here. Data will be available after 3:45pm</Text>
         </View>
     )}
+    
+    
+    
+    
     {windowChecker == "intraday" && !noData && (
-                <ScrollView>
-                {jsonData?.stocks.map((stocks) => (
+                <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+                {jsonData?.stocks.map((stock) => {
+                    const priceChange = stock.ohlc.closing - stock.ohlc.opening;
+                    const pricePct = stock.ohlc.opening !== 0
+                        ? ((priceChange / stock.ohlc.opening) * 100).toFixed(2)
+                        : "0.00";
+                    const isPositive = priceChange >= 0;
+                    const { bull, bear } = getSignalCounts(stock.signals as Record<string, boolean>);
+                    const pct = stock.stats.percentage;
+                    const pctColor = pct >= 60 ? "#43fb00" : pct <= 40 ? "#ff4d4d" : "#ffd700";
 
-                    <View style={style.cardParent}>
-                        <View>
-                            <Text style={style.stockName}>
-                                {stocks.name}
-                            </Text>
-                            <Text style={style.stockNameLight}>
-                                {stocks.name}
-                            </Text>
-                        </View>
-
-                        <View>
-                            <Text style={style.summary}>
-                                {expandedSummaries.has(stocks.name)
-                                    ? stocks.summary
-                                    : getTwoSentences(stocks.summary)}
-                            </Text>
-                            {getTwoSentences(stocks.summary) !== stocks.summary && (
-                                <TouchableOpacity onPress={() => toggleSummary(stocks.name)}>
-                                    <Text style={style.showMoreText}>
-                                        {expandedSummaries.has(stocks.name) ? "Read less" : "Read more"}
-                                    </Text>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-
-                        <TouchableOpacity onPress={() => toggleExpand(stocks.name)} style={style.stockDetailsParent}>
-                            <View style={style.stockDetails}>
-                                <Text style={style.percet}>
-                                    %{stocks.stats.percentage}
-                                </Text>
-                                <View style={style.otherDetailsParent}>
-                                    <Text style={style.otherDeatilsHeading}>OPENING</Text>
-                                    <Text style={style.otherDetailsPrice}>
-                                        {stocks.ohlc.opening}
-                                    </Text>
+                    return (
+                        <TouchableOpacity
+                            key={stock.name}
+                            style={style.cardParent}
+                            activeOpacity={0.85}
+                            onPress={() =>
+                                navigation.navigate("StockAnalysisExpanded", {
+                                    stockName: stock.name,
+                                    date: selectedDate ?? todayDate,
+                                })
+                            }
+                        >
+                            {/* ── Header row ── */}
+                            <View style={style.cardHeader}>
+                                <View style={style.cardHeaderLeft}>
+                                    <Text style={style.stockName}>{stock.name}</Text>
+                                    <View style={[style.changePill, { backgroundColor: isPositive ? "#0d2e0d" : "#2e0d0d" }]}>
+                                        <Text style={[style.changeText, { color: isPositive ? "#43fb00" : "#ff4d4d" }]}>
+                                            {isPositive ? "+" : ""}{priceChange.toFixed(2)}  ({pricePct}%)
+                                        </Text>
+                                    </View>
                                 </View>
-                                <View style={style.otherDetailsParent}>
-                                    <Text style={style.otherDeatilsHeading}>CLOSING</Text>
-                                    <Text style={style.otherDetailsPrice}>
-                                        {stocks.ohlc.closing}
-                                    </Text>
-                                </View>
-                                <View style={style.otherDetailsParent}>
-                                    <Text style={style.otherDeatilsHeading}>HIGHEST</Text>
-                                    <Text style={style.otherDetailsPrice}>
-                                        {stocks.ohlc.high}
-                                    </Text>
-                                </View>
-                                <View style={style.otherDetailsParent}>
-                                    <Text style={style.otherDeatilsHeading}>LOWEST</Text>
-                                    <Text style={style.otherDetailsPrice}>
-                                        {stocks.ohlc.low}
-                                    </Text>
+                                <View style={[style.pctBadge, { borderColor: pctColor }]}>
+                                    <Text style={[style.pctValue, { color: pctColor }]}>{pct.toFixed(0)}</Text>
+                                    <Text style={[style.pctLabel, { color: pctColor }]}>%ile</Text>
                                 </View>
                             </View>
 
-                            
-                            {/* expands to show more details about the analysis */}
+                            {/* ── OHLC row ── */}
+                            <View style={style.ohlcRow}>
+                                {([
+                                    { label: "OPEN",  val: stock.ohlc.opening },
+                                    { label: "HIGH",  val: stock.ohlc.high },
+                                    { label: "LOW",   val: stock.ohlc.low },
+                                    { label: "CLOSE", val: stock.ohlc.closing },
+                                ] as const).map(({ label, val }) => (
+                                    <View key={label} style={style.ohlcCell}>
+                                        <Text style={style.ohlcLabel}>{label}</Text>
+                                        <Text style={style.ohlcValue}>{val.toFixed(2)}</Text>
+                                    </View>
+                                ))}
+                            </View>
 
-                            {isExpanded === stocks.name && (
-                                <View style={style.stockDetails}>
-                                    <View style={style.otherDetailsParent}>
-                                        <Text style={style.otherDeatilsHeading}>OPENING</Text>
-                                        <Text style={style.otherDetailsPrice}>
-                                            {stocks.ohlc.opening}
-                                        </Text>
-                                    </View>
-                                    <View style={style.otherDetailsParent}>
-                                        <Text style={style.otherDeatilsHeading}>CLOSING</Text>
-                                        <Text style={style.otherDetailsPrice}>
-                                            {stocks.ohlc.closing}
-                                        </Text>
-                                    </View>
-                                    <View style={style.otherDetailsParent}>
-                                        <Text style={style.otherDeatilsHeading}>HIGHEST</Text>
-                                        <Text style={style.otherDetailsPrice}>
-                                            {stocks.ohlc.high}
-                                        </Text>
-                                    </View>
-                                    <View style={style.otherDetailsParent}>
-                                        <Text style={style.otherDeatilsHeading}>LOWEST</Text>
-                                        <Text style={style.otherDetailsPrice}>
-                                            {stocks.ohlc.low}
-                                        </Text>
-                                    </View>
+                            {/* ── Signal pills ── */}
+                            <View style={style.signalRow}>
+                                <View style={style.signalPillBull}>
+                                    <View style={style.signalDotBull} />
+                                    <Text style={style.signalPillTextBull}>{bull} Bullish</Text>
                                 </View>
-                            )}
-                        </TouchableOpacity>
-                    </View>
+                                <View style={style.signalPillBear}>
+                                    <View style={style.signalDotBear} />
+                                    <Text style={style.signalPillTextBear}>{bear} Bearish</Text>
+                                </View>
+                            </View>
 
-                ))}
+                            {/* ── Summary ── */}
+                            <View style={style.summaryBlock}>
+                                <Text style={style.summary}>
+                                    {expandedSummaries.has(stock.name)
+                                        ? stock.summary
+                                        : getTwoSentences(stock.summary)}
+                                </Text>
+                                {getTwoSentences(stock.summary) !== stock.summary && (
+                                    <TouchableOpacity onPress={(e) => { e.stopPropagation?.(); toggleSummary(stock.name); }}>
+                                        <Text style={style.showMoreText}>
+                                            {expandedSummaries.has(stock.name) ? "Read less ↑" : "Read more ↓"}
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+
+                            {/* ── Tap hint ── */}
+                            <View style={style.cardFooter}>
+                                <Text style={style.cardFooterText}>View full analysis  →</Text>
+                            </View>
+                        </TouchableOpacity>
+                    );
+                })}
             </ScrollView>
             )}
+
+
+
+
+
 
             {windowChecker == "1week" && (
                 <View>
@@ -484,50 +507,152 @@ const style = StyleSheet.create({
     // DESIGN FOR THE CARDS
 
     cardParent: {
-        backgroundColor: primaryColor,
-        margin: 20,
-        borderRadius: 20
+        backgroundColor: "#111",
+        marginHorizontal: 16,
+        marginTop: 14,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: "#222",
+        overflow: "hidden",
+    },
+    cardHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        paddingHorizontal: 16,
+        paddingTop: 16,
+        paddingBottom: 12,
+    },
+    cardHeaderLeft: {
+        flex: 1,
+        gap: 6,
     },
     stockName: {
-        backgroundColor: "#000",
         color: primaryColor,
-        margin: 10,
-        padding: 10,
+        fontFamily: "Jura-Bold",
+        fontSize: 18,
+        letterSpacing: 1.5,
+    },
+    changePill: {
         alignSelf: "flex-start",
         borderRadius: 20,
-
-        fontFamily: 'Jura-Bold',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
     },
-    summary: {
-        margin: 10,
-        // padding : 10
-
-        fontFamily: 'Jura-Bold',
+    changeText: {
+        fontFamily: "Jura-Bold",
+        fontSize: 12,
     },
-
-    stockDetailsParent: {
-        display: "flex",
-        flexDirection: "column"
+    pctBadge: {
+        alignItems: "center",
+        justifyContent: "center",
+        borderWidth: 1.5,
+        borderRadius: 14,
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        minWidth: 54,
     },
-
-    stockDetails: {
-        display: "flex",
+    pctValue: {
+        fontFamily: "Jura-Bold",
+        fontSize: 18,
+        lineHeight: 22,
+    },
+    pctLabel: {
+        fontFamily: "Jura-Bold",
+        fontSize: 9,
+        letterSpacing: 1,
+        opacity: 0.75,
+    },
+    ohlcRow: {
+        flexDirection: "row",
+        backgroundColor: "#0a0a0a",
+        marginHorizontal: 12,
+        borderRadius: 14,
+        paddingVertical: 10,
+        marginBottom: 10,
+    },
+    ohlcCell: {
+        flex: 1,
+        alignItems: "center",
+    },
+    ohlcLabel: {
+        fontFamily: "Jura-Bold",
+        fontSize: 9,
+        color: "#555",
+        letterSpacing: 0.5,
+        marginBottom: 3,
+    },
+    ohlcValue: {
+        fontFamily: "Jura-Bold",
+        fontSize: 13,
+        color: primaryColor,
+    },
+    signalRow: {
+        flexDirection: "row",
+        gap: 8,
+        paddingHorizontal: 12,
+        marginBottom: 12,
+    },
+    signalPillBull: {
         flexDirection: "row",
         alignItems: "center",
-        padding: 5,
-        gap: 10,
-        backgroundColor: "#000",
-        margin: 5,
-        borderRadius: 15,
-        height: 60,
-        // padding : 10
+        gap: 5,
+        backgroundColor: "#0d2e0d",
+        borderRadius: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
     },
-    percet: {
-        fontSize: 20,
-        padding: 5,
+    signalDotBull: {
+        width: 6, height: 6, borderRadius: 3,
+        backgroundColor: "#43fb00",
+    },
+    signalPillTextBull: {
+        fontFamily: "Jura-Bold",
+        fontSize: 11,
         color: "#43fb00",
-
-        fontFamily: 'Jura-Bold',
+    },
+    signalPillBear: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 5,
+        backgroundColor: "#2e0d0d",
+        borderRadius: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+    },
+    signalDotBear: {
+        width: 6, height: 6, borderRadius: 3,
+        backgroundColor: "#ff4d4d",
+    },
+    signalPillTextBear: {
+        fontFamily: "Jura-Bold",
+        fontSize: 11,
+        color: "#ff4d4d",
+    },
+    summaryBlock: {
+        borderTopWidth: 1,
+        borderTopColor: "#1e1e1e",
+        paddingHorizontal: 14,
+        paddingTop: 10,
+        paddingBottom: 4,
+    },
+    summary: {
+        fontFamily: "Jura-Bold",
+        fontSize: 12,
+        color: "#999",
+        lineHeight: 18,
+    },
+    cardFooter: {
+        alignItems: "flex-end",
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+    },
+    cardFooterText: {
+        fontFamily: "Jura-Bold",
+        fontSize: 11,
+        color: secondaryColor,
+        opacity: 0.7,
+        letterSpacing: 0.5,
     },
     otherDetailsParent: {
         display: "flex",
@@ -536,14 +661,12 @@ const style = StyleSheet.create({
     otherDeatilsHeading: {
         fontSize: 12,
         color: primaryColor,
-
-        fontFamily: 'Jura-Bold',
+        fontFamily: "Jura-Bold",
     },
     otherDetailsPrice: {
         fontSize: 14,
         color: primaryColor,
-
-        fontFamily: 'Jura-Bold',
+        fontFamily: "Jura-Bold",
     },
 
     noDataContainer: {
@@ -634,11 +757,12 @@ const style = StyleSheet.create({
 
     showMoreText: {
         fontFamily: 'Jura-Bold',
-        fontSize: 12,
-        color: "#000000",
+        fontSize: 11,
+        color: secondaryColor,
         textDecorationLine: 'underline',
-        marginHorizontal: 10,
-        marginBottom: 8,
+        marginTop: 4,
+        marginBottom: 4,
+        opacity: 0.8,
     },
 
 })
