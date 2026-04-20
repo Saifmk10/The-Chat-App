@@ -18,6 +18,7 @@ import IntraDayBot from "../../Widgets/Stock_screen_widgets/BOT/intraDayBot";
 import StockWindowSelector from "../../Widgets/Stock_screen_widgets/DASHBOARD/StockWindowSelector";
 
 import IntradayDataDisplay from "../../Widgets/Stock_screen_widgets/DASHBOARD/Selected_windows/IntradayDataDisplay";
+import WeeklyDataDisplay from "../../Widgets/Stock_screen_widgets/DASHBOARD/Selected_windows/weeklyDataDisplay";
 
 const StockAgentOperationsScreen = () => {
   const navigation = useNavigation<any>();
@@ -56,7 +57,8 @@ const StockAgentOperationsScreen = () => {
         {checker === "DASHBOARD" && (
           <>
           <StockWindowSelector windowChecker={windowChecker} setWindowCheker={setWindowCheker}/>
-          <IntradayDataDisplay windowChecker={windowChecker} />
+          {windowChecker === "intraday" && <IntradayDataDisplay windowChecker={windowChecker} />}
+          {windowChecker === "1week" && <WeeklyDataDisplay windowChecker={windowChecker} />}
           </>
           
 

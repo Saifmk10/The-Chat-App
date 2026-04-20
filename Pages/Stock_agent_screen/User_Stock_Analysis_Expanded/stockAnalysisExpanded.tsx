@@ -10,8 +10,10 @@ import {
     Dimensions,
     Modal,
     Pressable,
+    Image,
 } from "react-native";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import { LOGO_DEV_PUBLIC_KEY } from '@env';
 import { getAuth } from "@react-native-firebase/auth";
 import { getFirestore, doc, getDoc } from "@react-native-firebase/firestore";
 
@@ -313,6 +315,11 @@ const StockAnalysisExpanded = () => {
 
                     <Text style={s.dateBadge}>{date}</Text>
 
+                    {/* Stock Logo */}
+                    <View style={s.logoWrapper}>
+                        <Image source={{ uri: `https://img.logo.dev/ticker/${stockName}.NS?token=${LOGO_DEV_PUBLIC_KEY}` }} style={s.stockLogo} />
+                    </View>
+
                     {/* Price Header */}
                     <View style={s.priceCard}>
                         <View style={s.priceRow}>
@@ -585,6 +592,8 @@ const s = StyleSheet.create({
     statLabel: { color: "#555", fontFamily: "Jura-Bold", fontSize: 10, letterSpacing: 0.5 },
     statValue: { color: PRIMARY, fontFamily: "Jura-Bold", fontSize: 13, marginTop: 4 },
     hBarCenter: { alignItems: "center", marginHorizontal: -16 },
+    logoWrapper: { alignItems: "center", marginTop: 16, marginBottom: 4 },
+    stockLogo: { width: 60, height: 60, borderRadius: 16 },
     sectionTitleRow: {
         flexDirection: "row", alignItems: "center", marginBottom: 10,
     },

@@ -7,6 +7,7 @@ import { getAuth } from '@react-native-firebase/auth';
 import { getFirestore, collection, doc, addDoc, setDoc, getDocs, deleteDoc } from "@react-native-firebase/firestore";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LOGO_DEV_PUBLIC_KEY } from '@env';
+import  { AreaChart, BarChart, LineChart, PieChart , RadarChart , ChartShowcase ,GaugeChart , HorizontalBarChart}  from '../../../Assets/graphs';
 
 const stockApiEndpoint = "https://stock-api.saifmk.online/stock/{stockname}"
 const STOCKS_CACHE_KEY = 'stocks_metadata_cache';
@@ -37,6 +38,12 @@ const UserSelectedStockDisplay = () => {
     const fireBaseUser = getAuth();
     const db = getFirestore()
     const loggedinUser = fireBaseUser.currentUser?.uid;
+
+
+    const data = [
+    { name: 'Monday', value: 400 },
+    { name: 'Tuesday', value: 300 },
+    ];
 
 
 
@@ -124,6 +131,7 @@ const UserSelectedStockDisplay = () => {
 
         <SafeAreaView >
 
+            {/* heading for widget */}
             <View style={styles.headingRow}>
                 <Text style={styles.headingStyle}>YOUR STOCKS</Text>
                 <TouchableOpacity onPress={() => setInfoVisible(true)} style={styles.infoButton}>
@@ -131,6 +139,8 @@ const UserSelectedStockDisplay = () => {
                 </TouchableOpacity>
             </View>
 
+
+            {/* learn more popup */}
             <Modal transparent animationType="fade" visible={infoVisible} onRequestClose={() => setInfoVisible(false)}>
                 <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setInfoVisible(false)}>
                     <View style={styles.modalBox}>
@@ -144,6 +154,7 @@ const UserSelectedStockDisplay = () => {
             </Modal>
 
 
+            {/* cards for the stock details user has addded */}
             <ScrollView style={styles.youStockContainerParent} horizontal={true} showsHorizontalScrollIndicator={true}>
                 {isLoading ? (
                     <Text style={styles.loadingText}>Loading...</Text>
@@ -164,6 +175,15 @@ const UserSelectedStockDisplay = () => {
                     ))
                 )}
             </ScrollView>
+
+
+            <ScrollView>
+                {/* <GaugeChart value={100} maxValue={100} title="Gauge Chart" subtitle="Performance metric" colorScheme="forest" /> */}
+                {/* <HorizontalBarChart data={data} title="Bar Chart - Horizontal" colorScheme="ocean" /> */}
+                {/* <AreaChart/> */}
+            </ScrollView>
+
+            
             
         </SafeAreaView>
 

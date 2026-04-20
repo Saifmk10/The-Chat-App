@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, LayoutAnimation } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, LayoutAnimation, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { LOGO_DEV_PUBLIC_KEY } from '@env';
 import { getAuth } from '@react-native-firebase/auth';
 import { getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs, deleteDoc } from "@react-native-firebase/firestore";
 import StockWindowSelctor from "../StockWindowSelector";
@@ -369,7 +370,13 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
                             {/* ── Header row ── */}
                             <View style={style.cardHeader}>
                                 <View style={style.cardHeaderLeft}>
-                                    <Text style={style.stockName}>{stock.name}</Text>
+                                    <View style={style.nameRow}>
+                                        <Image
+                                            source={{ uri: `https://img.logo.dev/ticker/${stock.name}.NS?token=${LOGO_DEV_PUBLIC_KEY}` }}
+                                            style={style.stockLogo}
+                                        />
+                                        <Text style={style.stockName}>{stock.name}</Text>
+                                    </View>
                                     <View style={[style.changePill, { backgroundColor: isPositive ? "#0d2e0d" : "#2e0d0d" }]}>
                                         <Text style={[style.changeText, { color: isPositive ? "#43fb00" : "#ff4d4d" }]}>
                                             {isPositive ? "+" : ""}{priceChange.toFixed(2)}  ({pricePct}%)
@@ -440,13 +447,7 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
 
 
 
-            {windowChecker == "1week" && (
-                <View>
-                    <Text style={style.otherDeatilsHeading}>
-                        1 week data
-                    </Text>
-                </View>
-            )}
+
             
 
         </SafeAreaView>
@@ -526,6 +527,16 @@ const style = StyleSheet.create({
     cardHeaderLeft: {
         flex: 1,
         gap: 6,
+    },
+    nameRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+    },
+    stockLogo: {
+        width: 35,
+        height: 35,
+        borderRadius: 10,
     },
     stockName: {
         color: primaryColor,

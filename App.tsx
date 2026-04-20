@@ -11,6 +11,7 @@ import UsersChatPage from "./Pages/User_chat_screen/UsersChatPage";
 import StockAgentScreen from "./Pages/Stock_agent_screen/stockAgentPage";
 import AgentScreen from "./Pages/Agent_home_screen/agentScreen";
 import StockAnalysisExpanded from "./Pages/Stock_agent_screen/User_Stock_Analysis_Expanded/stockAnalysisExpanded";
+import WeeklyAnalysisExpanded from "./Pages/Stock_agent_screen/User_Stock_Analysis_Expanded/weeklyAnalysisExpanded";
 
 const Stack = createNativeStackNavigator();
 
@@ -53,6 +54,7 @@ export default function App() {
             <Stack.Screen name="UsersChatPage" component={UsersChatPage} />
             <Stack.Screen name="StockAgentScreen" component={StockAgentScreen} options={{ animation: 'none' }}/>
             <Stack.Screen name="StockAnalysisExpanded" component={StockAnalysisExpanded} />
+            <Stack.Screen name="WeeklyAnalysisExpanded" component={WeeklyAnalysisExpanded} />
             {/* <Stack.Screen name="AgentScreen" component={AgentScreen}/> */}
             
           </>
