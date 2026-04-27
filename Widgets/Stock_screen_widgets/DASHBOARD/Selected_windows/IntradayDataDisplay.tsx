@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, LayoutAnimation, Image } from "react-native";
+// IntradayDataDisplay is a widget that displays intraday stock analysis data for the stocks in the user's watchlist. It fetches the intraday data from Firestore based on the selected date, and shows a list of stocks with their price changes, OHLC values, signal counts, and a summary of the analysis. Users can select different dates using a calendar dropdown, and tap on each stock card to view a more detailed analysis on a separate page. The component also handles cases where no data is available for the selected date, providing appropriate messaging to the user.
+
+
+import React, { useEffect, useState, useMemo } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, LayoutAnimation, Image, Modal, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { LOGO_DEV_PUBLIC_KEY } from '@env';
 import { getAuth } from '@react-native-firebase/auth';
@@ -139,8 +142,37 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
     const [availableDates, setAvailableDates] = useState<string[]>([]);
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [todayDate, setTodayDate] = useState<string>("");
-    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [calendarOpen, setCalendarOpen] = useState(false);
+    const [calendarMonth, setCalendarMonth] = useState(new Date().getMonth());
+    const [calendarYear, setCalendarYear] = useState(new Date().getFullYear());
     const [expandedSummaries, setExpandedSummaries] = useState<Set<string>>(new Set());
+
+    // Convert available DD-MM-YYYY dates to a Set for fast lookup
+    const availableDateSet = useMemo(() => new Set(availableDates), [availableDates]);
+
+    const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+    const DAY_HEADERS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
+    const calendarDays = useMemo(() => {
+        const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+        const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+        const cells: (number | null)[] = Array(firstDay).fill(null);
+        for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+        return cells;
+    }, [calendarMonth, calendarYear]);
+
+    const formatDDMMYYYY = (day: number) =>
+        `${String(day).padStart(2, "0")}-${String(calendarMonth + 1).padStart(2, "0")}-${calendarYear}`;
+
+    const goToPrevMonth = () => {
+        if (calendarMonth === 0) { setCalendarMonth(11); setCalendarYear(y => y - 1); }
+        else setCalendarMonth(m => m - 1);
+    };
+    const goToNextMonth = () => {
+        if (calendarMonth === 11) { setCalendarMonth(0); setCalendarYear(y => y + 1); }
+        else setCalendarMonth(m => m + 1);
+    };
 
 
 
@@ -230,7 +262,7 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
     const handleDateSelect = async (date: string) => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setSelectedDate(date);
-        setDropdownOpen(false);
+        setCalendarOpen(false);
         setJsonData(null);
         setNoData(false);
         const data = await intraDayData(date);
@@ -295,41 +327,71 @@ const IntradayDataDisplay = ({ windowChecker }: { windowChecker: string }) => {
         <View style={style.dropdownWrapper}>
             <TouchableOpacity
                 style={style.dropdownTrigger}
-                onPress={() => {
-                    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-                    setDropdownOpen(!dropdownOpen);
-                }}
+                onPress={() => setCalendarOpen(true)}
             >
                 <Text style={style.dropdownTriggerText}>
                     {selectedDate ?? "Select Date"}
                 </Text>
-                <Text style={style.dropdownArrow}>{dropdownOpen ? "▲" : "▼"}</Text>
+                <Text style={style.dropdownArrow}>📅</Text>
             </TouchableOpacity>
-            
-            
-            
-            {dropdownOpen && (
-                <ScrollView style={style.dropdownList} nestedScrollEnabled>
-                    {availableDates.length === 0 ? (
-                        <Text style={style.dropdownItemText}>No dates available</Text>
-                    ) : (
-                        availableDates.map((date) => (
-                            <TouchableOpacity
-                                key={date}
-                                style={[
-                                    style.dropdownItem,
-                                    selectedDate === date && style.dropdownItemSelected,
-                                ]}
-                                onPress={() => handleDateSelect(date)}
-                            >
-                                <Text style={style.dropdownItemText}>{date}</Text>
-                            </TouchableOpacity>
-                        ))
-                    )}
-                </ScrollView>
-            )}
         </View>
     )}
+
+    {/* Calendar Modal */}
+    <Modal visible={calendarOpen} transparent animationType="fade" onRequestClose={() => setCalendarOpen(false)}>
+        <Pressable style={style.calBackdrop} onPress={() => setCalendarOpen(false)}>
+            <Pressable style={style.calCard} onPress={() => {}}>
+                {/* Month navigation */}
+                <View style={style.calNav}>
+                    <TouchableOpacity onPress={goToPrevMonth} style={style.calNavBtn}>
+                        <Text style={style.calNavArrow}>←</Text>
+                    </TouchableOpacity>
+                    <Text style={style.calMonthLabel}>{MONTH_NAMES[calendarMonth]} {calendarYear}</Text>
+                    <TouchableOpacity onPress={goToNextMonth} style={style.calNavBtn}>
+                        <Text style={style.calNavArrow}>→</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* Day headers */}
+                <View style={style.calRow}>
+                    {DAY_HEADERS.map(d => (
+                        <View key={d} style={style.calHeaderCell}>
+                            <Text style={style.calHeaderText}>{d}</Text>
+                        </View>
+                    ))}
+                </View>
+
+                {/* Day grid */}
+                <View style={style.calGrid}>
+                    {calendarDays.map((day, i) => {
+                        if (day === null) return <View key={`e-${i}`} style={style.calDayCell} />;
+                        const dateStr = formatDDMMYYYY(day);
+                        const hasData = availableDateSet.has(dateStr);
+                        const isSelected = selectedDate === dateStr;
+                        return (
+                            <View key={dateStr} style={style.calDayCell}>
+                                <TouchableOpacity
+                                    style={[
+                                        style.calDayInner,
+                                        hasData && style.calDayAvailable,
+                                        isSelected && style.calDaySelected,
+                                    ]}
+                                    disabled={!hasData}
+                                    onPress={() => handleDateSelect(dateStr)}
+                                >
+                                    <Text style={[
+                                        style.calDayText,
+                                        !hasData && style.calDayDisabled,
+                                        isSelected && style.calDaySelectedText,
+                                    ]}>{day}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        );
+                    })}
+                </View>
+            </Pressable>
+        </Pressable>
+    </Modal>
     
     
     
@@ -732,30 +794,45 @@ const style = StyleSheet.create({
         color: secondaryColor,
     },
 
-    dropdownList: {
-        backgroundColor: '#111',
-        borderRadius: 12,
-        marginTop: 4,
-        maxHeight: 180,
+    calBackdrop: {
+        flex: 1, backgroundColor: 'rgba(0,0,0,0.75)',
+        justifyContent: 'center', alignItems: 'center', padding: 20,
     },
-
-    dropdownItem: {
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#222',
+    calCard: {
+        backgroundColor: '#111', borderRadius: 20, padding: 16,
+        borderWidth: 1, borderColor: '#2a2a2a', width: '100%',
     },
-
-    dropdownItemSelected: {
-        backgroundColor: secondaryColor,
-        borderRadius: 10,
+    calNav: {
+        flexDirection: 'row', justifyContent: 'space-between',
+        alignItems: 'center', marginBottom: 14,
     },
-
-    dropdownItemText: {
-        fontFamily: 'Jura-Bold',
-        fontSize: 13,
-        color: primaryColor,
+    calNavBtn: { padding: 6 },
+    calNavArrow: { color: primaryColor, fontSize: 20, fontFamily: 'Jura-Bold' },
+    calMonthLabel: {
+        color: primaryColor, fontFamily: 'Jura-Bold', fontSize: 15,
+        letterSpacing: 1,
     },
+    calRow: { flexDirection: 'row' },
+    calHeaderCell: { flex: 1, alignItems: 'center', paddingBottom: 8 },
+    calHeaderText: {
+        color: '#555', fontFamily: 'Jura-Bold', fontSize: 15, letterSpacing: 0.5,
+    },
+    calGrid: { flexDirection: 'row', flexWrap: 'wrap' },
+    calDayCell: {
+        width: '14.28%', alignItems: 'center', justifyContent: 'center',
+        paddingVertical: 4,
+    },
+    calDayInner: {
+        width: 40, height: 40, borderRadius: 20,
+        justifyContent: 'center', alignItems: 'center',
+    },
+    calDayText: {
+        color: primaryColor, fontFamily: 'Jura-Bold', fontSize: 17,
+    },
+    calDayDisabled: { color: '#333' },
+    calDayAvailable: { backgroundColor: '#1a1a1a' },
+    calDaySelected: { backgroundColor: secondaryColor },
+    calDaySelectedText: { color: '#fff' },
 
     stockNameLight: {
         fontFamily: 'Jura-Regular',

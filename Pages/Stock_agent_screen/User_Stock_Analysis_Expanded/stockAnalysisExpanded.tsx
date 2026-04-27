@@ -1,4 +1,7 @@
-﻿import React, { useEffect, useState } from "react";
+﻿// StockAnalysisExpanded is a page that expands on the analysis for a specific stock on a specific day. It shows detailed charts, signals, and statistics to help users understand the intraday price action and make informed trading decisions. The page fetches data from Firestore based on the stock name and date passed as route parameters, and displays it in a visually appealing and informative way.
+
+
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -111,6 +114,17 @@ const signalColor = (key: SignalKey, active: boolean) => {
 
 const formatSignalLabel = (key: string) => key.replace(/_/g, " ");
 
+const buy_sell_progress_cal = (
+    signals: Record<SignalKey, boolean>
+): { buyPct: number; sellPct: number } => {
+    const buyCount = BULLISH_SIGNALS.filter(k => signals[k]).length;
+    const sellCount = BEARISH_SIGNALS.filter(k => signals[k]).length;
+    const total = buyCount + sellCount;
+    if (total === 0) return { buyPct: 50, sellPct: 50 };
+    const buyPct = Math.round((buyCount / total) * 100);
+    return { buyPct, sellPct: 100 - buyPct };
+};
+
 // --- Info content ---
 
 const SECTION_INFO: Record<string, { title: string; body: string }> = {
@@ -141,6 +155,16 @@ const SECTION_INFO: Record<string, { title: string; body: string }> = {
             "An AI-generated narrative of the day's price action, contextualising the signals and statistics into a readable insight.\n\n" +
             "Read this to understand *why* the stock behaved the way it did — not just the numbers.\n\n" +
             "Look for phrases like 'buyer absorption', 'late selling pressure', or 'VWAP rejection' — these point to the dominant intraday theme and directly map to the signals detected.",
+    },
+    BUY_SELL: {
+        title: "Buy / Sell Pressure",
+        body:
+            "A single progress bar showing the ratio of active Bullish (Buy) signals to Bearish (Sell) signals.\n\n" +
+            "🟢 Green portion → Buy pressure. Calculated from active bullish signals (Buyer Control, Intraday Strength, VWAP Hold, Dip Absorption, Late Buying, Trend Day Up).\n" +
+            "🔴 Red portion → Sell pressure. Calculated from active bearish signals (Seller Control, Intraday Weakness, VWAP Rejection, Late Selling, Trend Day Down).\n\n" +
+            "If no bullish or bearish signals fired, the bar defaults to 50/50.\n\n" +
+            "✅ Strong buy bias: Green > 60%. Consider intraday long setups.\n" +
+            "❌ Strong sell bias: Red > 60%. Exercise caution or look for short setups.",
     },
     SIGNAL_BREAKDOWN: {
         title: "Signal Breakdown",
@@ -343,6 +367,7 @@ const StockAnalysisExpanded = () => {
                         </View>
                     </View>
 
+
                     {/* Gauge */}
                     <View style={s.section}>
                         <View style={s.sectionTitleRow}>
@@ -360,6 +385,36 @@ const StockAnalysisExpanded = () => {
                             />
                         </View>
                     </View>
+
+
+
+                    {/* Buy / Sell Progress Bar */}
+                    {(() => {
+                        const { buyPct, sellPct } = buy_sell_progress_cal(stock.signals);
+                        return (
+                            <View style={s.section}>
+                                <View style={s.sectionTitleRow}>
+                                    <Text style={s.sectionTitle}>BUY / SELL PRESSURE</Text>
+                                    <TouchableOpacity onPress={() => showInfo("BUY_SELL")} style={s.infoBtn}>
+                                        <Text style={s.infoIcon}>ⓘ</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={s.bsBarOuter}>
+                                    <View style={[s.bsBarBuy, { flex: buyPct }]}>
+                                        {buyPct > 0 && (
+                                            <Text style={s.bsBarBuyText}>BUY {buyPct}%</Text>
+                                        )}
+                                    </View>
+                                    <View style={[s.bsBarSell, { flex: sellPct }]}>
+                                        {sellPct > 0 && (
+                                            <Text style={s.bsBarSellText}>SELL {sellPct}%</Text>
+                                        )}
+                                    </View>
+                                </View>
+                            </View>
+                        );
+                    })()}
+
 
                     {/* OHLC Bar Chart */}
                     <View style={s.section}>
@@ -387,6 +442,8 @@ const StockAnalysisExpanded = () => {
                         </View>
                         <Text style={s.summaryText}>{stock.summary}</Text>
                     </View>
+
+                    
 
                     {/* Signal Donut */}
                     <View style={s.section}>
@@ -592,6 +649,22 @@ const s = StyleSheet.create({
     statLabel: { color: "#555", fontFamily: "Jura-Bold", fontSize: 10, letterSpacing: 0.5 },
     statValue: { color: PRIMARY, fontFamily: "Jura-Bold", fontSize: 13, marginTop: 4 },
     hBarCenter: { alignItems: "center", marginHorizontal: -16 },
+    bsBarOuter: {
+        flexDirection: "row", height: 38, borderRadius: 12, overflow: "hidden",
+        backgroundColor: CARD_BG, borderWidth: 1, borderColor: "#1e1e1e",
+    },
+    bsBarBuy: {
+        backgroundColor: "#0d2e0d", justifyContent: "center", alignItems: "center",
+    },
+    bsBarSell: {
+        backgroundColor: "#2e0d0d", justifyContent: "center", alignItems: "center",
+    },
+    bsBarBuyText: {
+        color: "#43fb00", fontFamily: "Jura-Bold", fontSize: 12, letterSpacing: 1,
+    },
+    bsBarSellText: {
+        color: "#ff4d4d", fontFamily: "Jura-Bold", fontSize: 12, letterSpacing: 1,
+    },
     logoWrapper: { alignItems: "center", marginTop: 16, marginBottom: 4 },
     stockLogo: { width: 60, height: 60, borderRadius: 16 },
     sectionTitleRow: {

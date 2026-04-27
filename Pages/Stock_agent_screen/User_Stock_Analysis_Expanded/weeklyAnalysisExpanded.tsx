@@ -1,3 +1,5 @@
+// WeeklyAnalysisExpanded is a file that expands to a page to show detailed weekly analysis for a specific stock. It fetches the weekly data for the given stock and date from Firestore, and displays various charts, metrics, and insights to help users understand the stock's weekly performance and make informed trading decisions. The page includes a buy/sell pressure bar, a volume conviction gauge, a metrics overview bar chart, and a sentiment vs liquidity horizontal bar, along with detailed explanations for each section accessible via info buttons.
+
 import React, { useEffect, useState } from "react";
 import {
     View,
@@ -74,9 +76,35 @@ const safeNum = (val: number): number => {
     return val;
 };
 
+const buy_sell_progress_cal = (
+    stock: WeeklyStockDetail
+): { buyPct: number; sellPct: number } => {
+    const sentimentScore = Math.max(0, Math.min(1, safeNum(stock.closing_sentiment_bias)));
+    const liquidityScore = Math.max(0, Math.min(1, safeNum(stock.liquidity_absorption_rate)));
+    const returnScore = safeNum(stock.net_weekly_return) >= 0 ? 1 : 0;
+
+    // Weighted: sentiment 40%, liquidity 30%, return direction 30%
+    const buyRatio = sentimentScore * 0.4 + liquidityScore * 0.3 + returnScore * 0.3;
+    const buyPct = Math.round(buyRatio * 100);
+    return { buyPct, sellPct: 100 - buyPct };
+};
+
 // --- Info content ---
 
 const SECTION_INFO: Record<string, { title: string; body: string }> = {
+    BUY_SELL: {
+        title: "Buy / Sell Pressure",
+        body:
+            "A single progress bar showing the estimated Buy vs Sell pressure for the week.\n\n" +
+            "Calculated from three weekly metrics:\n" +
+            "• Closing Sentiment Bias (40% weight) — where the stock closed within its weekly range.\n" +
+            "• Liquidity Absorption Rate (30% weight) — how effectively buyers absorbed selling.\n" +
+            "• Net Weekly Return direction (30% weight) — positive return adds buy pressure.\n\n" +
+            "\ud83d\udfe2 Green portion \u2192 Buy pressure percentage.\n" +
+            "\ud83d\udd34 Red portion \u2192 Sell pressure percentage.\n\n" +
+            "\u2705 Buy > 60% \u2192 Bullish bias. Consider continuation or entry setups.\n" +
+            "\u274c Sell > 60% \u2192 Bearish bias. Exercise caution on longs.",
+    },
     VOLUME_CONVICTION: {
         title: "Volume Conviction Score",
         body:
@@ -295,6 +323,33 @@ const WeeklyAnalysisExpanded = () => {
                         </View>
                     </View>
 
+                    {/* Buy / Sell Progress Bar */}
+                    {(() => {
+                        const { buyPct, sellPct } = buy_sell_progress_cal(stock);
+                        return (
+                            <View style={s.section}>
+                                <View style={s.sectionTitleRow}>
+                                    <Text style={s.sectionTitle}>BUY / SELL PRESSURE</Text>
+                                    <TouchableOpacity onPress={() => showInfo("BUY_SELL")} style={s.infoBtn}>
+                                        <Text style={s.infoIcon}>ⓘ</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={s.bsBarOuter}>
+                                    <View style={[s.bsBarBuy, { flex: buyPct }]}>
+                                        {buyPct > 0 && (
+                                            <Text style={s.bsBarBuyText}>BUY {buyPct}%</Text>
+                                        )}
+                                    </View>
+                                    <View style={[s.bsBarSell, { flex: sellPct }]}>
+                                        {sellPct > 0 && (
+                                            <Text style={s.bsBarSellText}>SELL {sellPct}%</Text>
+                                        )}
+                                    </View>
+                                </View>
+                            </View>
+                        );
+                    })()}
+
                     {/* Volume Conviction Gauge */}
                     <View style={s.section}>
                         <View style={s.sectionTitleRow}>
@@ -472,6 +527,22 @@ const s = StyleSheet.create({
     infoBtn: { marginLeft: 8, padding: 2 },
     infoIcon: { color: SECONDARY, fontSize: 15, fontWeight: "700" },
     hBarCenter: { alignItems: "center", marginHorizontal: -16 },
+    bsBarOuter: {
+        flexDirection: "row", height: 38, borderRadius: 12, overflow: "hidden",
+        backgroundColor: CARD_BG, borderWidth: 1, borderColor: "#1e1e1e",
+    },
+    bsBarBuy: {
+        backgroundColor: "#0d2e0d", justifyContent: "center", alignItems: "center",
+    },
+    bsBarSell: {
+        backgroundColor: "#2e0d0d", justifyContent: "center", alignItems: "center",
+    },
+    bsBarBuyText: {
+        color: "#43fb00", fontFamily: "Jura-Bold", fontSize: 12, letterSpacing: 1,
+    },
+    bsBarSellText: {
+        color: "#ff4d4d", fontFamily: "Jura-Bold", fontSize: 12, letterSpacing: 1,
+    },
     statsGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
     statCell: {
         width: "30%", backgroundColor: CARD_BG, borderRadius: 14, padding: 11,

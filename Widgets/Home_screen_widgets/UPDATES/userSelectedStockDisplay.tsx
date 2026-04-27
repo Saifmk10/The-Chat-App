@@ -1,3 +1,5 @@
+// UserSelectedStockDisplay is a widget that displays the stocks added by the user to their watchlist. this is shown in the main screen. It fetches the stock metadata (name and ticker) from Firestore, then retrieves the current price for each stock from an external API. The component updates the stock prices every 3 seconds to provide real-time information. It also handles caching of stock metadata and prices using AsyncStorage to improve performance and provide offline access. The UI includes a heading, an info button with a modal popup explaining the widget, and horizontally scrollable cards for each stock showing its logo, name, ticker, price, and a live indicator.
+
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View , Text, ScrollView, TouchableOpacity, Modal} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -155,7 +157,7 @@ const UserSelectedStockDisplay = () => {
 
 
             {/* cards for the stock details user has addded */}
-            <ScrollView style={styles.youStockContainerParent} horizontal={true} showsHorizontalScrollIndicator={true}>
+            <ScrollView style={styles.youStockContainerParent} horizontal={true} showsHorizontalScrollIndicator={false}>
                 {isLoading ? (
                     <Text style={styles.loadingText}>Loading...</Text>
                 ) : emptyStock ? (
@@ -163,13 +165,29 @@ const UserSelectedStockDisplay = () => {
                 ) : (
                     stockDetails.map((stock, index) => (
                         <View style={styles.container} key={index}>
-                            <View style={styles.yourContainerStockNameAndLogo}>
-                                <Image source={{ uri: `https://img.logo.dev/ticker/${stock.StockTicker+".NS"}?token=${LOGO_DEV_PUBLIC_KEY}` }} style={{ width: 35, height: 35 , borderRadius:10 }}/>
-                                <Text style={styles.yourStockContainerText}>{stock.stockName.length > 15 ? stock.stockName.slice(0, 13) + '..' : stock.stockName}</Text>
+                            {/* Logo + Ticker */}
+                            <View style={styles.cardTopRow}>
+                                <Image
+                                    source={{ uri: `https://img.logo.dev/ticker/${stock.StockTicker + ".NS"}?token=${LOGO_DEV_PUBLIC_KEY}` }}
+                                    style={styles.cardLogo}
+                                />
+                                <View style={styles.tickerBadge}>
+                                    <Text style={styles.tickerBadgeText}>{stock.StockTicker}</Text>
+                                </View>
                             </View>
-                            <View style={styles.yourContainerStockPriceAndPercentage}>
-                                <Text style={styles.yourStockContainerText}>₹{stock.stockPrice}</Text>
-                                <Text style={styles.yourStockContainerText}>+13%</Text>
+
+                            {/* Stock Name */}
+                            <Text style={styles.cardStockName} numberOfLines={1}>
+                                {stock.stockName}
+                            </Text>
+
+                            {/* Price */}
+                            <Text style={styles.cardPrice}>₹{stock.stockPrice}</Text>
+
+                            {/* Live indicator */}
+                            <View style={styles.cardLiveRow}>
+                                <View style={styles.liveDot} />
+                                <Text style={styles.liveText}>LIVE</Text>
                             </View>
                         </View>
                     ))
@@ -268,37 +286,76 @@ const styles = StyleSheet.create({
     
     },
     container: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        backgroundColor: "#000000",
-        height: 160,    
-        width: 160,
-        margin: 10,
-        borderRadius: 10,
-        color: "#D9D9D9",
+        backgroundColor: "#111",
+        width: 165,
+        margin: 8,
+        borderRadius: 18,
         borderWidth: 1,
-        borderColor: "#50468e",
+        borderColor: "#1e1e1e",
+        padding: 14,
+        justifyContent: "space-between",
+    },
+
+    cardTopRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: 12,
+    },
+
+    cardLogo: {
+        width: 38,
+        height: 38,
+        borderRadius: 12,
+    },
+
+    tickerBadge: {
+        backgroundColor: "#1a1a2e",
+        borderRadius: 10,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+    },
+
+    tickerBadgeText: {
+        color: "#5F48F5",
         fontFamily: "Jura-Bold",
+        fontSize: 10,
+        letterSpacing: 1,
     },
 
-    yourContainerStockNameAndLogo: {
-        display: "flex",
-        flexDirection: "column",
-        margin: 10,
-        padding: 2,
-
-    },
-    yourContainerStockPriceAndPercentage: {
-        display: "flex",
-        flexDirection: "column",
-        margin: 10,
-        padding: 2,
-    },
-    yourStockContainerText: {
+    cardStockName: {
         color: "#D9D9D9",
         fontFamily: "Jura-Bold",
-        fontSize: 16
+        fontSize: 14,
+        marginBottom: 6,
+    },
+
+    cardPrice: {
+        color: "#D9D9D9",
+        fontFamily: "Jura-Bold",
+        fontSize: 22,
+        marginBottom: 10,
+    },
+
+    cardLiveRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 5,
+    },
+
+    liveDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: "#43fb00",
+    },
+
+    liveText: {
+        color: "#43fb00",
+        fontFamily: "Jura-Bold",
+        fontSize: 9,
+        letterSpacing: 1.5,
+        opacity: 0.8,
     },
     
     loadingText: {
